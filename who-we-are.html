@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+  <script src="./image-slot.js"></script>
+  <script src="./cursor-fx.js"></script>
+  <script src="./practice-areas-data.js"></script>
+  <style>
+    body { margin: 0; background: #ffffff; font-family: 'Montserrat', sans-serif; }
+    a { color: #82C44D; text-decoration: none; }
+    a:hover { color: #6fa93e; }
+    .nav-link { position:relative; }
+    .nav-link::after { content:''; position:absolute; left:0; right:0; bottom:-7px; height:2px; background:#82C44D; transform:scaleX(0); transform-origin:left center; transition:transform 0.32s cubic-bezier(0.22,1,0.36,1); }
+    .nav-link:hover::after { transform:scaleX(1); }
+    @media (max-width: 900px) {
+      [data-nav-desktop], [data-actions-desktop] { display: none !important; }
+      [data-mobile-toggle] { display: block !important; }
+      [data-hero-grid] { grid-template-columns: 1fr !important; gap: 32px !important; }
+      [data-hero-art] { min-height: 320px !important; }
+      [data-stats-strip] { grid-template-columns: repeat(2,1fr) !important; }
+    }
+    .nav-link[data-active]::after { transform:scaleX(1); }
+  </style>
+</helmet>
+
+<div style="width:100%;color:oklch(0.22 0.01 250);line-height:1.5">
+
+  <header style="display:flex;align-items:center;justify-content:space-between;gap:20px;padding:16px 40px;position:sticky;top:0;z-index:50;transition:background 0.3s ease,box-shadow 0.3s ease;background:{{ headerBg }};box-shadow:{{ headerShadow }};backdrop-filter:blur(10px)">
+    <a href="./index.html" style="display:flex;align-items:center;gap:10px">
+      <img src="./assets/ios-partners-logo.webp" alt="IOS Partners" style="height:72px;width:auto"/>
+    </a>
+    <nav data-nav-desktop style="display:flex;align-items:center;gap:26px;flex-shrink:0">
+      <div style="position:relative" onMouseEnter="{{ openDropdown }}" onMouseLeave="{{ closeDropdown }}">
+        <a href="./index.html#practice-areas" class="nav-link" style="color:oklch(0.28 0.09 264);font-weight:500;font-size:15px;cursor:pointer;display:flex;align-items:center;gap:5px;white-space:nowrap">Practice areas
+          <span style="font-size:11px;transform:translateY(1px)">▾</span>
+        </a>
+        <sc-if value="{{ dropdownOpen }}">
+          <div style="position:absolute;top:20px;left:-16px;padding-top:8px;width:520px">
+            <div style="background:white;border:1px solid oklch(0.92 0.005 95);border-radius:12px;box-shadow:0 16px 40px oklch(0.2 0.02 250 / 0.12);padding:10px;display:grid;grid-template-columns:1fr 1fr;gap:2px">
+              <sc-for list="{{ navPracticeAreas }}" as="pa" hint-placeholder-count="16">
+                <a href="{{ pa.href }}" target="{{ pa.target }}" style="display:flex;align-items:center;min-height:38px;padding:6px 12px;border-radius:8px;font-size:13.5px;font-weight:500;line-height:1.25;color:oklch(0.3 0.01 250)">{{ pa.name }}</a>
+              </sc-for>
+            </div>
+          </div>
+        </sc-if>
+      </div>
+      <a href="./index.html#our-work" class="nav-link" style="color:oklch(0.28 0.09 264);font-weight:500;font-size:15px;white-space:nowrap">Our work</a>
+      <a href="./who-we-are.html" class="nav-link" data-active="true" style="color:oklch(0.28 0.09 264);font-weight:500;font-size:15px;white-space:nowrap">About us</a>
+      <a href="./index.html#cta" class="nav-link" style="color:oklch(0.28 0.09 264);font-weight:500;font-size:15px;white-space:nowrap">Contact us</a>
+    </nav>
+    <div data-actions-desktop style="display:flex;align-items:center;gap:14px">
+      <a href="./index.html#cta" style="background:#82C44D;color:#ffffff;font-weight:600;font-size:14.5px;padding:12px 22px;border-radius:9px;white-space:nowrap" style-hover="background:#6fa93e">Work with us</a>
+      <div style="position:relative" onMouseEnter="{{ openLangMenu }}" onMouseLeave="{{ closeLangMenu }}">
+        <button style="display:flex;align-items:center;gap:6px;background:none;border:1px solid oklch(0.85 0.005 95);color:oklch(0.28 0.09 264);font-weight:600;font-size:13px;padding:8px 12px;border-radius:8px;cursor:pointer">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 4 6 4 9s-1.5 6.3-4 9c-2.5-2.7-4-6-4-9s1.5-6.3 4-9Z"/></svg>
+          {{ langLabel }}
+        </button>
+        <sc-if value="{{ langOpen }}">
+          <div style="position:absolute;top:100%;right:0;padding-top:8px;width:150px;z-index:60">
+            <div style="background:white;border:1px solid oklch(0.9 0.005 95);border-radius:10px;box-shadow:0 16px 40px oklch(0.2 0.02 250 / 0.14);padding:6px;display:flex;flex-direction:column;gap:2px">
+              <sc-for list="{{ langs }}" as="l" hint-placeholder-count="4">
+                <button onClick="{{ l.onClick }}" style="text-align:left;background:none;border:none;padding:8px 10px;border-radius:7px;font-size:13.5px;font-weight:500;color:oklch(0.3 0.01 250);cursor:pointer">{{ l.label }}</button>
+              </sc-for>
+            </div>
+          </div>
+        </sc-if>
+      </div>
+    </div>
+    <button data-mobile-toggle onClick="{{ toggleMobileMenu }}" style="display:none;background:none;border:none;cursor:pointer;padding:6px;flex-shrink:0">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="oklch(0.28 0.09 264)" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+    </button>
+  </header>
+
+  <sc-if value="{{ mobileMenuOpen }}">
+    <div style="position:sticky;top:88px;z-index:49;background:white;border-bottom:1px solid oklch(0.92 0.005 95);box-shadow:0 12px 24px rgba(20,30,45,0.08);padding:16px 24px 24px;display:flex;flex-direction:column;gap:14px">
+      <a href="./index.html#practice-areas" onClick="{{ closeMobileMenu }}" style="color:oklch(0.28 0.09 264);font-weight:500;font-size:16px">Practice areas</a>
+      <a href="./index.html#our-work" onClick="{{ closeMobileMenu }}" style="color:oklch(0.28 0.09 264);font-weight:500;font-size:16px">Our work</a>
+      <a href="./who-we-are.html" onClick="{{ closeMobileMenu }}" style="color:oklch(0.28 0.09 264);font-weight:500;font-size:16px">About us</a>
+      <a href="./index.html#cta" onClick="{{ closeMobileMenu }}" style="color:oklch(0.28 0.09 264);font-weight:500;font-size:16px">Contact us</a>
+      <a href="./index.html#cta" onClick="{{ closeMobileMenu }}" style="background:#82C44D;color:#ffffff;font-weight:600;font-size:15px;padding:12px 20px;border-radius:9px;text-align:center;margin-top:4px">Work with us</a>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <sc-for list="{{ langs }}" as="l" hint-placeholder-count="4">
+          <button onClick="{{ l.onClick }}" style="background:none;border:1px solid oklch(0.85 0.005 95);color:oklch(0.28 0.09 264);font-weight:500;font-size:13px;padding:8px 12px;border-radius:8px;cursor:pointer">{{ l.label }}</button>
+        </sc-for>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- HERO -->
+  <section ref="{{ setHeroRef }}" style="position:relative;background:oklch(0.28 0.09 264);overflow:hidden">
+    <div style="position:absolute;top:-120px;left:-60px;width:420px;height:420px;border-radius:50%;background:radial-gradient(circle,rgba(130,196,77,0.18) 0%,transparent 70%)"></div>
+    <div style="position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.04) 1px,transparent 1px);background-size:44px 44px"></div>
+    <div data-hero-grid style="position:relative;max-width:1240px;margin:0 auto;padding:0 24px;display:grid;grid-template-columns:1.05fr 0.95fr;gap:56px;align-items:center">
+      <div style="padding:76px 0 68px;{{ heroStyle }}">
+        <div style="display:inline-flex;align-items:center;gap:9px;background:rgba(130,196,77,0.14);border:1px solid rgba(130,196,77,0.35);color:#9fd97a;font-weight:600;font-size:12px;letter-spacing:0.18em;text-transform:uppercase;font-family:'JetBrains Mono',monospace;padding:7px 16px;border-radius:99px;margin-bottom:24px">
+          <span style="width:6px;height:6px;border-radius:50%;background:#82C44D;display:block"></span>Learn about our story
+        </div>
+        <h1 style="font-family:Montserrat;font-weight:600;font-size:56px;line-height:1.05;letter-spacing:-0.03em;margin:0 0 22px;color:white;text-wrap:pretty">Who we <span style="color:#82C44D">are</span></h1>
+        <p style="font-size:17px;font-weight:300;line-height:1.65;color:rgba(255,255,255,0.72);margin:0 0 30px;max-width:520px">A distinctively international consulting firm in structure, personnel and experience — facilitating economic and financial reform across more than 120 countries since 1999.</p>
+        <div style="display:flex;gap:12px;flex-wrap:wrap">
+          <a href="#our-team" style="display:inline-flex;align-items:center;gap:8px;background:#82C44D;color:#ffffff;font-weight:600;font-size:14.5px;padding:13px 24px;border-radius:10px;transition:transform 0.2s ease,box-shadow 0.2s ease" style-hover="background:#6fa93e;transform:translateY(-2px);box-shadow:0 10px 24px rgba(130,196,77,0.32)">Meet the team →</a>
+          <a href="./index.html#our-work" style="display:inline-flex;align-items:center;gap:8px;background:transparent;border:1px solid rgba(255,255,255,0.28);color:white;font-weight:500;font-size:14.5px;padding:13px 24px;border-radius:10px;transition:background 0.2s ease,border-color 0.2s ease" style-hover="background:rgba(255,255,255,0.08);border-color:rgba(255,255,255,0.5)">See our work</a>
+        </div>
+      </div>
+      <div data-hero-art style="position:relative;align-self:stretch;min-height:460px">
+        <div style="position:absolute;top:64px;bottom:0;right:0;width:62%;max-width:340px;border-radius:20px;overflow:hidden;box-shadow:0 30px 70px rgba(0,0,0,0.32)">
+          <image-slot id="who-hero-a" src="./assets/carousel-1.webp" shape="rect" placeholder="Team in the field" fit="cover" style="width:100%;height:100%"></image-slot>
+        </div>
+        <div style="position:absolute;bottom:52px;left:0;width:46%;max-width:230px;height:200px;border-radius:18px;overflow:hidden;border:5px solid oklch(0.28 0.09 264);box-shadow:0 24px 54px rgba(0,0,0,0.34)">
+          <image-slot id="who-hero-b" src="./assets/carousel-3.webp" shape="rect" placeholder="Project site" fit="cover" style="width:100%;height:100%"></image-slot>
+        </div>
+        <div style="position:absolute;top:12px;left:6%;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);backdrop-filter:blur(8px);border-radius:12px;padding:12px 18px">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:#9fd97a">Since 1999</div>
+        </div>
+      </div>
+    </div>
+    <div style="position:relative;border-top:1px solid rgba(255,255,255,0.12);background:rgba(0,0,0,0.14)">
+      <div data-stats-strip style="max-width:1240px;margin:0 auto;padding:0 24px;display:grid;grid-template-columns:repeat(4,1fr)">
+        <sc-for list="{{ stats }}" as="s" as-index="i" hint-placeholder-count="4">
+          <div style="padding:28px 20px;border-left:1px solid rgba(255,255,255,0.1);{{ statStyle }}">
+            <div style="font-family:Montserrat;font-weight:600;font-size:32px;line-height:1;color:#82C44D">{{ s.display }}</div>
+            <div style="font-size:13px;font-weight:300;color:rgba(255,255,255,0.62);margin-top:8px;line-height:1.45">{{ s.label }}</div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </section>
+
+  <!-- HISTORY -->
+  <section style="max-width:1180px;margin:0 auto;padding:64px 24px 72px;display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center">
+    <div style="width:100%;justify-self:center;border-radius:20px;overflow:hidden;aspect-ratio:4/3;max-width:520px;background:oklch(0.94 0.005 95)">
+      <image-slot id="who-history-image" src="./assets/who-history-image.webp" shape="rect" placeholder="Robert Hans in Garoua, Cameroon" fit="cover" style="width:100%;height:100%"></image-slot>
+    </div>
+    <div>
+      <p style="font-size:15.5px;color:oklch(0.35 0.01 250);margin:0 0 16px"><strong style="color:oklch(0.28 0.09 264)">IOS Partners</strong> commenced operations in 1999. The firm has since accumulated a knowledge base and experience facilitating economic and financial reforms in over 120 countries worldwide. Our varied and extensive portfolio enables us to bring a proven track record and deep knowledge of markets, institutions and international best practices.</p>
+      <p style="font-size:15.5px;color:oklch(0.35 0.01 250);margin:0">While providing country-specific solutions, IOS Partners is a distinctively international consulting firm in structure, personnel and experience — with an established, broad-based partnership with specialized professionals and firms around the world.</p>
+    </div>
+  </section>
+
+  <!-- TEAM -->
+  <section id="our-team" style="position:relative;background:oklch(0.975 0.003 95);padding:80px 24px 32px;overflow:hidden">
+    <div style="position:absolute;top:-100px;left:-80px;width:320px;height:320px;border-radius:50%;background:radial-gradient(circle,rgba(130,196,77,0.1) 0%,transparent 70%)"></div>
+    <div style="position:relative;max-width:1180px;margin:0 auto">
+      <h2 style="font-family:Montserrat;font-weight:600;font-size:28px;text-align:center;margin:0 0 12px;color:oklch(0.28 0.09 264)">Our Team</h2>
+      <p style="text-align:center;color:oklch(0.5 0.01 250);font-size:15.5px;max-width:700px;margin:0 auto 40px">A diverse staff from five continents and over fourteen countries — multidisciplinary, multilingual and multicultural, supported by a vast network of regional partner firms.</p>
+    </div>
+  </section>
+
+  <sc-for list="{{ teamGroups }}" as="group" hint-placeholder-count="6">
+    <section style="background:oklch(0.975 0.003 95);padding:0 24px 56px">
+      <div style="max-width:1180px;margin:0 auto">
+      <h3 style="font-family:Montserrat;font-weight:600;font-size:18px;margin:0 0 20px;color:oklch(0.28 0.09 264)">{{ group.name }}</h3>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:20px">
+        <sc-for list="{{ group.people }}" as="p" hint-placeholder-count="4">
+          <div style="background:white;border-radius:18px;padding:24px 18px;text-align:center;box-shadow:0 2px 12px rgba(20,30,45,0.05);transition:transform 0.25s ease,box-shadow 0.25s ease" style-hover="transform:translateY(-4px);box-shadow:0 16px 32px rgba(20,30,45,0.1)">
+            <div style="width:84px;height:84px;border-radius:50%;overflow:hidden;margin:0 auto 16px;box-shadow:0 0 0 4px rgba(130,196,77,0.12)">
+              <image-slot id="{{ p.id }}" src="{{ p.photo }}" shape="circle" placeholder="Photo" fit="cover" style="width:100%;height:100%"></image-slot>
+            </div>
+            <div style="font-family:Montserrat;font-weight:600;font-size:14.5px;color:oklch(0.22 0.01 250)">{{ p.name }}</div>
+            <div style="font-size:12px;color:#5f9636;font-weight:600;margin:5px 0 8px">{{ p.title }}</div>
+            <div style="font-size:12px;color:oklch(0.55 0.01 250)">{{ p.location }}</div>
+          </div>
+        </sc-for>
+      </div>
+      </div>
+    </section>
+  </sc-for>
+
+  <footer style="background:oklch(0.2 0.08 264);color:white;padding:56px 56px 32px">
+    <div style="max-width:1180px;margin:0 auto;display:grid;grid-template-columns:0.8fr 0.6fr 1fr;gap:40px">
+      <div>
+        <img loading="lazy" decoding="async" src="./assets/ios-partners-logo-white.webp" alt="IOS Partners" style="height:44px;width:auto;margin-bottom:14px"/>
+      </div>
+      <div>
+        <div style="font-weight:600;font-size:13px;text-transform:uppercase;letter-spacing:0.04em;color:white;margin-bottom:16px">Site links</div>
+        <div style="display:flex;flex-direction:column;gap:12px;font-size:14px">
+          <a href="./index.html#our-work" style="color:white">Our work</a>
+          <a href="./index.html#cta" style="color:white">Contact us</a>
+        </div>
+      </div>
+      <div>
+        <div style="font-weight:600;font-size:13px;text-transform:uppercase;letter-spacing:0.04em;color:white;margin-bottom:16px">Practice areas</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px 16px;font-size:14px">
+          <a href="./practice-agriculture.html" style="color:white">Agriculture</a>
+          <a href="./practice-aviation.html" style="color:white">Aviation</a>
+          <a href="./practice-finance.html" style="color:white">Finance</a>
+          <a href="./practice-ict4d.html" style="color:white">ICT4D</a>
+          <a href="./practice-private-sector-development.html" style="color:white">Private Sector</a>
+          <a href="./practice-social-development-health-inclusion.html" style="color:white">Social Development</a>
+        </div>
+      </div>
+    </div>
+    <div style="max-width:1180px;margin:40px auto 0;padding-top:24px;border-top:1px solid oklch(0.3 0.01 250);display:flex;justify-content:space-between;font-size:12.5px;color:white">
+      <span>© 2026 IOS Partners, Inc. All rights reserved.</span>
+      <div style="display:flex;gap:20px">
+        <a href="https://www.linkedin.com/company/ios-partners-inc./" target="_blank" rel="noopener" aria-label="LinkedIn" style="color:white;display:flex;align-items:center" style-hover="color:#82C44D">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.45 20.45h-3.55v-5.57c0-1.33-.02-3.03-1.85-3.03-1.85 0-2.14 1.45-2.14 2.94v5.66H9.36V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.45v6.29zM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12zM7.12 20.45H3.56V9h3.56v11.45z"/></svg>
+        </a>
+      </div>
+    </div>
+  </footer>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { dropdownOpen: false, newsletterEmail: '', langOpen: false, mobileMenuOpen: false, lang: 'EN', scrolled: false, heroRevealed: false, statCounts: [0, 0, 0, 0] };
+  setHeroRef = (el) => {
+    if (!el || this._heroObserved) return;
+    this._heroObserved = true;
+    const obs = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting) { this.setState({ heroRevealed: true }); this.animateStats(); obs.disconnect(); }
+    }, { threshold: 0.15 });
+    obs.observe(el);
+    this.setState({ heroRevealed: true });
+    this.animateStats();
+  };
+  animateStats = () => {
+    if (this._statsAnimated) return;
+    this._statsAnimated = true;
+    const targets = this.stats.map((s) => s.num);
+    const duration = 1400;
+    const start = Date.now();
+    this._statInterval = setInterval(() => {
+      const t = Math.min(1, (Date.now() - start) / duration);
+      const eased = 1 - Math.pow(1 - t, 3);
+      this.setState({ statCounts: targets.map((n) => Math.round(n * eased)) });
+      if (t >= 1) clearInterval(this._statInterval);
+    }, 30);
+  };
+
+  practiceAreas = [
+    'Agriculture', 'Aviation', 'Finance', 'Tourism', 'Blue Economy', 'Forestry & Environment',
+    'ICT4D', 'Infrastructure Development', 'Ports & Maritime', 'Private Sector Development',
+    'Public Administration & Reform', 'Public-Private Partnerships (PPP)', 'Special Economic Zones',
+    'Social Development & Health Inclusion', 'Trade & Investment', 'USG Practice'
+  ];
+
+  stats = [
+    { num: 25, suffix: '+ years', label: 'of experience in international economic development' },
+    { num: 350, suffix: '+ projects', label: 'implemented worldwide' },
+    { num: 130, suffix: '+ countries', label: 'we worked in' },
+    { num: 15, suffix: ' offices', label: 'established across the globe' }
+  ];
+
+  teamGroups = [
+    { name: 'Leadership', people: [
+      { id: 'p-robert', name: 'Robert Hans', title: 'Senior Managing Director', location: 'Miami, FL, USA' },
+      { id: 'p-patricia', name: 'Patricia Hans', title: 'Chairwoman', location: 'Miami, FL, USA' },
+      { id: 'p-tea', name: 'Tea Alania', title: 'COO / VP Project Management', location: 'Tbilisi, Georgia' },
+      { id: 'p-denitza', name: 'Denitza Bojinova', title: 'VP Business Development', location: 'Lisbon, Portugal' }
+    ]},
+    { name: 'Business Development Team', people: [
+      { id: 'p-bilal', name: 'Bilal El Moustakim', title: 'Project Coordinator', location: 'Brussels, Belgium' },
+      { id: 'p-erick', name: 'Erick Muriithi', title: 'Manager, USG Practice & Africa', location: 'Nairobi, Kenya' },
+      { id: 'p-andrea', name: 'Andrea Talero', title: 'Project Coordinator', location: 'Bogota, Colombia' },
+      { id: 'p-vincent', name: 'Vincent Pondaven-Menegazzi', title: 'Senior Project Coordinator', location: 'Torino, Italy' },
+      { id: 'p-matthieu', name: 'Matthieu Pignol', title: 'Manager, Strategic Business Development', location: 'Nice, France' },
+      { id: 'p-tarek', name: 'Tarek Mandile', title: 'Project Coordinator', location: 'Paris, France' },
+      { id: 'p-varsha', name: 'Varsha Lakshmi', title: 'Project Coordinator', location: 'Paris, France' }
+    ]},
+    { name: 'Project Management Team', people: [
+      { id: 'p-katty', name: 'Katty Metreveli', title: 'Director for Project Management', location: 'Tbilisi, Georgia' },
+      { id: 'p-masa', name: 'Masa Cosic', title: 'Director, Public Administration Reform', location: 'Sarajevo, Bosnia & Herzegovina' },
+      { id: 'p-irina', name: 'Irina Gotsiridze', title: 'Project Manager', location: 'Tbilisi, Georgia' },
+      { id: 'p-alessandra', name: 'Alessandra Dolabella', title: 'Project Manager', location: 'Sao Paulo, Brasil' },
+      { id: 'p-ashley', name: 'Ashley Hans-Barrientos', title: 'Project Manager', location: 'Miami, FL, USA' },
+      { id: 'p-alois', name: 'Aloïs Ye', title: 'Project Coordinator', location: 'Nice, France' },
+      { id: 'p-quentin', name: 'Quentin Lambert', title: 'Project Coordinator', location: 'Bogota, Colombia' },
+      { id: 'p-florencia', name: 'Florencia Solano', title: 'Project Manager', location: 'Paris, France' },
+      { id: 'p-leticia', name: 'Leticia Kleinsorge', title: 'Assistant Project Manager', location: 'Belo Horizonte, Brazil' }
+    ]},
+    { name: 'Aviation Team', people: [
+      { id: 'p-david', name: 'David Crowther', title: 'Chief Economist', location: 'San José, Costa Rica' },
+      { id: 'p-komal', name: 'Komal Sood', title: 'Senior Project Manager', location: 'Nairobi, Kenya' },
+      { id: 'p-patricia-r', name: 'Dr. Patricia Ryan', title: 'Director of Aviation', location: 'Miami, FL, USA' }
+    ]},
+    { name: 'Marketing Team', people: [
+      { id: 'p-stephan', name: 'Stephan Rich', title: 'Director of Operations & Marketing', location: 'Santa Cruz, Bolivia' },
+      { id: 'p-carl', name: 'Potlaki Carl Thakaso', title: 'Social Media & Marketing', location: 'Cape Town, South Africa' },
+      { id: 'p-sol', name: 'Maria Sol Amores', title: 'UI/UX Designer', location: 'Barcelona, Spain' }
+    ]},
+    { name: 'IOSsoft Team', people: [
+      { id: 'p-pedro', name: 'Pedro Souss', title: 'General Manager, IOSsoft Inc.', location: 'San Juan, Puerto Rico' },
+      { id: 'p-sasa', name: 'Sasa Cosic', title: 'Senior Consultant', location: 'Sarajevo, Bosnia & Herzegovina' },
+      { id: 'p-stefan', name: 'Stefan Berner', title: 'Senior Project Manager', location: 'Amsterdam, Netherlands' }
+    ]},
+    { name: 'Finance & Administration', people: [
+      { id: 'p-roscy', name: 'Roscy Baptista', title: 'Director of Finance and Administration', location: 'Washington, D.C., USA' },
+      { id: 'p-anne', name: 'Anne Dekker', title: 'Finance & Admin Manager', location: 'Miami, FL, USA' },
+      { id: 'p-rafael', name: 'Rafael Caballero', title: 'Accounts Payable Administrator', location: 'Washington D.C.' },
+      { id: 'p-darling', name: 'Darling Garcia', title: 'Database Administrator', location: 'San José, Costa Rica' }
+    ]}
+  ];
+
+  openDropdown = () => this.setState({ dropdownOpen: true });
+  closeDropdown = () => this.setState({ dropdownOpen: false });
+
+  openLangMenu = () => this.setState({ langOpen: true });
+  closeLangMenu = () => this.setState({ langOpen: false });
+  toggleMobileMenu = () => this.setState((s) => ({ mobileMenuOpen: !s.mobileMenuOpen }));
+  closeMobileMenu = () => this.setState({ mobileMenuOpen: false });
+  setLang = (code) => () => this.setState({ lang: code, langOpen: false });
+  LANGS = [{ code: 'EN', label: 'English' }, { code: 'ES', label: 'Español' }, { code: 'FR', label: 'Français' }, { code: 'PT', label: 'Português' }];
+  componentDidMount() {
+    this._onScroll = () => {
+      const scrolled = window.scrollY > 12;
+      if (scrolled !== this.state.scrolled) this.setState({ scrolled });
+    };
+    window.addEventListener('scroll', this._onScroll, { passive: true });
+  }
+  componentWillUnmount() {
+    if (this._onScroll) window.removeEventListener('scroll', this._onScroll);
+    if (this._statInterval) clearInterval(this._statInterval);
+  }
+  setNewsletter = (e) => this.setState({ newsletterEmail: e.target.value });
+
+  renderVals() {
+    return {
+      dropdownOpen: this.state.dropdownOpen,
+      openDropdown: this.openDropdown,
+      closeDropdown: this.closeDropdown,
+      langOpen: this.state.langOpen,
+      openLangMenu: this.openLangMenu,
+      closeLangMenu: this.closeLangMenu,
+      mobileMenuOpen: this.state.mobileMenuOpen,
+      toggleMobileMenu: this.toggleMobileMenu,
+      closeMobileMenu: this.closeMobileMenu,
+      langLabel: this.state.lang,
+      langs: this.LANGS.map((l) => ({ label: l.label, onClick: this.setLang(l.code) })),
+      headerBg: this.state.scrolled ? 'rgba(255,255,255,0.82)' : '#ffffff',
+      headerShadow: this.state.scrolled ? '0 8px 24px rgba(20,30,45,0.08)' : 'none',
+      setHeroRef: this.setHeroRef,
+      heroStyle: { opacity: this.state.heroRevealed ? 1 : 0, transform: this.state.heroRevealed ? 'translateY(0)' : 'translateY(18px)', transition: 'opacity 0.7s ease, transform 0.7s ease' },
+      statStyle: { opacity: this.state.heroRevealed ? 1 : 0, transform: this.state.heroRevealed ? 'translateY(0)' : 'translateY(18px)', transition: 'opacity 0.6s ease 0.15s, transform 0.6s ease 0.15s' },
+      practiceAreas: this.practiceAreas,
+      navPracticeAreas: Object.values(window.PRACTICE_AREAS || {}).map((a) => ({ name: a.title, href: a.title === 'ICT4D' ? 'https://iossoftinc.com/' : a.file, target: a.title === 'ICT4D' ? '_blank' : '_self' })),
+      stats: this.stats.map((s, i) => ({ label: s.label, display: (this.state.statCounts[i] || 0) + s.suffix })),
+      teamGroups: this.teamGroups.map((g) => ({ ...g, people: g.people.map((p) => ({ ...p, photo: './assets/team/' + p.id + '.webp' })) })),
+      newsletterEmail: this.state.newsletterEmail,
+      setNewsletter: this.setNewsletter
+    };
+  }
+}
+
+</script>
+</body>
+</html>
