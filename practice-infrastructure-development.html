@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <script src="./support.js"></script>
+<script src="./i18n.js"></script>
 </head>
 <body>
 <x-dc>
@@ -49,7 +50,7 @@
     </a>
     <nav data-nav-desktop style="display:flex;align-items:center;gap:26px;flex-shrink:0">
       <div style="position:relative" onMouseEnter="{{ openDropdown }}" onMouseLeave="{{ closeDropdown }}">
-        <a href="./index.html#practice-areas" class="nav-link" data-active="true" style="color:oklch(0.28 0.09 264);font-weight:500;font-size:15px;cursor:pointer;display:flex;align-items:center;gap:5px;white-space:nowrap">Practice areas
+        <a href="./index.html#practice-areas" class="nav-link" data-active="true" style="color:oklch(0.28 0.09 264);font-weight:500;font-size:15px;cursor:pointer;display:flex;align-items:center;gap:5px;white-space:nowrap">{{ txtPracticeAreas }}
           <span style="font-size:11px;transform:translateY(1px)">▾</span>
         </a>
         <sc-if value="{{ dropdownOpen }}">
@@ -62,12 +63,11 @@
           </div>
         </sc-if>
       </div>
-      <a href="./index.html#our-work" class="nav-link" style="color:oklch(0.28 0.09 264);font-weight:500;font-size:15px;white-space:nowrap">Our work</a>
-      <a href="./who-we-are.html" class="nav-link" style="color:oklch(0.28 0.09 264);font-weight:500;font-size:15px;white-space:nowrap">About us</a>
-      <a href="./index.html#cta" class="nav-link" style="color:oklch(0.28 0.09 264);font-weight:500;font-size:15px;white-space:nowrap">Contact us</a>
+      <a href="./index.html#our-work" class="nav-link" style="color:oklch(0.28 0.09 264);font-weight:500;font-size:15px;white-space:nowrap">{{ txtOurWork }}</a>
+      <a href="./who-we-are.html" class="nav-link" style="color:oklch(0.28 0.09 264);font-weight:500;font-size:15px;white-space:nowrap">{{ txtAboutUs }}</a>
     </nav>
     <div data-actions-desktop style="display:flex;align-items:center;gap:14px">
-      <a href="./index.html#cta" style="background:#82C44D;color:#ffffff;font-weight:600;font-size:14.5px;padding:12px 22px;border-radius:9px;white-space:nowrap" style-hover="background:#6fa93e">Work with us</a>
+      <a href="./index.html#cta" style="background:#82C44D;color:#ffffff;font-weight:600;font-size:14.5px;padding:12px 22px;border-radius:9px;white-space:nowrap" style-hover="background:#6fa93e">{{ txtWorkWithUs }}</a>
       <div style="position:relative" onMouseEnter="{{ openLangMenu }}" onMouseLeave="{{ closeLangMenu }}">
         <button style="display:flex;align-items:center;gap:6px;background:none;border:1px solid oklch(0.85 0.005 95);color:oklch(0.28 0.09 264);font-weight:600;font-size:13px;padding:8px 12px;border-radius:8px;cursor:pointer">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 4 6 4 9s-1.5 6.3-4 9c-2.5-2.7-4-6-4-9s1.5-6.3 4-9Z"/></svg>
@@ -91,11 +91,10 @@
 
   <sc-if value="{{ mobileMenuOpen }}">
     <div style="position:sticky;top:88px;z-index:49;background:white;border-bottom:1px solid oklch(0.92 0.005 95);box-shadow:0 12px 24px rgba(20,30,45,0.08);padding:16px 24px 24px;display:flex;flex-direction:column;gap:14px">
-      <a href="./index.html#practice-areas" onClick="{{ closeMobileMenu }}" style="color:oklch(0.28 0.09 264);font-weight:500;font-size:16px">Practice areas</a>
-      <a href="./index.html#our-work" onClick="{{ closeMobileMenu }}" style="color:oklch(0.28 0.09 264);font-weight:500;font-size:16px">Our work</a>
-      <a href="./who-we-are.html" onClick="{{ closeMobileMenu }}" style="color:oklch(0.28 0.09 264);font-weight:500;font-size:16px">About us</a>
-      <a href="./index.html#cta" onClick="{{ closeMobileMenu }}" style="color:oklch(0.28 0.09 264);font-weight:500;font-size:16px">Contact us</a>
-      <a href="./index.html#cta" onClick="{{ closeMobileMenu }}" style="background:#82C44D;color:#ffffff;font-weight:600;font-size:15px;padding:12px 20px;border-radius:9px;text-align:center;margin-top:4px">Work with us</a>
+      <a href="./index.html#practice-areas" onClick="{{ closeMobileMenu }}" style="color:oklch(0.28 0.09 264);font-weight:500;font-size:16px">{{ txtPracticeAreas }}</a>
+      <a href="./index.html#our-work" onClick="{{ closeMobileMenu }}" style="color:oklch(0.28 0.09 264);font-weight:500;font-size:16px">{{ txtOurWork }}</a>
+      <a href="./who-we-are.html" onClick="{{ closeMobileMenu }}" style="color:oklch(0.28 0.09 264);font-weight:500;font-size:16px">{{ txtAboutUs }}</a>
+      <a href="./index.html#cta" onClick="{{ closeMobileMenu }}" style="background:#82C44D;color:#ffffff;font-weight:600;font-size:15px;padding:12px 20px;border-radius:9px;text-align:center;margin-top:4px">{{ txtWorkWithUs }}</a>
       <div style="display:flex;gap:10px;flex-wrap:wrap">
         <sc-for list="{{ langs }}" as="l" hint-placeholder-count="4">
           <button onClick="{{ l.onClick }}" style="background:none;border:1px solid oklch(0.85 0.005 95);color:oklch(0.28 0.09 264);font-weight:500;font-size:13px;padding:8px 12px;border-radius:8px;cursor:pointer">{{ l.label }}</button>
@@ -113,10 +112,6 @@
       <p style="font-size:17px;font-weight:300;color:rgba(255,255,255,0.85);max-width:680px;margin:0;animation:fadeInUp 0.7s ease both;animation-delay:0.2s">{{ areaBlurb }}</p>
       <div style="display:flex;gap:28px;margin-top:28px;animation:fadeInUp 0.7s ease both;animation-delay:0.3s">
         <div>
-          <div style="font-family:Montserrat;font-weight:600;font-size:26px;color:#82C44D">{{ projectCount }}</div>
-          <div style="font-size:12.5px;font-weight:300;color:rgba(255,255,255,0.7)">projects delivered</div>
-        </div>
-        <div>
           <div style="font-family:Montserrat;font-weight:600;font-size:26px;color:#82C44D">{{ countryCount }}</div>
           <div style="font-size:12.5px;font-weight:300;color:rgba(255,255,255,0.7)">countries</div>
         </div>
@@ -125,7 +120,7 @@
   </section>
 
   <section style="max-width:1180px;margin:0 auto;padding:72px 24px 24px">
-    <h2 style="font-family:Montserrat;font-weight:600;font-size:28px;margin:0 0 28px;color:oklch(0.28 0.09 264)">Highlighted projects</h2>
+    <h2 style="font-family:Montserrat;font-weight:600;font-size:28px;margin:0 0 28px;color:oklch(0.28 0.09 264)">{{ txtHighlightedProjects }}</h2>
     <sc-if value="{{ hasProjects }}" hint-placeholder-val="{{ true }}">
       <div data-proj-grid style="display:grid;grid-template-columns:{{ gridCols }};gap:22px;max-width:{{ gridMax }};margin:0 auto">
         <sc-for list="{{ projects }}" as="proj" hint-placeholder-count="6">
@@ -198,13 +193,13 @@
     <div style="max-width:1180px;margin:0 auto;position:relative">
       <div style="text-align:center;margin-bottom:20px">
         <div style="display:inline-block;background:rgba(130,196,77,0.12);border:1px solid rgba(130,196,77,0.3);color:#5f9636;font-weight:600;font-size:12px;letter-spacing:0.18em;text-transform:uppercase;font-family:'JetBrains Mono',monospace;padding:6px 14px;border-radius:99px;margin-bottom:14px">Where we work</div>
-        <h2 style="font-family:Montserrat;font-weight:600;font-size:28px;margin:0 0 12px;color:oklch(0.28 0.09 264)">Infrastructure Development around the world</h2>
+        <h2 style="font-family:Montserrat;font-weight:600;font-size:28px;margin:0 0 12px;color:oklch(0.28 0.09 264)">{{ txtAroundWorld }}</h2>
         <p style="color:oklch(0.5 0.01 250);font-weight:300;font-size:15px;max-width:660px;margin:0 auto">Every highlighted country on the globe has a Infrastructure Development assignment in our portfolio. Click a dot to browse the work.</p>
       </div>
-      <div style="position:relative;width:100%;aspect-ratio:16/8">
+      <div style="position:relative;width:100%;aspect-ratio:16/8;background:radial-gradient(ellipse at 50% 40%,oklch(0.22 0.06 264) 0%,oklch(0.13 0.04 264) 70%);border-radius:20px;overflow:hidden;box-shadow:0 20px 50px rgba(10,20,40,0.2)">
         <canvas ref="{{ setMapRef }}" style="width:100%;height:100%;display:block"></canvas>
       </div>
-      <div style="text-align:center;margin-top:10px;font-size:12.5px;font-weight:300;color:oklch(0.55 0.01 250)">Drag to rotate · click a highlighted dot to explore a project</div>
+      <div style="text-align:center;margin-top:10px;font-size:12.5px;font-weight:300;color:oklch(0.55 0.01 250)">{{ txtDragRotate }}</div>
 
       <sc-if value="{{ selectedCountry }}">
         <div style="position:fixed;inset:0;background:rgba(20,30,45,0.6);display:flex;align-items:center;justify-content:center;z-index:200;padding:24px" onClick="{{ closeCountryModal }}">
@@ -246,8 +241,8 @@
 
   <section style="position:relative;background:oklch(0.28 0.09 264);padding:64px 24px;text-align:center;overflow:hidden">
     <div style="max-width:720px;margin:0 auto">
-      <h2 style="font-family:Montserrat;font-weight:600;font-size:28px;margin:0 0 14px;color:white">Working in Infrastructure Development?</h2>
-      <p style="font-size:15.5px;font-weight:300;color:rgba(255,255,255,0.7);margin:0 0 26px">Tell us about your challenge and we will put the right specialists on it.</p>
+      <h2 style="font-family:Montserrat;font-weight:600;font-size:28px;margin:0 0 14px;color:white">{{ txtWorkingInSector }}</h2>
+      <p style="font-size:15.5px;font-weight:300;color:rgba(255,255,255,0.7);margin:0 0 26px">{{ txtChallenge }}</p>
       <a href="./index.html#cta" style="display:inline-block;background:#82C44D;color:#ffffff;font-weight:600;font-size:15px;padding:14px 28px;border-radius:10px" style-hover="background:#6fa93e">Contact us →</a>
     </div>
   </section>
@@ -258,15 +253,15 @@
         <img loading="lazy" decoding="async" src="./assets/ios-partners-logo-white.webp" alt="IOS Partners" style="height:44px;width:auto;margin-bottom:14px"/>
       </div>
       <div>
-        <div style="font-weight:600;font-size:13px;text-transform:uppercase;letter-spacing:0.04em;color:white;margin-bottom:16px">Site links</div>
+        <div style="font-weight:600;font-size:13px;text-transform:uppercase;letter-spacing:0.04em;color:white;margin-bottom:16px">{{ txtSiteLinks }}</div>
         <div style="display:flex;flex-direction:column;gap:12px;font-size:14px">
-          <a href="./index.html#our-work" style="color:white">Our work</a>
+          <a href="./index.html#our-work" style="color:white">{{ txtOurWork }}</a>
           <a href="./who-we-are.html" style="color:white">About us</a>
           <a href="./index.html#cta" style="color:white">Contact us</a>
         </div>
       </div>
       <div>
-        <div style="font-weight:600;font-size:13px;text-transform:uppercase;letter-spacing:0.04em;color:white;margin-bottom:16px">Practice areas</div>
+        <div style="font-weight:600;font-size:13px;text-transform:uppercase;letter-spacing:0.04em;color:white;margin-bottom:16px">{{ txtPracticeAreas }}</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px 16px;font-size:14px">
           <sc-for list="{{ practiceAreas }}" as="pa" hint-placeholder-count="16">
             <a href="{{ pa.href }}" target="{{ pa.target }}" style="color:white">{{ pa.name }}</a>
@@ -275,7 +270,7 @@
       </div>
     </div>
     <div style="max-width:1180px;margin:40px auto 0;padding-top:24px;border-top:1px solid oklch(0.3 0.01 250);display:flex;justify-content:space-between;font-size:12.5px;color:white">
-      <span>© 2026 IOS Partners, Inc. All rights reserved.</span>
+      <span>© 2026 IOS Partners, Inc. {{ txtRights }}</span>
       <div style="display:flex;gap:20px">
         <a href="https://www.linkedin.com/company/ios-partners-inc./" target="_blank" rel="noopener" aria-label="LinkedIn" style="color:white;display:flex;align-items:center">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.45 20.45h-3.55v-5.57c0-1.33-.02-3.03-1.85-3.03-1.85 0-2.14 1.45-2.14 2.94v5.66H9.36V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.45v6.29zM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12zM7.12 20.45H3.56V9h3.56v11.45z"/></svg>
@@ -298,6 +293,7 @@ class Component extends DCLogic {
   toggleMobileMenu = () => this.setState((s) => ({ mobileMenuOpen: !s.mobileMenuOpen }));
   closeMobileMenu = () => this.setState({ mobileMenuOpen: false });
   setLang = (code) => () => this.setState({ lang: code, langOpen: false });
+  t = (s) => window.tr(this.state.lang, s);
   stopPropagation = (e) => e.stopPropagation();
   LANGS = [{ code: 'EN', label: 'English' }, { code: 'ES', label: 'Español' }, { code: 'FR', label: 'Français' }, { code: 'PT', label: 'Português' }];
   SECTOR_IMG = './assets/pa-infrastructure.webp';
@@ -505,7 +501,7 @@ class Component extends DCLogic {
   shiftCardPrev = () => this.shiftCard(-1);
   shiftCardNext = () => this.shiftCard(1);
   allocateImages = (list) => {
-    const direct = (p) => this.KEYWORD_IMG.filter(([re]) => re.test(p.title || '')).map(([, x]) => x);
+    const direct = (p) => this.KEYWORD_IMG.filter(([re]) => re.test(p.title || '')).map(([, x]) => x).filter((x) => x !== this.SECTOR_IMG);
     const kin = (imgs) => imgs.flatMap((x) => this.RELATED[x] || []).filter((x, i, a) => a.indexOf(x) === i);
     const matches = list.map(direct);
     const ruleIdx = (p) => {
@@ -619,7 +615,7 @@ class Component extends DCLogic {
     const cc = window.__IOS_COUNTRY_COORDS__ || {};
     const scoped = this.scopedData;
     this._mapClick = (e) => {
-      const st = window.IOSWorld && window.IOSWorld._lastGlobeState;
+      const st = canvas._iosGlobeState || (window.IOSWorld && window.IOSWorld._lastGlobeState);
       const rect = canvas.getBoundingClientRect();
       const W = rect.width, H = rect.height;
       const cx = W / 2, cy = H / 2, R = Math.min(W, H) * 0.46;
@@ -689,6 +685,26 @@ class Component extends DCLogic {
       toggleMobileMenu: this.toggleMobileMenu,
       closeMobileMenu: this.closeMobileMenu,
       langLabel: this.state.lang,
+      txtHighlightedProjects: this.t('Highlighted projects'),
+      txtDragRotate: this.t('Drag to rotate · click a highlighted dot to explore a project'),
+      txtChallenge: this.t('Tell us about your challenge and we will put the right specialists on it.'),
+      txtAroundWorld: meta.title + ' ' + this.t('around the world'),
+      txtEveryCountry: this.t('Every highlighted country on the globe has a') + ' ' + meta.title + ' ' + this.t('assignment in our portfolio. Click a dot to explore a project.'),
+      txtWorkingInSector: this.t('Working in') + ' ' + meta.title + '?',
+      txtOurPracticeAreas: this.t('Our practice areas'),
+      txtDiversePortfolio: this.t('Our Diverse Global Portfolio'),
+      txtGlobalOffices: this.t('Global Offices'),
+      txtHistoryTogether: this.t("Let's Make History Together"),
+      txtLearnStory: this.t('Learn about our story'),
+      txtOurWork: this.t('Our work'),
+      txtAboutUs: this.t('About us'),
+      txtWhoWeAre: this.t('Who we are'),
+      txtPracticeAreas: this.t('Practice areas'),
+      txtWorkWithUs: this.t('Work with us'),
+      txtContactUs: this.t('Contact us'),
+      txtSiteLinks: this.t('Site links'),
+      txtRights: this.t('All rights reserved.'),
+      txtNews: this.t('News'),
       langs: this.LANGS.map((l) => ({ label: l.label, onClick: this.setLang(l.code) })),
       practiceAreas,
       areaBlurb: meta.blurb,

@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <script src="./support.js"></script>
+<script src="./i18n.js"></script>
 </head>
 <body>
 <x-dc>
@@ -13,6 +14,7 @@
   <script src="./image-slot.js"></script>
   <script src="./cursor-fx.js"></script>
   <script src="./practice-areas-data.js"></script>
+  <script src="./globe.js"></script>
   <style>
     body { margin: 0; background: #ffffff; font-family: 'Montserrat', sans-serif; }
     a { color: #82C44D; text-decoration: none; }
@@ -39,7 +41,7 @@
     </a>
     <nav data-nav-desktop style="display:flex;align-items:center;gap:26px;flex-shrink:0">
       <div style="position:relative" onMouseEnter="{{ openDropdown }}" onMouseLeave="{{ closeDropdown }}">
-        <a href="./index.html#practice-areas" class="nav-link" style="color:oklch(0.28 0.09 264);font-weight:500;font-size:15px;cursor:pointer;display:flex;align-items:center;gap:5px;white-space:nowrap">Practice areas
+        <a href="./index.html#practice-areas" class="nav-link" style="color:oklch(0.28 0.09 264);font-weight:500;font-size:15px;cursor:pointer;display:flex;align-items:center;gap:5px;white-space:nowrap">{{ txtPracticeAreas }}
           <span style="font-size:11px;transform:translateY(1px)">▾</span>
         </a>
         <sc-if value="{{ dropdownOpen }}">
@@ -52,12 +54,11 @@
           </div>
         </sc-if>
       </div>
-      <a href="./index.html#our-work" class="nav-link" style="color:oklch(0.28 0.09 264);font-weight:500;font-size:15px;white-space:nowrap">Our work</a>
-      <a href="./who-we-are.html" class="nav-link" data-active="true" style="color:oklch(0.28 0.09 264);font-weight:500;font-size:15px;white-space:nowrap">About us</a>
-      <a href="./index.html#cta" class="nav-link" style="color:oklch(0.28 0.09 264);font-weight:500;font-size:15px;white-space:nowrap">Contact us</a>
+      <a href="./index.html#our-work" class="nav-link" style="color:oklch(0.28 0.09 264);font-weight:500;font-size:15px;white-space:nowrap">{{ txtOurWork }}</a>
+      <a href="./who-we-are.html" class="nav-link" data-active="true" style="color:oklch(0.28 0.09 264);font-weight:500;font-size:15px;white-space:nowrap">{{ txtAboutUs }}</a>
     </nav>
     <div data-actions-desktop style="display:flex;align-items:center;gap:14px">
-      <a href="./index.html#cta" style="background:#82C44D;color:#ffffff;font-weight:600;font-size:14.5px;padding:12px 22px;border-radius:9px;white-space:nowrap" style-hover="background:#6fa93e">Work with us</a>
+      <a href="./index.html#cta" style="background:#82C44D;color:#ffffff;font-weight:600;font-size:14.5px;padding:12px 22px;border-radius:9px;white-space:nowrap" style-hover="background:#6fa93e">{{ txtWorkWithUs }}</a>
       <div style="position:relative" onMouseEnter="{{ openLangMenu }}" onMouseLeave="{{ closeLangMenu }}">
         <button style="display:flex;align-items:center;gap:6px;background:none;border:1px solid oklch(0.85 0.005 95);color:oklch(0.28 0.09 264);font-weight:600;font-size:13px;padding:8px 12px;border-radius:8px;cursor:pointer">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 4 6 4 9s-1.5 6.3-4 9c-2.5-2.7-4-6-4-9s1.5-6.3 4-9Z"/></svg>
@@ -81,11 +82,10 @@
 
   <sc-if value="{{ mobileMenuOpen }}">
     <div style="position:sticky;top:88px;z-index:49;background:white;border-bottom:1px solid oklch(0.92 0.005 95);box-shadow:0 12px 24px rgba(20,30,45,0.08);padding:16px 24px 24px;display:flex;flex-direction:column;gap:14px">
-      <a href="./index.html#practice-areas" onClick="{{ closeMobileMenu }}" style="color:oklch(0.28 0.09 264);font-weight:500;font-size:16px">Practice areas</a>
-      <a href="./index.html#our-work" onClick="{{ closeMobileMenu }}" style="color:oklch(0.28 0.09 264);font-weight:500;font-size:16px">Our work</a>
-      <a href="./who-we-are.html" onClick="{{ closeMobileMenu }}" style="color:oklch(0.28 0.09 264);font-weight:500;font-size:16px">About us</a>
-      <a href="./index.html#cta" onClick="{{ closeMobileMenu }}" style="color:oklch(0.28 0.09 264);font-weight:500;font-size:16px">Contact us</a>
-      <a href="./index.html#cta" onClick="{{ closeMobileMenu }}" style="background:#82C44D;color:#ffffff;font-weight:600;font-size:15px;padding:12px 20px;border-radius:9px;text-align:center;margin-top:4px">Work with us</a>
+      <a href="./index.html#practice-areas" onClick="{{ closeMobileMenu }}" style="color:oklch(0.28 0.09 264);font-weight:500;font-size:16px">{{ txtPracticeAreas }}</a>
+      <a href="./index.html#our-work" onClick="{{ closeMobileMenu }}" style="color:oklch(0.28 0.09 264);font-weight:500;font-size:16px">{{ txtOurWork }}</a>
+      <a href="./who-we-are.html" onClick="{{ closeMobileMenu }}" style="color:oklch(0.28 0.09 264);font-weight:500;font-size:16px">{{ txtAboutUs }}</a>
+      <a href="./index.html#cta" onClick="{{ closeMobileMenu }}" style="background:#82C44D;color:#ffffff;font-weight:600;font-size:15px;padding:12px 20px;border-radius:9px;text-align:center;margin-top:4px">{{ txtWorkWithUs }}</a>
       <div style="display:flex;gap:10px;flex-wrap:wrap">
         <sc-for list="{{ langs }}" as="l" hint-placeholder-count="4">
           <button onClick="{{ l.onClick }}" style="background:none;border:1px solid oklch(0.85 0.005 95);color:oklch(0.28 0.09 264);font-weight:500;font-size:13px;padding:8px 12px;border-radius:8px;cursor:pointer">{{ l.label }}</button>
@@ -96,30 +96,16 @@
 
   <!-- HERO -->
   <section ref="{{ setHeroRef }}" style="position:relative;background:oklch(0.28 0.09 264);overflow:hidden">
-    <div style="position:absolute;top:-120px;left:-60px;width:420px;height:420px;border-radius:50%;background:radial-gradient(circle,rgba(130,196,77,0.18) 0%,transparent 70%)"></div>
+<img loading="lazy" decoding="async" src="./assets/who-hero-bg.jpg" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover"/>
+    <div style="position:absolute;inset:0;background:linear-gradient(90deg,oklch(0.28 0.09 264) 0%,oklch(0.28 0.09 264 / 0.92) 35%,oklch(0.28 0.09 264 / 0.3) 100%)"></div>
     <div style="position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.04) 1px,transparent 1px);background-size:44px 44px"></div>
-    <div data-hero-grid style="position:relative;max-width:1240px;margin:0 auto;padding:0 24px;display:grid;grid-template-columns:1.05fr 0.95fr;gap:56px;align-items:center">
-      <div style="padding:76px 0 68px;{{ heroStyle }}">
+    <div style="position:relative;max-width:1240px;margin:0 auto;padding:96px 24px 100px">
+      <div style="max-width:620px;{{ heroStyle }}">
         <div style="display:inline-flex;align-items:center;gap:9px;background:rgba(130,196,77,0.14);border:1px solid rgba(130,196,77,0.35);color:#9fd97a;font-weight:600;font-size:12px;letter-spacing:0.18em;text-transform:uppercase;font-family:'JetBrains Mono',monospace;padding:7px 16px;border-radius:99px;margin-bottom:24px">
           <span style="width:6px;height:6px;border-radius:50%;background:#82C44D;display:block"></span>Learn about our story
         </div>
         <h1 style="font-family:Montserrat;font-weight:600;font-size:56px;line-height:1.05;letter-spacing:-0.03em;margin:0 0 22px;color:white;text-wrap:pretty">Who we <span style="color:#82C44D">are</span></h1>
-        <p style="font-size:17px;font-weight:300;line-height:1.65;color:rgba(255,255,255,0.72);margin:0 0 30px;max-width:520px">A distinctively international consulting firm in structure, personnel and experience — facilitating economic and financial reform across more than 120 countries since 1999.</p>
-        <div style="display:flex;gap:12px;flex-wrap:wrap">
-          <a href="#our-team" style="display:inline-flex;align-items:center;gap:8px;background:#82C44D;color:#ffffff;font-weight:600;font-size:14.5px;padding:13px 24px;border-radius:10px;transition:transform 0.2s ease,box-shadow 0.2s ease" style-hover="background:#6fa93e;transform:translateY(-2px);box-shadow:0 10px 24px rgba(130,196,77,0.32)">Meet the team →</a>
-          <a href="./index.html#our-work" style="display:inline-flex;align-items:center;gap:8px;background:transparent;border:1px solid rgba(255,255,255,0.28);color:white;font-weight:500;font-size:14.5px;padding:13px 24px;border-radius:10px;transition:background 0.2s ease,border-color 0.2s ease" style-hover="background:rgba(255,255,255,0.08);border-color:rgba(255,255,255,0.5)">See our work</a>
-        </div>
-      </div>
-      <div data-hero-art style="position:relative;align-self:stretch;min-height:460px">
-        <div style="position:absolute;top:64px;bottom:0;right:0;width:62%;max-width:340px;border-radius:20px;overflow:hidden;box-shadow:0 30px 70px rgba(0,0,0,0.32)">
-          <image-slot id="who-hero-a" src="./assets/carousel-1.webp" shape="rect" placeholder="Team in the field" fit="cover" style="width:100%;height:100%"></image-slot>
-        </div>
-        <div style="position:absolute;bottom:52px;left:0;width:46%;max-width:230px;height:200px;border-radius:18px;overflow:hidden;border:5px solid oklch(0.28 0.09 264);box-shadow:0 24px 54px rgba(0,0,0,0.34)">
-          <image-slot id="who-hero-b" src="./assets/carousel-3.webp" shape="rect" placeholder="Project site" fit="cover" style="width:100%;height:100%"></image-slot>
-        </div>
-        <div style="position:absolute;top:12px;left:6%;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);backdrop-filter:blur(8px);border-radius:12px;padding:12px 18px">
-          <div style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:#9fd97a">Since 1999</div>
-        </div>
+        <p style="font-size:17px;font-weight:300;line-height:1.65;color:rgba(255,255,255,0.72);margin:0;max-width:520px">A distinctively international consulting firm in structure, personnel and experience — facilitating economic and financial reform across more than 120 countries since 1999.</p>
       </div>
     </div>
     <div style="position:relative;border-top:1px solid rgba(255,255,255,0.12);background:rgba(0,0,0,0.14)">
@@ -136,8 +122,11 @@
 
   <!-- HISTORY -->
   <section style="max-width:1180px;margin:0 auto;padding:64px 24px 72px;display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center">
-    <div style="width:100%;justify-self:center;border-radius:20px;overflow:hidden;aspect-ratio:4/3;max-width:520px;background:oklch(0.94 0.005 95)">
-      <image-slot id="who-history-image" src="./assets/who-history-image.webp" shape="rect" placeholder="Robert Hans in Garoua, Cameroon" fit="cover" style="width:100%;height:100%"></image-slot>
+    <div style="position:relative;width:100%;justify-self:center;border-radius:20px;overflow:hidden;aspect-ratio:4/3;max-width:520px;background:oklch(0.94 0.005 95)">
+      <image-slot id="who-history-image" src="./assets/who-history-image.webp" shape="rect" placeholder="Robert Hans in Garoua, Cameroon" fit="cover" style="width:100%;height:100%;filter:saturate(1.35) contrast(1.08) brightness(1.03)"></image-slot>
+      <div style="position:absolute;left:0;right:0;bottom:0;background:oklch(0.28 0.09 264 / 0.85);padding:10px 16px">
+        <span style="color:white;font-size:13px;font-weight:500">Robert Hans (left), Garoua Cameroon, 1988</span>
+      </div>
     </div>
     <div>
       <p style="font-size:15.5px;color:oklch(0.35 0.01 250);margin:0 0 16px"><strong style="color:oklch(0.28 0.09 264)">IOS Partners</strong> commenced operations in 1999. The firm has since accumulated a knowledge base and experience facilitating economic and financial reforms in over 120 countries worldwide. Our varied and extensive portfolio enables us to bring a proven track record and deep knowledge of markets, institutions and international best practices.</p>
@@ -145,7 +134,8 @@
     </div>
   </section>
 
-  <!-- TEAM -->
+<!-- TEAM (hidden) -->
+  <sc-if value="{{ showTeam }}" hint-placeholder-val="{{ false }}">
   <section id="our-team" style="position:relative;background:oklch(0.975 0.003 95);padding:80px 24px 32px;overflow:hidden">
     <div style="position:absolute;top:-100px;left:-80px;width:320px;height:320px;border-radius:50%;background:radial-gradient(circle,rgba(130,196,77,0.1) 0%,transparent 70%)"></div>
     <div style="position:relative;max-width:1180px;margin:0 auto">
@@ -173,6 +163,18 @@
       </div>
     </section>
   </sc-for>
+  </sc-if>
+
+  <!-- GLOBAL OFFICES -->
+  <section id="global-offices" style="position:relative;background:oklch(0.28 0.09 264);padding:32px 0 8px;overflow:hidden">
+    <div style="position:relative;max-width:1180px;margin:0 auto 4px;text-align:center;padding:0 24px">
+      <h2 style="font-family:Montserrat;font-weight:600;font-size:28px;margin:0 0 8px;color:white">{{ txtGlobalOffices }}</h2>
+      <p style="color:rgba(255,255,255,0.7);font-size:15.5px;max-width:640px;margin:0 auto">15 offices across 4 continents.</p>
+    </div>
+    <div style="position:relative;width:100%;max-width:1320px;margin:0 auto;aspect-ratio:16/7.5">
+      <canvas ref="{{ setOfficesMapRef }}" style="width:100%;height:100%;display:block"></canvas>
+    </div>
+  </section>
 
   <footer style="background:oklch(0.2 0.08 264);color:white;padding:56px 56px 32px">
     <div style="max-width:1180px;margin:0 auto;display:grid;grid-template-columns:0.8fr 0.6fr 1fr;gap:40px">
@@ -180,14 +182,14 @@
         <img loading="lazy" decoding="async" src="./assets/ios-partners-logo-white.webp" alt="IOS Partners" style="height:44px;width:auto;margin-bottom:14px"/>
       </div>
       <div>
-        <div style="font-weight:600;font-size:13px;text-transform:uppercase;letter-spacing:0.04em;color:white;margin-bottom:16px">Site links</div>
+        <div style="font-weight:600;font-size:13px;text-transform:uppercase;letter-spacing:0.04em;color:white;margin-bottom:16px">{{ txtSiteLinks }}</div>
         <div style="display:flex;flex-direction:column;gap:12px;font-size:14px">
-          <a href="./index.html#our-work" style="color:white">Our work</a>
+          <a href="./index.html#our-work" style="color:white">{{ txtOurWork }}</a>
           <a href="./index.html#cta" style="color:white">Contact us</a>
         </div>
       </div>
       <div>
-        <div style="font-weight:600;font-size:13px;text-transform:uppercase;letter-spacing:0.04em;color:white;margin-bottom:16px">Practice areas</div>
+        <div style="font-weight:600;font-size:13px;text-transform:uppercase;letter-spacing:0.04em;color:white;margin-bottom:16px">{{ txtPracticeAreas }}</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px 16px;font-size:14px">
           <a href="./practice-agriculture.html" style="color:white">Agriculture</a>
           <a href="./practice-aviation.html" style="color:white">Aviation</a>
@@ -199,7 +201,7 @@
       </div>
     </div>
     <div style="max-width:1180px;margin:40px auto 0;padding-top:24px;border-top:1px solid oklch(0.3 0.01 250);display:flex;justify-content:space-between;font-size:12.5px;color:white">
-      <span>© 2026 IOS Partners, Inc. All rights reserved.</span>
+      <span>© 2026 IOS Partners, Inc. {{ txtRights }}</span>
       <div style="display:flex;gap:20px">
         <a href="https://www.linkedin.com/company/ios-partners-inc./" target="_blank" rel="noopener" aria-label="LinkedIn" style="color:white;display:flex;align-items:center" style-hover="color:#82C44D">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.45 20.45h-3.55v-5.57c0-1.33-.02-3.03-1.85-3.03-1.85 0-2.14 1.45-2.14 2.94v5.66H9.36V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.45v6.29zM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12zM7.12 20.45H3.56V9h3.56v11.45z"/></svg>
@@ -212,7 +214,7 @@
 </x-dc>
 <script type="text/x-dc" data-dc-script>
 class Component extends DCLogic {
-  state = { dropdownOpen: false, newsletterEmail: '', langOpen: false, mobileMenuOpen: false, lang: 'EN', scrolled: false, heroRevealed: false, statCounts: [0, 0, 0, 0] };
+  state = { dropdownOpen: false, newsletterEmail: '', langOpen: false, mobileMenuOpen: false, lang: 'EN', scrolled: false, heroRevealed: false, statCounts: [0, 0, 0, 0], showTeam: false };
   setHeroRef = (el) => {
     if (!el || this._heroObserved) return;
     this._heroObserved = true;
@@ -237,8 +239,35 @@ class Component extends DCLogic {
     }, 30);
   };
 
+  offices = [
+    { name: 'Miami, FL, USA', lng: -80.19, lat: 25.76, hq: true },
+    { name: 'Washington D.C., USA', lng: -77.04, lat: 38.90 },
+    { name: 'Bogotá, Colombia', lng: -74.08, lat: 4.71 },
+    { name: 'San José, Costa Rica', lng: -84.09, lat: 9.93 },
+    { name: 'Santa Cruz, Bolivia', lng: -63.18, lat: -17.78 },
+    { name: 'Sao Paulo, Brazil', lng: -46.63, lat: -23.55 },
+    { name: 'Brussels, Belgium', lng: 4.35, lat: 50.85 },
+    { name: 'Paris, France', lng: 2.35, lat: 48.86 },
+    { name: 'Lisbon, Portugal', lng: -9.14, lat: 38.72 },
+    { name: 'Barcelona, Spain', lng: 2.17, lat: 41.39 },
+    { name: 'Amsterdam, Netherlands', lng: 4.90, lat: 52.37 },
+    { name: 'Sarajevo, Bosnia & Herzegovina', lng: 18.36, lat: 43.86 },
+    { name: 'Tbilisi, Georgia', lng: 44.79, lat: 41.72 },
+    { name: 'Sofia, Bulgaria', lng: 23.32, lat: 42.70 },
+    { name: 'Nairobi, Kenya', lng: 36.82, lat: -1.29 },
+    { name: 'Cape Town, South Africa', lng: 18.42, lat: -33.92 }
+  ];
+  setOfficesMapRef = (el) => {
+    if (!el || this._officesMapMounted) return;
+    this._officesMapMounted = true;
+    const boot = () => {
+      if (window.IOSWorld && window.IOSWorld.initOfficesMap) window.IOSWorld.initOfficesMap(el, this.offices, 1.5);
+      else setTimeout(boot, 60);
+    };
+    boot();
+  };
   practiceAreas = [
-    'Agriculture', 'Aviation', 'Finance', 'Tourism', 'Blue Economy', 'Forestry & Environment',
+    'Agriculture', 'Aviation', 'Finance', 'Tourism', 'Blue Economy',
     'ICT4D', 'Infrastructure Development', 'Ports & Maritime', 'Private Sector Development',
     'Public Administration & Reform', 'Public-Private Partnerships (PPP)', 'Special Economic Zones',
     'Social Development & Health Inclusion', 'Trade & Investment', 'USG Practice'
@@ -309,6 +338,7 @@ class Component extends DCLogic {
   toggleMobileMenu = () => this.setState((s) => ({ mobileMenuOpen: !s.mobileMenuOpen }));
   closeMobileMenu = () => this.setState({ mobileMenuOpen: false });
   setLang = (code) => () => this.setState({ lang: code, langOpen: false });
+  t = (s) => window.tr(this.state.lang, s);
   LANGS = [{ code: 'EN', label: 'English' }, { code: 'ES', label: 'Español' }, { code: 'FR', label: 'Français' }, { code: 'PT', label: 'Português' }];
   componentDidMount() {
     this._onScroll = () => {
@@ -335,6 +365,20 @@ class Component extends DCLogic {
       toggleMobileMenu: this.toggleMobileMenu,
       closeMobileMenu: this.closeMobileMenu,
       langLabel: this.state.lang,
+      txtOurPracticeAreas: this.t('Our practice areas'),
+      txtDiversePortfolio: this.t('Our Diverse Global Portfolio'),
+      txtGlobalOffices: this.t('Global Offices'),
+      txtHistoryTogether: this.t("Let's Make History Together"),
+      txtLearnStory: this.t('Learn about our story'),
+      txtOurWork: this.t('Our work'),
+      txtAboutUs: this.t('About us'),
+      txtWhoWeAre: this.t('Who we are'),
+      txtPracticeAreas: this.t('Practice areas'),
+      txtWorkWithUs: this.t('Work with us'),
+      txtContactUs: this.t('Contact us'),
+      txtSiteLinks: this.t('Site links'),
+      txtRights: this.t('All rights reserved.'),
+      txtNews: this.t('News'),
       langs: this.LANGS.map((l) => ({ label: l.label, onClick: this.setLang(l.code) })),
       headerBg: this.state.scrolled ? 'rgba(255,255,255,0.82)' : '#ffffff',
       headerShadow: this.state.scrolled ? '0 8px 24px rgba(20,30,45,0.08)' : 'none',
@@ -345,6 +389,8 @@ class Component extends DCLogic {
       navPracticeAreas: Object.values(window.PRACTICE_AREAS || {}).map((a) => ({ name: a.title, href: a.title === 'ICT4D' ? 'https://iossoftinc.com/' : a.file, target: a.title === 'ICT4D' ? '_blank' : '_self' })),
       stats: this.stats.map((s, i) => ({ label: s.label, display: (this.state.statCounts[i] || 0) + s.suffix })),
       teamGroups: this.teamGroups.map((g) => ({ ...g, people: g.people.map((p) => ({ ...p, photo: './assets/team/' + p.id + '.webp' })) })),
+      showTeam: this.state.showTeam,
+      setOfficesMapRef: this.setOfficesMapRef,
       newsletterEmail: this.state.newsletterEmail,
       setNewsletter: this.setNewsletter
     };

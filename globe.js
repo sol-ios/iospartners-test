@@ -112,6 +112,7 @@ function startLoop(draw, canvas){
 /* ============================================================
    3D GLOBE  (hero)
    ============================================================ */
+function canonArea(raw){ return raw ? raw.split('|')[0].trim() : ''; }
 function initGlobe(canvas){
   var ctx = canvas.getContext('2d');
   var dots = buildDots(3.2);
@@ -205,7 +206,7 @@ function initGlobe(canvas){
         if(pp.z<=0) continue;
         var pcnt=(pdata[pname]||[]).length;
         var af=window.__iosActiveFilter;
-        var matches = !af || af==='All' || (pdata[pname]||[]).some(function(p){return p.area===af;});
+        var matches = !af || af==='All' || (pdata[pname]||[]).some(function(p){return canonArea(p.area)===af;});
         var dim = matches?1:0.16;
         var pr=Math.max(2.5,Math.min(7,2.5+Math.log(pcnt+1)*1.2))*pp.z;
         var ppulse=0.5+0.5*Math.sin(t*1.3+ci*0.37);
@@ -245,8 +246,10 @@ function initGlobe(canvas){
       vY *= 0.93;
       if(Math.abs(vY)<0.0001) vY=0;
     }
-    // expose state for external click/hover (project-map.js)
-    IOSWorld._lastGlobeState={rotY:rotY,rotX:rotX,cx:cx,cy:cy,R:R};
+    // expose state for external click/hover (project-map.js) — per-canvas AND globally (back-compat, last-drawn wins)
+    var _gs={rotY:rotY,rotX:rotX,cx:cx,cy:cy,R:R};
+    canvas._iosGlobeState=_gs;
+    IOSWorld._lastGlobeState=_gs;
   }
   // expose land dots for modal flat map
   IOSWorld.landDots = dots;
@@ -653,7 +656,8 @@ function initStandaloneProjectMap(canvas){
 /* ============================================================
    OFFICES MAP (Contact section) — leader-line labels
    ============================================================ */
-function initOfficesMap(canvas,offices){
+function initOfficesMap(canvas,offices,scale){
+  scale=scale||1;
   var ctx=canvas.getContext('2d');
   var DPR=Math.min(window.devicePixelRatio||1,2);
   var W,H,hoverOff=-1,offPts=[];
@@ -667,9 +671,9 @@ function initOfficesMap(canvas,offices){
     'Sarajevo, Bosnia & Herzegovina':[46,-6],
     'Sofia, Bulgaria':[64,26],
     'Tbilisi, Georgia':[72,-22],
-    'Miami, FL, USA':[16,22],
+    'Miami, FL, USA':[18,32],
     'Washington D.C., USA':[-98,-16],
-    'San José, Costa Rica':[18,-28],
+    'San José, Costa Rica':[16,-40],
     'Bogotá, Colombia':[-78,16]
   };
   // Pre-defined label anchor positions [fracX, fracY] — carefully spaced to avoid overlap
@@ -730,29 +734,35 @@ function initOfficesMap(canvas,offices){
       var ax=pt.x+lo[0], ay=pt.y+lo[1];
       offPts.push({x:pt.x,y:pt.y,idx:o});
       // glow ring on dot
-      ctx.beginPath(); ctx.strokeStyle='rgba(130,196,77,'+(isHQ?0.55:0.25)+')'; ctx.lineWidth=(isHQ?1.2:0.7);
-      ctx.arc(pt.x,pt.y,(isHQ?9:4)+4*pulse,0,Math.PI*2); ctx.stroke();
+      ctx.beginPath(); ctx.strokeStyle='rgba(130,196,77,'+(isHQ?0.55:0.25)+')'; ctx.lineWidth=(isHQ?1.2:0.7)*scale;
+      ctx.arc(pt.x,pt.y,((isHQ?9:4)+4*pulse)*scale,0,Math.PI*2); ctx.stroke();
       // core dot
       ctx.beginPath(); ctx.fillStyle=GREEN;
-      ctx.shadowColor=GREEN; ctx.shadowBlur=isHQ?18:(isH?12:6);
-      ctx.arc(pt.x,pt.y,isHQ?5.5:2.8,0,Math.PI*2); ctx.fill(); ctx.shadowBlur=0;
+      ctx.shadowColor=GREEN; ctx.shadowBlur=(isHQ?18:(isH?12:6))*scale;
+      ctx.arc(pt.x,pt.y,(isHQ?5.5:2.8)*scale,0,Math.PI*2); ctx.fill(); ctx.shadowBlur=0;
       // leader line: dot → anchor
       ctx.beginPath();
       ctx.strokeStyle=isHQ?GREENLINE:'rgba(255,255,255,'+(isH?0.5:0.35)+')';
-      ctx.lineWidth=isHQ?0.9:0.6;
+      ctx.lineWidth=(isHQ?0.9:0.6)*scale;
       ctx.setLineDash(isHQ?[]:[2,3]);
       ctx.moveTo(pt.x,pt.y); ctx.lineTo(ax,ay); ctx.stroke();
       ctx.setLineDash([]);
       // label at anchor — plain white text, no background box
-      var lbl=(isHQ?'★ ':'')+(off.city||off.name.split(',')[0]);
-      var fs=isHQ?13.5:(isH?13:10.5);
+      var lbl=(off.city||off.name.split(',')[0]);
+      var fs=(isHQ?13.5:(isH?13:10.5))*scale;
       ctx.font=(isHQ||isH?'700':'600')+' '+fs+'px Montserrat,sans-serif';
-      var tw=ctx.measureText(lbl).width;
+      var iconW=isHQ?fs+5:0;
+      var tw=ctx.measureText(lbl).width+iconW;
       // clamp so label doesn't leave canvas
       var lx=ax; if(lx+tw+4>W*0.98) lx=ax-tw-4;
       var ly=ay; if(ly<fs+2) ly=fs+2; if(ly>H-4) ly=H-4;
+      if(isHQ){
+        var swirl=window.__iosSwirlImg;
+        if(!swirl){ swirl=new Image(); swirl.src='./assets/swirl-mark.png'; window.__iosSwirlImg=swirl; }
+        if(swirl.complete && swirl.naturalWidth) ctx.drawImage(swirl,lx,ly-fs+1,fs,fs);
+      }
       ctx.fillStyle=isHQ?GREEN:(isH?'#ffffff':'#ffffff');
-      ctx.fillText(lbl,lx,ly);
+      ctx.fillText(lbl,lx+iconW,ly);
       if(isHQ&&off.phone){ /* phone shown via button below map */ }
     }
   }
