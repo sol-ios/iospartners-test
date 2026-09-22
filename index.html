@@ -480,16 +480,16 @@
           <sc-if value="{{ ctaNotSubmitted }}" hint-placeholder-val="{{ true }}">
             <form onSubmit="{{ submitCtaForm }}" style="display:flex;flex-direction:column;gap:14px">
               <div data-2col-input style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
-                <input type="text" placeholder="Name" value="{{ ctaFields.name }}" onChange="{{ setCtaField('name') }}" required="" style="width:100%;box-sizing:border-box;padding:12px 14px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.06);color:#ffffff;border-radius:10px;font-size:14px;font-family:Montserrat;caret-color:#ffffff"/>
-                <input type="text" placeholder="Last name" value="{{ ctaFields.lastName }}" onChange="{{ setCtaField('lastName') }}" required="" style="width:100%;box-sizing:border-box;padding:12px 14px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.06);color:#ffffff;border-radius:10px;font-size:14px;font-family:Montserrat;caret-color:#ffffff"/>
+                <input type="text" placeholder="Name" value="{{ ctaFields.name }}" onChange="{{ setCtaFieldName }}" required="" style="width:100%;box-sizing:border-box;padding:12px 14px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.06);color:#ffffff;border-radius:10px;font-size:14px;font-family:Montserrat;caret-color:#ffffff"/>
+                <input type="text" placeholder="Last name" value="{{ ctaFields.lastName }}" onChange="{{ setCtaFieldLastName }}" required="" style="width:100%;box-sizing:border-box;padding:12px 14px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.06);color:#ffffff;border-radius:10px;font-size:14px;font-family:Montserrat;caret-color:#ffffff"/>
               </div>
-              <input type="email" placeholder="Email" value="{{ ctaFields.email }}" onChange="{{ setCtaField('email') }}" required="" style="width:100%;box-sizing:border-box;padding:12px 14px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.06);color:#ffffff;border-radius:10px;font-size:14px;font-family:Montserrat;caret-color:#ffffff"/>
+              <input type="email" placeholder="Email" value="{{ ctaFields.email }}" onChange="{{ setCtaFieldEmail }}" required="" style="width:100%;box-sizing:border-box;padding:12px 14px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.06);color:#ffffff;border-radius:10px;font-size:14px;font-family:Montserrat;caret-color:#ffffff"/>
               <label style="display:flex;align-items:center;gap:10px;padding:12px 14px;border:1px dashed rgba(255,255,255,0.3);background:rgba(255,255,255,0.04);color:rgba(255,255,255,0.75);border-radius:10px;font-size:13.5px;cursor:pointer">
                 <input type="file" onChange="{{ setCtaFile }}" style="display:none"/>
                 <span style="background:rgba(255,255,255,0.12);padding:6px 12px;border-radius:8px;font-weight:600;font-size:12.5px;color:white;white-space:nowrap">Upload CV</span>
                 <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ ctaFields.cvFileName }}</span>
               </label>
-              <textarea placeholder="Explain the project" value="{{ ctaFields.message }}" onChange="{{ setCtaField('message') }}" rows="3" style="width:100%;box-sizing:border-box;padding:12px 14px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.06);color:#ffffff;border-radius:10px;font-size:14px;font-family:Montserrat;resize:vertical;caret-color:#ffffff"></textarea>
+              <textarea placeholder="Explain the project" value="{{ ctaFields.message }}" onChange="{{ setCtaFieldMessage }}" rows="3" style="width:100%;box-sizing:border-box;padding:12px 14px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.06);color:#ffffff;border-radius:10px;font-size:14px;font-family:Montserrat;resize:vertical;caret-color:#ffffff"></textarea>
               <button type="submit" style="align-self:flex-start;display:inline-flex;align-items:center;gap:8px;background:#82C44D;color:#ffffff;font-weight:600;font-size:15px;padding:14px 28px;border:none;border-radius:10px;transition:transform 0.2s ease,box-shadow 0.2s ease;cursor:pointer" style-hover="background:#6fa93e;transform:translateY(-2px);box-shadow:0 10px 24px rgba(130,196,77,0.35)">Contact us →</button>
             </form>
           </sc-if>
@@ -507,14 +507,14 @@
           </sc-if>
           <sc-if value="{{ firmNotSubmitted }}" hint-placeholder-val="{{ true }}">
             <form onSubmit="{{ submitFirmForm }}" style="display:flex;flex-direction:column;gap:14px">
-              <input type="text" placeholder="Company name" value="{{ firmFields.companyName }}" onChange="{{ setFirmField('companyName') }}" required="" style="width:100%;box-sizing:border-box;padding:12px 14px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.06);color:#ffffff;border-radius:10px;font-size:14px;font-family:Montserrat;caret-color:#ffffff"/>
-              <input type="text" placeholder="Website" value="{{ firmFields.website }}" onChange="{{ setFirmField('website') }}" style="width:100%;box-sizing:border-box;padding:12px 14px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.06);color:#ffffff;border-radius:10px;font-size:14px;font-family:Montserrat;caret-color:#ffffff"/>
+              <input type="text" placeholder="Company name" value="{{ firmFields.companyName }}" onChange="{{ setFirmFieldCompanyName }}" required="" style="width:100%;box-sizing:border-box;padding:12px 14px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.06);color:#ffffff;border-radius:10px;font-size:14px;font-family:Montserrat;caret-color:#ffffff"/>
+              <input type="text" placeholder="Website" value="{{ firmFields.website }}" onChange="{{ setFirmFieldWebsite }}" style="width:100%;box-sizing:border-box;padding:12px 14px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.06);color:#ffffff;border-radius:10px;font-size:14px;font-family:Montserrat;caret-color:#ffffff"/>
               <label style="display:flex;align-items:center;gap:10px;padding:12px 14px;border:1px dashed rgba(255,255,255,0.3);background:rgba(255,255,255,0.04);color:rgba(255,255,255,0.75);border-radius:10px;font-size:13.5px;cursor:pointer">
                 <input type="file" onChange="{{ setFirmFile }}" style="display:none"/>
                 <span style="background:rgba(255,255,255,0.12);padding:6px 12px;border-radius:8px;font-weight:600;font-size:12.5px;color:white;white-space:nowrap">Upload profile</span>
                 <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ firmFields.profileFileName }}</span>
               </label>
-              <textarea placeholder="What we can do together" value="{{ firmFields.message }}" onChange="{{ setFirmField('message') }}" rows="3" style="width:100%;box-sizing:border-box;padding:12px 14px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.06);color:#ffffff;border-radius:10px;font-size:14px;font-family:Montserrat;resize:vertical;caret-color:#ffffff"></textarea>
+              <textarea placeholder="What we can do together" value="{{ firmFields.message }}" onChange="{{ setFirmFieldMessage }}" rows="3" style="width:100%;box-sizing:border-box;padding:12px 14px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.06);color:#ffffff;border-radius:10px;font-size:14px;font-family:Montserrat;resize:vertical;caret-color:#ffffff"></textarea>
               <button type="submit" style="align-self:flex-start;display:inline-flex;align-items:center;gap:8px;background:#82C44D;color:#ffffff;font-weight:600;font-size:15px;padding:14px 28px;border:none;border-radius:10px;transition:transform 0.2s ease,box-shadow 0.2s ease;cursor:pointer" style-hover="background:#6fa93e;transform:translateY(-2px);box-shadow:0 10px 24px rgba(130,196,77,0.35)">Contact us →</button>
             </form>
           </sc-if>
@@ -866,11 +866,30 @@ class Component extends DCLogic {
   openCtaModal = () => this.setState({ ctaModalOpen: true, ctaSubmitted: false });
   closeCtaModal = () => this.setState({ ctaModalOpen: false });
   setCtaField = (name) => (e) => { const value = e.target.value; this.setState((s) => ({ ctaFields: { ...s.ctaFields, [name]: value } })); };
+  setCtaFieldName = this.setCtaField('name');
+  setCtaFieldLastName = this.setCtaField('lastName');
+  setCtaFieldEmail = this.setCtaField('email');
+  setCtaFieldMessage = this.setCtaField('message');
   setCtaFile = (e) => { const f = e.target.files && e.target.files[0]; if (f) this.setState((s) => ({ ctaFields: { ...s.ctaFields, cvFileName: f.name } })); };
-  submitCtaForm = (e) => { e.preventDefault(); this.setState({ ctaSubmitted: true }); };
+  submitCtaForm = (e) => {
+    e.preventDefault();
+    const f = this.state.ctaFields;
+    const body = `Name: ${f.name}\nEmail: ${f.email}\nCV file: ${f.cvFileName || 'none attached — please email separately'}\n\nProject:\n${f.message}`;
+    window.location.href = 'mailto:srich@iospartners.com?subject=' + encodeURIComponent('Join our team — ' + f.name) + '&body=' + encodeURIComponent(body);
+    this.setState({ ctaSubmitted: true });
+  };
   setFirmField = (name) => (e) => { const value = e.target.value; this.setState((s) => ({ firmFields: { ...s.firmFields, [name]: value } })); };
+  setFirmFieldCompanyName = this.setFirmField('companyName');
+  setFirmFieldWebsite = this.setFirmField('website');
+  setFirmFieldMessage = this.setFirmField('message');
   setFirmFile = (e) => { const f = e.target.files && e.target.files[0]; if (f) this.setState((s) => ({ firmFields: { ...s.firmFields, profileFileName: f.name } })); };
-  submitFirmForm = (e) => { e.preventDefault(); this.setState({ firmSubmitted: true }); };
+  submitFirmForm = (e) => {
+    e.preventDefault();
+    const f = this.state.firmFields;
+    const body = `Company: ${f.companyName}\nWebsite: ${f.website}\nProfile file: ${f.profileFileName || 'none attached — please email separately'}\n\nWhat we can do together:\n${f.message}`;
+    window.location.href = 'mailto:srich@iospartners.com?subject=' + encodeURIComponent('Partner with us — ' + f.companyName) + '&body=' + encodeURIComponent(body);
+    this.setState({ firmSubmitted: true });
+  };
   setCtaTabJoin = () => this.setState({ ctaTab: 'join' });
   setCtaTabPartner = () => this.setState({ ctaTab: 'partner' });
   stopPropagation = (e) => e.stopPropagation();
@@ -1147,12 +1166,19 @@ class Component extends DCLogic {
       ctaNotSubmitted: !this.state.ctaSubmitted,
       ctaFields: this.state.ctaFields,
       setCtaField: this.setCtaField,
+      setCtaFieldName: this.setCtaFieldName,
+      setCtaFieldLastName: this.setCtaFieldLastName,
+      setCtaFieldEmail: this.setCtaFieldEmail,
+      setCtaFieldMessage: this.setCtaFieldMessage,
       setCtaFile: this.setCtaFile,
       submitCtaForm: this.submitCtaForm,
       firmSubmitted: this.state.firmSubmitted,
       firmNotSubmitted: !this.state.firmSubmitted,
       firmFields: this.state.firmFields,
       setFirmField: this.setFirmField,
+      setFirmFieldCompanyName: this.setFirmFieldCompanyName,
+      setFirmFieldWebsite: this.setFirmFieldWebsite,
+      setFirmFieldMessage: this.setFirmFieldMessage,
       setFirmFile: this.setFirmFile,
       submitFirmForm: this.submitFirmForm,
       countedProjects: this.state.counted.projects + '+',

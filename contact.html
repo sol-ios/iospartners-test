@@ -318,6 +318,9 @@ class Component extends DCLogic {
 
   handleSubmit = (e) => {
     e.preventDefault();
+    const f = this.state.fields;
+    const body = `Name: ${f.firstName} ${f.lastName}\nEmail: ${f.email}\nOrganization: ${f.organization}\nArea of interest: ${f.interest}\n\nMessage:\n${f.message}`;
+    window.location.href = 'mailto:srich@iospartners.com?subject=' + encodeURIComponent('Contact form — ' + f.firstName + ' ' + f.lastName) + '&body=' + encodeURIComponent(body);
     this.setState({ submitted: true });
   };
 
