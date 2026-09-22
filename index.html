@@ -569,7 +569,20 @@
           <button onClick="{{ closeCountryModal }}" style="background:none;border:none;font-size:20px;cursor:pointer;color:oklch(0.5 0.01 250)">✕</button>
         </div>
 
-        <div style="display:flex;gap:8px;padding:14px 24px;overflow-x:auto;border-bottom:1px solid oklch(0.92 0.005 95);flex-shrink:0">
+        <div style="display:flex;gap:8px;padding:14px 24px 0;overflow-x:auto;flex-shrink:0">
+          <div style="position:relative;width:100%">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="oklch(0.55 0.01 250)" stroke-width="2" style="position:absolute;left:12px;top:50%;transform:translateY(-50%)"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+            <input type="text" placeholder="Search by client, country, or sector…" value="{{ searchQuery }}" onChange="{{ setSearchQuery }}" onFocus="{{ showSearchSuggestions }}" onBlur="{{ hideSearchSuggestionsDelayed }}" style="width:100%;box-sizing:border-box;padding:9px 12px 9px 34px;border:1px solid oklch(0.88 0.005 95);border-radius:99px;font-size:13px;background:white"/>
+            <sc-if value="{{ searchSuggestions }}">
+              <div style="position:absolute;top:calc(100% + 6px);left:0;right:0;background:white;border:1px solid oklch(0.88 0.005 95);border-radius:12px;box-shadow:0 12px 30px rgba(0,0,0,0.15);z-index:30;max-height:220px;overflow-y:auto">
+                <sc-for list="{{ searchSuggestions }}" as="sug" hint-placeholder-count="5">
+                  <div onClick="{{ sug.onClick }}" style="padding:9px 14px;font-size:13px;color:oklch(0.3 0.01 250);cursor:pointer;border-bottom:1px solid oklch(0.95 0.003 95)" style-hover="background:oklch(0.97 0.003 95)">{{ sug.label }}</div>
+                </sc-for>
+              </div>
+            </sc-if>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;padding:12px 24px 14px;overflow-x:auto;border-bottom:1px solid oklch(0.92 0.005 95);flex-shrink:0">
           <sc-for list="{{ modalSectors }}" as="sec" hint-placeholder-count="4">
             <button onClick="{{ sec.onClick }}" style="border:1px solid oklch(0.88 0.005 95);background:white;color:oklch(0.4 0.01 250);font-size:12.5px;font-weight:500;padding:6px 14px;border-radius:99px;cursor:pointer;white-space:nowrap">{{ sec.name }}</button>
           </sc-for>
@@ -587,7 +600,8 @@
                 <sc-if value="{{ modalCurrentProject.agency }}"><span style="font-size:12.5px;color:oklch(0.5 0.01 250)">{{ modalCurrentProject.agency }}</span></sc-if>
                 
               </div>
-              <div style="font-family:Montserrat;font-weight:600;font-size:16.5px;line-height:1.4;color:oklch(0.22 0.01 250)">{{ modalCurrentProject.title }}</div>
+              <div style="font-family:Montserrat;font-weight:600;font-size:16.5px;line-height:1.4;color:oklch(0.22 0.01 250);margin-bottom:12px">{{ modalCurrentProject.title }}</div>
+              <p style="font-size:14px;font-weight:300;color:oklch(0.42 0.01 250);line-height:1.7;margin:0">{{ modalCurrentProject.description }}</p>
             </div>
           </div>
         </sc-if>
@@ -872,11 +886,37 @@ class Component extends DCLogic {
 
   getSectorsFor = (country) => {
     const list = this.projectData[country] || [];
-    return ['All', ...Array.from(new Set(list.map((p) => p.area).filter(Boolean)))];
+    const canon = (a) => (a || '').split('|')[0].trim();
+    return ['All', ...Array.from(new Set(list.map((p) => canon(p.area)).filter(Boolean)))];
+  };
+  realAgency = (a) => {
+    const s = (a || '').trim();
+    return (!s || /^(n\/a|\?|-|none)$/i.test(s)) ? null : s;
+  };
+  describe = (p) => {
+    const t = (p.title || '').trim();
+    const agency = this.realAgency(p.agency);
+    const kind = /feasibility/i.test(t) ? 'A feasibility study'
+      : /evaluation|assessment|review|diagnostic/i.test(t) ? 'An independent evaluation'
+      : /technical assistance|advisory|advisor|support/i.test(t) ? 'A technical assistance engagement'
+      : /strategy|master plan|plan\b/i.test(t) ? 'A strategy assignment'
+      : /training|capacity/i.test(t) ? 'A capacity-building programme'
+      : /privatiz|privatisation|restructur|reform/i.test(t) ? 'A reform and restructuring mandate'
+      : /design|development|implement/i.test(t) ? 'A design and implementation assignment'
+      : 'An advisory assignment';
+    const where = p.country ? ' in ' + p.country : '';
+    const who = agency ? ' for ' + agency : '';
+    const state = /closed/i.test(p.status || '') ? 'The engagement has been completed.'
+      : /ongoing|active/i.test(p.status || '') ? 'The engagement is currently under way.' : '';
+    return kind + where + who + ', covering ' + t.charAt(0).toLowerCase() + t.slice(1) + '. ' + state;
   };
   getFilteredProjects = (country, area) => {
-    const list = this.projectData[country] || [];
-    return area && area !== 'All' ? list.filter((p) => p.area === area) : list;
+    let list = this.projectData[country] || [];
+    const canon = (a) => (a || '').split('|')[0].trim();
+    if (area && area !== 'All') list = list.filter((p) => canon(p.area) === area);
+    const q = (this.state.searchQuery || '').toLowerCase().trim();
+    if (q) list = list.filter((p) => (p.title || '').toLowerCase().includes(q) || (p.area || '').toLowerCase().includes(q) || (p.agency || '').toLowerCase().includes(q));
+    return list;
   };
   statusColors = (status) => {
     if (status === 'Active') return { bg: 'rgba(130,196,77,0.14)', fg: '#4f7a2c', bd: 'rgba(130,196,77,0.4)' };
@@ -940,6 +980,44 @@ class Component extends DCLogic {
   closeDropdown = () => this.setState({ dropdownOpen: false });
   filterLabels = { 'Information and Communication Technology for Development': 'ICT4D', 'Public Sector Governance and Public Enterprise Reform': 'Public Sector & Governance', 'Trade Facilitation and Investment Promotion': 'Trade & Investment Promotion', 'Social Development and Inclusion': 'Social Development & Inclusion' };
   setFilter = (f) => () => { window.__iosActiveFilter = f; this.setState({ activeFilter: f }); };
+  showSearchSuggestions = () => this.setState({ searchFocused: true });
+  hideSearchSuggestionsDelayed = () => setTimeout(() => this.setState({ searchFocused: false }), 150);
+  pickSearchSuggestion = (country) => () => {
+    if (this._searchTimer) clearTimeout(this._searchTimer);
+    this.setState({ searchQuery: '', selectedCountry: country, modalAreaFilter: 'All', modalProjectIdx: 0, searchFocused: false });
+  };
+  computeSuggestions = () => {
+    const ql = (this.state.searchQuery || '').toLowerCase().trim();
+    if (!ql) return null;
+    const matches = Object.keys(this.projectData).filter((c) =>
+      c.toLowerCase().includes(ql) ||
+      (this.projectData[c] || []).some((p) => (p.title || '').toLowerCase().includes(ql) || (p.area || '').toLowerCase().includes(ql) || (p.agency || '').toLowerCase().includes(ql)));
+    if (!matches.length) return null;
+    return matches.slice(0, 6).map((c) => ({ label: c, onClick: this.pickSearchSuggestion(c) }));
+  };
+  setSearchQuery = (e) => {
+    const q = e.target.value;
+    this.setState({ searchQuery: q });
+    if (this._searchTimer) clearTimeout(this._searchTimer);
+    this._searchTimer = setTimeout(() => {
+      this.setState((s) => {
+        const ql = (s.searchQuery || '').toLowerCase().trim();
+        let country = s.selectedCountry;
+        let effectiveQuery = s.searchQuery;
+        const countryHasMatch = country && (this.projectData[country] || []).some((p) =>
+          (p.title || '').toLowerCase().includes(ql) || (p.area || '').toLowerCase().includes(ql) || (p.agency || '').toLowerCase().includes(ql));
+        if (ql.length >= 3 && !countryHasMatch && !(country && country.toLowerCase().includes(ql))) {
+          const match = Object.keys(this.projectData).find((c) => c.toLowerCase() === ql) ||
+            Object.keys(this.projectData).find((c) => c.toLowerCase().startsWith(ql)) ||
+            Object.keys(this.projectData).find((c) => c.toLowerCase().includes(ql)) ||
+            Object.keys(this.projectData).find((c) => (this.projectData[c] || []).some((p) =>
+              (p.title || '').toLowerCase().includes(ql) || (p.area || '').toLowerCase().includes(ql) || (p.agency || '').toLowerCase().includes(ql)));
+          if (match) { country = match; effectiveQuery = ql; }
+        }
+        return { searchQuery: effectiveQuery, selectedCountry: country, modalAreaFilter: 'All', modalProjectIdx: 0 };
+      });
+    }, 500);
+  };
   stopPropagation = (e) => e.stopPropagation();
   openPaModal = (area) => (e) => {
     e.preventDefault();
@@ -1080,6 +1158,9 @@ class Component extends DCLogic {
       countedProjects: this.state.counted.projects + '+',
       countedCountries: this.state.counted.countries + '+',
       countedYears: this.state.counted.years + '+',
+      searchQuery: this.state.searchQuery || '',
+      searchSuggestions: this.state.searchFocused ? this.computeSuggestions() : null,
+      setSearchQuery: this.setSearchQuery,
       filters: this.filters.map((f) => {
         const on = this.state.activeFilter === f;
         return { value: f, label: this.filterLabels[f] || f, onClick: this.setFilter(f), border: on ? '#82C44D' : 'oklch(0.88 0.005 95)', bg: on ? '#82C44D' : 'white', color: on ? '#ffffff' : 'oklch(0.35 0.01 250)' };
@@ -1113,7 +1194,7 @@ class Component extends DCLogic {
           if (pick === prevPick) pick = (pick + 1) % pool.length;
         }
         const imgSrc = pool[pick] || this.PA_IMAGES[p.area] || pool[0];
-        return { ...p, statusBg: sc.bg, statusFg: sc.fg, statusBd: sc.bd, imgId: (this.state.selectedCountry + '-' + p.title).slice(0, 60), imgSrc };
+        return { ...p, agency: this.realAgency(p.agency) || '', description: this.describe(p), statusBg: sc.bg, statusFg: sc.fg, statusBd: sc.bd, imgId: (this.state.selectedCountry + '-' + p.title).slice(0, 60), imgSrc };
       })(),
       modalCounterText: (() => {
         if (!this.state.selectedCountry) return '';

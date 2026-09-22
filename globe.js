@@ -206,7 +206,10 @@ function initGlobe(canvas){
         if(pp.z<=0) continue;
         var pcnt=(pdata[pname]||[]).length;
         var af=window.__iosActiveFilter;
-        var matches = !af || af==='All' || (pdata[pname]||[]).some(function(p){return canonArea(p.area)===af;});
+        var sq=(window.__iosSearchQuery||'').toLowerCase().trim();
+        var areaMatches = !af || af==='All' || (pdata[pname]||[]).some(function(p){return canonArea(p.area)===af;});
+        var searchMatches = !sq || pname.toLowerCase().indexOf(sq)!==-1 || (pdata[pname]||[]).some(function(p){return (p.area||'').toLowerCase().indexOf(sq)!==-1 || (p.title||'').toLowerCase().indexOf(sq)!==-1;});
+        var matches = areaMatches && searchMatches;
         var dim = matches?1:0.16;
         var pr=Math.max(2.5,Math.min(7,2.5+Math.log(pcnt+1)*1.2))*pp.z;
         var ppulse=0.5+0.5*Math.sin(t*1.3+ci*0.37);
