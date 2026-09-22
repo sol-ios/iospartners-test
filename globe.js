@@ -711,7 +711,7 @@ function initOfficesMap(canvas,offices,scale){
     var GREEN='#82C44D', GREENLINE='rgba(130,196,77,0.4)';
     for(var i=0;i<dots.length;i++){
       var p=px(dots[i][0],dots[i][1]);
-      ctx.beginPath(); ctx.fillStyle='rgba(255,255,255,0.28)'; ctx.arc(p.x,p.y,0.9,0,Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.fillStyle='rgba(255,255,255,0.5)'; ctx.arc(p.x,p.y,1.3,0,Math.PI*2); ctx.fill();
     }
     // HQ connection lines
     var hqPt=null;
@@ -734,12 +734,15 @@ function initOfficesMap(canvas,offices,scale){
       var ax=pt.x+lo[0], ay=pt.y+lo[1];
       offPts.push({x:pt.x,y:pt.y,idx:o});
       // glow ring on dot
-      ctx.beginPath(); ctx.strokeStyle='rgba(130,196,77,'+(isHQ?0.55:0.25)+')'; ctx.lineWidth=(isHQ?1.2:0.7)*scale;
-      ctx.arc(pt.x,pt.y,((isHQ?9:4)+4*pulse)*scale,0,Math.PI*2); ctx.stroke();
+      ctx.beginPath(); ctx.strokeStyle='rgba(130,196,77,'+(isHQ?0.7:0.45)+')'; ctx.lineWidth=(isHQ?1.6:1.1)*scale;
+      ctx.arc(pt.x,pt.y,((isHQ?11:6)+4*pulse)*scale,0,Math.PI*2); ctx.stroke();
+      // white halo for contrast against the blue background
+      ctx.beginPath(); ctx.fillStyle='rgba(255,255,255,0.9)';
+      ctx.arc(pt.x,pt.y,(isHQ?8:5)*scale,0,Math.PI*2); ctx.fill();
       // core dot
       ctx.beginPath(); ctx.fillStyle=GREEN;
-      ctx.shadowColor=GREEN; ctx.shadowBlur=(isHQ?18:(isH?12:6))*scale;
-      ctx.arc(pt.x,pt.y,(isHQ?5.5:2.8)*scale,0,Math.PI*2); ctx.fill(); ctx.shadowBlur=0;
+      ctx.shadowColor=GREEN; ctx.shadowBlur=(isHQ?20:(isH?15:9))*scale;
+      ctx.arc(pt.x,pt.y,(isHQ?7:4.2)*scale,0,Math.PI*2); ctx.fill(); ctx.shadowBlur=0;
       // leader line: dot → anchor
       ctx.beginPath();
       ctx.strokeStyle=isHQ?GREENLINE:'rgba(255,255,255,'+(isH?0.5:0.35)+')';

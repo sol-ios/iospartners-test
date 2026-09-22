@@ -312,7 +312,19 @@ class Component extends DCLogic {
     [/USTDA|trade and development agency/i, './assets/client-ustda.webp'],
     [/world bank|\bIDA\b|\bIBRD\b|\bWB\b/i, './assets/client-worldbank.webp'],
     [/millennium challenge|\bMCC\b/i, './assets/client-mcc.webp'],
-    [/USAID|agency for international development/i, './assets/client-usaid.webp']
+    [/USAID|agency for international development/i, './assets/client-usaid.webp'],
+    [/international finance corp|\bIFC\b/i, './assets/client-ifc.png'],
+    [/inter-american development bank|\bIDB\b|\bIADB\b/i, './assets/client-idb.png'],
+    [/international fund for agricultural development|\bIFAD\b/i, './assets/client-ifad.png'],
+    [/dept\.? of state|department of state/i, './assets/client-dos.png'],
+    [/garnier\s*&?\s*garnier/i, './assets/client-garnier.png'],
+    [/\bONDA\b|office national des a[eé]roports/i, './assets/client-onda.png'],
+    [/air\s*mada(gascar)?/i, './assets/client-airmada.png'],
+    [/national bank of ethiopia|\bNBE\b/i, './assets/client-nbe.png'],
+    [/\bTMEA\b|trademark africa/i, './assets/client-tmea.png'],
+    [/outreach aid to the america|\bOAA\b/i, './assets/client-oaa.png'],
+    [/state of california/i, './assets/client-ca-gov.jpeg'],
+    [/lesotho national development|\bLNDC\b/i, './assets/client-lndc.png']
   ];
   hash = (s) => { let h = 0; for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0; return h; };
   KEYWORD_IMG = [
