@@ -676,7 +676,7 @@ function initOfficesMap(canvas,offices,scale){
     'Tbilisi, Georgia':[72,-22],
     'Miami, FL, USA':[18,32],
     'Washington D.C., USA':[-98,-16],
-    'San José, Costa Rica':[16,-40],
+    'San José, Costa Rica':[24,20],
     'Bogotá, Colombia':[-78,16]
   };
   // Pre-defined label anchor positions [fracX, fracY] — carefully spaced to avoid overlap
@@ -737,15 +737,19 @@ function initOfficesMap(canvas,offices,scale){
       var ax=pt.x+lo[0], ay=pt.y+lo[1];
       offPts.push({x:pt.x,y:pt.y,idx:o});
       // glow ring on dot
-      ctx.beginPath(); ctx.strokeStyle='rgba(130,196,77,'+(isHQ?0.7:0.45)+')'; ctx.lineWidth=(isHQ?1.6:1.1)*scale;
-      ctx.arc(pt.x,pt.y,((isHQ?11:6)+4*pulse)*scale,0,Math.PI*2); ctx.stroke();
-      // white halo for contrast against the blue background
-      ctx.beginPath(); ctx.fillStyle='rgba(255,255,255,0.9)';
-      ctx.arc(pt.x,pt.y,(isHQ?8:5)*scale,0,Math.PI*2); ctx.fill();
-      // core dot
-      ctx.beginPath(); ctx.fillStyle=GREEN;
-      ctx.shadowColor=GREEN; ctx.shadowBlur=(isHQ?20:(isH?15:9))*scale;
-      ctx.arc(pt.x,pt.y,(isHQ?7:4.2)*scale,0,Math.PI*2); ctx.fill(); ctx.shadowBlur=0;
+      ctx.beginPath(); ctx.strokeStyle='rgba(130,196,77,'+(isHQ?0.7:0.35)+')'; ctx.lineWidth=(isHQ?1.6:0.9)*scale;
+      ctx.arc(pt.x,pt.y,((isHQ?11:5)+4*pulse)*scale,0,Math.PI*2); ctx.stroke();
+      if(isHQ){
+        ctx.beginPath(); ctx.fillStyle=GREEN; ctx.shadowColor=GREEN; ctx.shadowBlur=20*scale; ctx.arc(pt.x,pt.y,7*scale,0,Math.PI*2); ctx.fill(); ctx.shadowBlur=0;
+      } else {
+        // white halo for contrast against the blue background
+        ctx.beginPath(); ctx.fillStyle='rgba(255,255,255,0.9)';
+        ctx.arc(pt.x,pt.y,3.6*scale,0,Math.PI*2); ctx.fill();
+        // core dot
+        ctx.beginPath(); ctx.fillStyle=GREEN;
+        ctx.shadowColor=GREEN; ctx.shadowBlur=(isH?11:6)*scale;
+        ctx.arc(pt.x,pt.y,2.8*scale,0,Math.PI*2); ctx.fill(); ctx.shadowBlur=0;
+      }
       // leader line: dot → anchor
       ctx.beginPath();
       ctx.strokeStyle=isHQ?GREENLINE:'rgba(255,255,255,'+(isH?0.5:0.35)+')';
