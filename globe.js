@@ -576,6 +576,7 @@ function initStandaloneProjectMap(canvas){
     ctx.setTransform(DPR,0,0,DPR,0,0);
   }
   resize(); window.addEventListener('resize',resize);
+  if(typeof ResizeObserver!=='undefined'){ new ResizeObserver(function(){ resize(); }).observe(canvas.parentElement||canvas); }
   // Tighter lat crop: -60..80 so Antarctica doesn't waste space
   function basePx(lng,lat){
     var LAT_MIN=-60,LAT_MAX=80,padX=W*0.01,padY=H*0.02;
@@ -666,18 +667,20 @@ function initOfficesMap(canvas,offices,scale){
   var W,H,hoverOff=-1,offPts=[];
   // custom per-office label offsets [dx,dy] to fan out clustered regions (Europe); default [16,-12]
   var LBL_OFF={
-    'Brussels, Belgium':[36,-34],
-    'Paris, France':[-72,-8],
+    'Brussels, Belgium':[-64,-4],
+    'Paris, France':[-72,26],
     'Lisbon, Portugal':[-30,16],
     'Barcelona, Spain':[8,42],
-    'Amsterdam, Netherlands':[2,-48],
+    'Amsterdam, Netherlands':[38,-46],
     'Sarajevo, Bosnia & Herzegovina':[46,-6],
     'Sofia, Bulgaria':[64,26],
     'Tbilisi, Georgia':[72,-22],
-    'Miami, FL, USA':[18,32],
+    'Miami, FL, USA':[16,-6],
     'Washington D.C., USA':[-98,-16],
-    'San José, Costa Rica':[24,20],
-    'Bogotá, Colombia':[-78,16]
+    'San José, Costa Rica':[-58,-10],
+    'Santa Cruz, Bolivia':[-70,10],
+    'Bogotá, Colombia':[30,20],
+    'Sao Paulo, Brazil':[16,10]
   };
   // Pre-defined label anchor positions [fracX, fracY] — carefully spaced to avoid overlap
   // Label anchors — each label zone carefully separated, leader lines connect to dots
@@ -706,6 +709,7 @@ function initOfficesMap(canvas,offices,scale){
     ctx.setTransform(DPR,0,0,DPR,0,0);
   }
   resize(); window.addEventListener('resize',resize);
+  if(typeof ResizeObserver!=='undefined'){ new ResizeObserver(function(){ resize(); }).observe(canvas.parentElement||canvas); }
   function px(lng,lat){ var padX=W*0.04,padY=H*0.10; return {x:padX+(lng+180)/360*(W-2*padX),y:padY+(90-lat)/180*(H-2*padY)*0.85+H*0.06}; }
   var dots=buildDots(2.6);
   function draw(){

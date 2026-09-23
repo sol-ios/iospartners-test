@@ -262,7 +262,19 @@ class Component extends DCLogic {
     this._officesMapMounted = true;
     const boot = () => {
       if (window.IOSWorld && window.IOSWorld.initOfficesMap) window.IOSWorld.initOfficesMap(el, this.offices, 1.5);
-      else setTimeout(boot, 60);
+      else { setTimeout(boot, 60); return; }
+      let tries = 0;
+      const ensureSized = () => {
+        if (el.getBoundingClientRect().width > 0 && el.width === 0 && tries < 20) {
+          tries++;
+          window.IOSWorld.initOfficesMap(el, this.offices, 1.5);
+          setTimeout(ensureSized, 120);
+        } else if (el.width === 0 && tries < 20) {
+          tries++;
+          setTimeout(ensureSized, 120);
+        }
+      };
+      setTimeout(ensureSized, 120);
     };
     boot();
   };
