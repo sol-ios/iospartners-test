@@ -4,7 +4,7 @@
 (function () {
   var SHEET_ID = '14iSlCVkLh96VfDUmS2zILfWjxb2D90MoE59RvF4w480';
   var SHEET_GID = '471787958';
-  var CACHE_KEY = 'ios-sheet-projects-v4';
+  var CACHE_KEY = 'ios-sheet-projects-v5';
 
   var URLS = [
     'https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/gviz/tq?tqx=out:csv&gid=' + SHEET_GID,
@@ -83,6 +83,7 @@
       var get = function (k) { return idx[k] === undefined ? '' : (r[idx[k]] || '').trim(); };
       var country = get('country'), title = get('title');
       if (!country || !title) return;
+      if (/\boffice\b/i.test(title) || country.length > 40) return; // office listings, not projects
       var list = (data[country] = data[country] || []);
       var areas = canonAreas(get('area'));
       var area = areas.join('|');

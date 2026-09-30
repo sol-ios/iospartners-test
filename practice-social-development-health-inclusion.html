@@ -226,6 +226,7 @@
                     
                   </div>
                   <div style="font-family:Montserrat;font-weight:500;font-size:16.5px;line-height:1.4;color:oklch(0.22 0.01 250)">{{ modalCurrentProject.title }}</div>
+                  <sc-if value="{{ modalCurrentProject.description }}"><p style="font-size:13.5px;font-weight:300;color:oklch(0.42 0.01 250);line-height:1.65;margin:10px 0 0">{{ modalCurrentProject.description }}</p></sc-if>
                 </div>
               </div>
             </sc-if>
@@ -752,7 +753,7 @@ class Component extends DCLogic {
       modalCurrentProject: cur ? (() => {
         const sc = this.statusColors(cur.status);
         const mk = (this.state.selectedCountry + '-' + (cur.title || '')).replace(/[^a-zA-Z0-9]+/g, '-').slice(0, 48);
-        return { ...cur, agency: this.realAgency(cur.agency) || '', imgSrc: this.imgFor(cur, idx), imgId: 'modal-' + mk, statusBg: sc.bg, statusFg: sc.fg, statusBd: sc.bd };
+        return { ...cur, agency: this.realAgency(cur.agency) || '', description: cur.description || this.describe(cur), imgSrc: cur.image || this.imgFor(cur, idx), imgId: 'modal-' + mk, statusBg: sc.bg, statusFg: sc.fg, statusBd: sc.bd };
       })() : null
     };
   }
