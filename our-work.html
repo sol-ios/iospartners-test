@@ -16,6 +16,7 @@
   <script src="./practice-areas-data.js"></script>
   <script src="./globe.js"></script>
   <script src="./project-data.js"></script>
+  <script src="./sheet-loader.js"></script>
   <style>
     :root { --accent:#82C44D; --accent-rgb:130,196,77; }
     body { margin: 0; background: #ffffff; font-family: 'Montserrat', sans-serif; }
@@ -364,6 +365,8 @@ class Component extends DCLogic {
   t = (s) => window.tr(this.state.lang, s);
   LANGS = [{ code: 'EN', label: 'English' }, { code: 'ES', label: 'Español' }, { code: 'FR', label: 'Français' }, { code: 'PT', label: 'Português' }];
   componentDidMount() {
+    this._onSheetData = () => { window.__iosProjectData = this.projectData; window.__iosCC = this.countryCoords; this.forceUpdate(); };
+    window.addEventListener('ios-data-updated', this._onSheetData);
     this._onScroll = () => {
       const scrolled = window.scrollY > 12;
       if (scrolled !== this.state.scrolled) this.setState({ scrolled });

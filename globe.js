@@ -127,6 +127,7 @@ function initGlobe(canvas){
   }
   resize();
   window.addEventListener('resize', resize);
+  if (window.ResizeObserver) new ResizeObserver(function(){ resize(); }).observe(canvas);
 
   var rotY = -1.2, rotX = 0.0;   // yaw, tilt — equator-level view
   var spin = 0.0016;
@@ -207,7 +208,7 @@ function initGlobe(canvas){
         var pcnt=(pdata[pname]||[]).length;
         var af=window.__iosActiveFilter;
         var sq=(window.__iosSearchQuery||'').toLowerCase().trim();
-        var areaMatches = !af || af==='All' || (pdata[pname]||[]).some(function(p){return canonArea(p.area)===af;});
+        var areaMatches = !af || af==='All' || (pdata[pname]||[]).some(function(p){return (p.area||'').split('|').map(function(a){return a.trim();}).indexOf(af)!==-1;});
         var searchMatches = !sq || pname.toLowerCase().indexOf(sq)!==-1 || (pdata[pname]||[]).some(function(p){return (p.area||'').toLowerCase().indexOf(sq)!==-1 || (p.title||'').toLowerCase().indexOf(sq)!==-1;});
         var matches = areaMatches && searchMatches;
         var dim = matches?1:0.16;

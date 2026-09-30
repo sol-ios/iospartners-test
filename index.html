@@ -16,6 +16,7 @@
   <script src="./practice-areas-data.js"></script>
   <script src="./globe.js"></script>
   <script src="./project-data.js"></script>
+  <script src="./sheet-loader.js"></script>
   <style>
     :root { --accent:#82C44D; --accent-rgb:130,196,77; }
     body { margin: 0; background: #ffffff; font-family: 'Montserrat', sans-serif; }
@@ -59,9 +60,6 @@
     <div style="position:absolute;top:0;left:0;height:100%;width:40%;background:linear-gradient(90deg,transparent,#82C44D,transparent);animation:sweepBar 2.4s ease-in-out infinite"></div>
   </div>
 
-  <div style="position:fixed;top:0;left:0;width:10px;height:10px;border-radius:50%;background:#82C44D;box-shadow:0 0 0 4px rgba(130,196,77,0.25),0 2px 10px rgba(0,0,0,0.35);pointer-events:none;z-index:9999;transform:translate({{ cursorDotX }}px,{{ cursorDotY }}px);transition:opacity 0.2s ease;opacity:{{ cursorVisible }}"></div>
-  <div style="position:fixed;top:0;left:0;width:10px;height:10px;border-radius:50%;background:rgba(130,196,77,0.35);pointer-events:none;z-index:9997;transform:translate({{ cursorTrailX }}px,{{ cursorTrailY }}px);transition:opacity 0.2s ease;opacity:{{ cursorVisible }}"></div>
-  <div style="position:fixed;top:0;left:0;width:{{ cursorRingSize }}px;height:{{ cursorRingSize }}px;margin-left:{{ cursorRingOffset }}px;margin-top:{{ cursorRingOffset }}px;border-radius:50%;border:2px solid {{ cursorRingColor }};background:{{ cursorRingBg }};box-shadow:{{ cursorRingShadow }};pointer-events:none;z-index:9998;transform:translate({{ cursorRingX }}px,{{ cursorRingY }}px);transition:width 0.25s ease,height 0.25s ease,margin 0.25s ease,border-color 0.25s ease,background 0.25s ease,box-shadow 0.25s ease,opacity 0.2s ease;opacity:{{ cursorVisible }}"></div>
 
   <header style="display:flex;align-items:center;justify-content:space-between;gap:20px;padding:16px 40px;position:sticky;top:0;z-index:50;transition:background 0.3s ease,box-shadow 0.3s ease;background:{{ headerBg }};box-shadow:{{ headerShadow }};backdrop-filter:blur(10px)">
     <a href="./index.html" style="display:flex;align-items:center;gap:10px">
@@ -660,6 +658,8 @@ class Component extends DCLogic {
   };
 
   componentDidMount() {
+    this._onSheetData = () => { window.__iosProjectData = this.projectData; window.__iosCC = this.countryCoords; this.forceUpdate(); };
+    window.addEventListener('ios-data-updated', this._onSheetData);
     this._heroTimer = setInterval(() => {
       this.setState((s) => ({ heroSlide: ((s.heroSlide ?? 0) + 1) % this.heroImages.length }));
     }, 4500);
@@ -679,27 +679,6 @@ class Component extends DCLogic {
       if (scrolled !== this.state.scrolled) this.setState({ scrolled });
     };
     window.addEventListener('scroll', this._onScroll, { passive: true });
-    this._ringPos = { x: -40, y: -40 };
-    this._trailPos = { x: -40, y: -40 };
-    this._onMove = (e) => {
-      if (!this.state.cursorVisible) this.setState({ cursorVisible: true });
-      this.setState({ cursorDot: { x: e.clientX, y: e.clientY } });
-      const hoverEl = e.target.closest && e.target.closest('a, button, [onclick]');
-      if (!!hoverEl !== this.state.cursorHover) this.setState({ cursorHover: !!hoverEl });
-    };
-    this._onLeave = () => this.setState({ cursorVisible: false });
-    window.addEventListener('mousemove', this._onMove);
-    document.addEventListener('mouseleave', this._onLeave);
-    const tick = () => {
-      const target = this.state.cursorDot;
-      this._ringPos.x += (target.x - this._ringPos.x) * 0.42;
-      this._ringPos.y += (target.y - this._ringPos.y) * 0.42;
-      this._trailPos.x += (target.x - this._trailPos.x) * 0.25;
-      this._trailPos.y += (target.y - this._trailPos.y) * 0.25;
-      this.setState({ cursorRing: { x: this._ringPos.x, y: this._ringPos.y }, cursorTrail: { x: this._trailPos.x, y: this._trailPos.y } });
-      this._ringRaf = requestAnimationFrame(tick);
-    };
-    this._ringRaf = requestAnimationFrame(tick);
   }
   componentWillUnmount() {
     if (this._observer) this._observer.disconnect();
@@ -875,7 +854,7 @@ class Component extends DCLogic {
     e.preventDefault();
     const f = this.state.ctaFields;
     const body = `Name: ${f.name}\nEmail: ${f.email}\nCV file: ${f.cvFileName || 'none attached — please email separately'}\n\nProject:\n${f.message}`;
-    window.location.href = 'mailto:srich@iospartners.com?subject=' + encodeURIComponent('Join our team — ' + f.name) + '&body=' + encodeURIComponent(body);
+    window.location.href = 'mailto:careers@iospartners.com?subject=' + encodeURIComponent('Join our team — ' + f.name) + '&body=' + encodeURIComponent(body);
     this.setState({ ctaSubmitted: true });
   };
   setFirmField = (name) => (e) => { const value = e.target.value; this.setState((s) => ({ firmFields: { ...s.firmFields, [name]: value } })); };
@@ -906,7 +885,7 @@ class Component extends DCLogic {
   getSectorsFor = (country) => {
     const list = this.projectData[country] || [];
     const canon = (a) => (a || '').split('|')[0].trim();
-    return ['All', ...Array.from(new Set(list.map((p) => canon(p.area)).filter(Boolean)))];
+    return ['All', ...Array.from(new Set(list.flatMap((p) => (p.area || '').split('|').map((a) => a.trim())).filter(Boolean)))];
   };
   realAgency = (a) => {
     const s = (a || '').trim();
@@ -932,7 +911,7 @@ class Component extends DCLogic {
   getFilteredProjects = (country, area) => {
     let list = this.projectData[country] || [];
     const canon = (a) => (a || '').split('|')[0].trim();
-    if (area && area !== 'All') list = list.filter((p) => canon(p.area) === area);
+    if (area && area !== 'All') list = list.filter((p) => (p.area || '').split('|').map((a) => a.trim()).includes(area));
     const q = (this.state.searchQuery || '').toLowerCase().trim();
     if (q) list = list.filter((p) => (p.title || '').toLowerCase().includes(q) || (p.area || '').toLowerCase().includes(q) || (p.agency || '').toLowerCase().includes(q));
     return list;
@@ -950,7 +929,12 @@ class Component extends DCLogic {
     'Social Development & Health Inclusion', 'Trade & Investment', 'USG Practice'
   ];
 
-  filters = ['All', 'Agriculture', 'Aviation & Tourism', 'Finance', 'Information and Communication Technology for Development', 'Private Sector Development', 'Public Sector Governance and Public Enterprise Reform', 'Social Development and Inclusion', 'Trade Facilitation and Investment Promotion', 'Transport & Infrastructure'];
+  // sector chips come from whatever categories exist in the project list (sheet or fallback)
+  get filters() {
+    const s = new Set();
+    Object.values(this.projectData || {}).forEach((arr) => arr.forEach((p) => (p.area || '').split('|').forEach((a) => { a = a.trim(); if (a) s.add(a); })));
+    return ['All', ...Array.from(s).sort()];
+  }
 
   projectDots = [
     { label: 'Miami HQ, USA', top: '52%', left: '22%' }, { label: 'Colombia', top: '68%', left: '27%' },
@@ -1219,8 +1203,8 @@ class Component extends DCLogic {
           const prevPick = hash(prevP.title + prevP.country + ((idx - 1 + list.length) % list.length)) % pool.length;
           if (pick === prevPick) pick = (pick + 1) % pool.length;
         }
-        const imgSrc = pool[pick] || this.PA_IMAGES[p.area] || pool[0];
-        return { ...p, agency: this.realAgency(p.agency) || '', description: this.describe(p), statusBg: sc.bg, statusFg: sc.fg, statusBd: sc.bd, imgId: (this.state.selectedCountry + '-' + p.title).slice(0, 60), imgSrc };
+        const imgSrc = p.image || pool[pick] || this.PA_IMAGES[p.area] || pool[0];
+        return { ...p, agency: this.realAgency(p.agency) || '', description: p.description || this.describe(p), statusBg: sc.bg, statusFg: sc.fg, statusBd: sc.bd, imgId: (this.state.selectedCountry + '-' + p.title).slice(0, 60), imgSrc };
       })(),
       modalCounterText: (() => {
         if (!this.state.selectedCountry) return '';

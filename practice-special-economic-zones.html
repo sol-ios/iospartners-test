@@ -14,6 +14,7 @@
   <script src="./image-slot.js"></script>
   <script src="./cursor-fx.js"></script>
   <script src="./project-data.js"></script>
+  <script src="./sheet-loader.js"></script>
   <script src="./practice-areas-data.js"></script>
   <script src="./globe.js"></script>
   <style>
@@ -583,6 +584,8 @@ class Component extends DCLogic {
   }
 
   componentDidMount() {
+    this._onSheetData = () => { if (window.__iosProjectData) window.__iosProjectData = this.scopedData; this.forceUpdate(); };
+    window.addEventListener('ios-data-updated', this._onSheetData);
     this._onScroll = () => {
       const scrolled = window.scrollY > 12;
       if (scrolled !== this.state.scrolled) this.setState({ scrolled });
@@ -625,8 +628,8 @@ class Component extends DCLogic {
   wireGlobeClicks = (canvas) => {
     canvas.style.cursor = 'grab';
     const cc = window.__IOS_COUNTRY_COORDS__ || {};
-    const scoped = this.scopedData;
     this._mapClick = (e) => {
+      const scoped = this.scopedData;
       const st = canvas._iosGlobeState || (window.IOSWorld && window.IOSWorld._lastGlobeState);
       const rect = canvas.getBoundingClientRect();
       const W = rect.width, H = rect.height;
@@ -671,7 +674,7 @@ class Component extends DCLogic {
       const logoSrc = this.logoFor(p.agency);
       const key = (p.country + '-' + (p.title || '')).replace(/[^a-zA-Z0-9]+/g, '-').slice(0, 48);
       const ag = this.realAgency(p.agency);
-      return { ...p, agency: ag || '', imgSrc: imgAssign[i], imgId: 'proj-' + key, description: this.describe(p), onClick: this.openCardModal(i), logoId: 'logo-' + key, logoSrc, showAgencyText: !logoSrc && !!ag };
+      return { ...p, agency: ag || '', imgSrc: imgAssign[i], imgId: 'proj-' + key, description: p.description || this.describe(p), onClick: this.openCardModal(i), logoId: 'logo-' + key, logoSrc, showAgencyText: !logoSrc && !!ag };
     });
     const practiceAreas = window.PRACTICE_AREAS ? Object.keys(window.PRACTICE_AREAS).map((s) => ({
       name: window.PRACTICE_AREAS[s].title,
