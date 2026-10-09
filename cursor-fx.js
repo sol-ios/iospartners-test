@@ -6,9 +6,9 @@
   function mount() {
     // soft glowing shadow that trails behind the dot and swells with speed
     var glow = document.createElement('div');
-    glow.style.cssText = 'position:fixed;top:0;left:0;width:56px;height:56px;margin:-28px 0 0 -28px;border-radius:50%;background:radial-gradient(circle,rgba(130,196,77,0.38) 0%,rgba(130,196,77,0.14) 45%,rgba(130,196,77,0) 70%);pointer-events:none;z-index:9997;opacity:0;transition:opacity 0.3s ease;will-change:transform;';
+    glow.style.cssText = 'position:fixed;top:0;left:0;width:56px;height:56px;margin:-28px 0 0 -28px;border-radius:50%;background:radial-gradient(circle,rgba(130,196,77,0.2) 0%,rgba(130,196,77,0.07) 45%,rgba(130,196,77,0) 70%);pointer-events:none;z-index:9997;opacity:0;transition:opacity 0.3s ease;will-change:transform;';
     // fading trail of small dots
-    var TRAIL = 6, trail = [];
+    var TRAIL = 4, trail = [];
     for (var i = 0; i < TRAIL; i++) {
       var t = document.createElement('div');
       var s = 8 - i;
@@ -52,7 +52,7 @@
         var p = trail[i];
         p.x += (px - p.x) * 0.42; p.y += (py - p.y) * 0.42;
         p.el.style.transform = 'translate3d(' + p.x + 'px,' + p.y + 'px,0)';
-        p.el.style.opacity = (Math.min(1, speed / 8) * (0.55 - i * 0.08)).toFixed(3);
+        p.el.style.opacity = (Math.min(1, speed / 8) * (0.32 - i * 0.05)).toFixed(3);
         px = p.x; py = p.y;
       }
       var settled = speed < 0.05 && Math.abs(mx - gx) < 0.3 && Math.abs(my - gy) < 0.3;

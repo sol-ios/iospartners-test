@@ -751,6 +751,7 @@ class Component extends DCLogic {
     'Tourism': './assets/pa-tourism.webp',
     'Infrastructure Development': './assets/pa-infrastructure.webp',
     'Digital Transformation': './assets/pa-ict4d.webp',
+    'ICT4D': './assets/pa-ict4d.webp',
     'Private Sector Development': './assets/pa-private-sector.webp',
     'Forestry & Environment': './assets/pa-forestry.webp'
   };
@@ -758,7 +759,7 @@ class Component extends DCLogic {
     'Agriculture': 'isGrowth', 'Blue Economy': 'isWave', 'Forestry & Environment': 'isGrowth',
     'Aviation': 'isPlane', 'Tourism': 'isSun',
     'Finance': 'isCoin', 'Trade & Investment': 'isGlobe',
-    'Digital Transformation': 'isChip',
+    'Digital Transformation': 'isChip', 'ICT4D': 'isChip',
     'Infrastructure Development': 'isBuilding', 'Special Economic Zones': 'isFactory', 'Public Administration & Reform': 'isGov',
     'Ports & Maritime': 'isAnchor',
     'Private Sector Development': 'isChart', 'Public-Private Partnerships (PPP)': 'isLink',
@@ -1316,7 +1317,7 @@ class Component extends DCLogic {
   stopPropagation = (e) => e.stopPropagation();
   openPaModal = (area) => (e) => {
     e.preventDefault();
-    if (area.title === 'Digital Transformation') { window.open('https://iossoftinc.com/', '_blank'); return; }
+    if (area.title === 'Digital Transformation' || area.title === 'ICT4D') { window.open('https://iossoftinc.com/', '_blank'); return; }
     this.setState({ paModalArea: area });
   };
   closePaModal = () => this.setState({ paModalArea: null });
@@ -1349,7 +1350,7 @@ class Component extends DCLogic {
       openDropdown: this.openDropdown,
       closeDropdown: this.closeDropdown,
       practiceAreas: this.practiceAreas,
-      navPracticeAreas: Object.values(window.PRACTICE_AREAS || {}).map((a) => ({ name: a.title, href: a.title === 'Digital Transformation' ? 'https://iossoftinc.com/' : a.file, target: a.title === 'Digital Transformation' ? '_blank' : '_self' })),
+      navPracticeAreas: Object.values(window.PRACTICE_AREAS || {}).map((a) => ({ name: a.title, href: (a.title === 'Digital Transformation' || a.title === 'ICT4D') ? 'https://iossoftinc.com/' : a.file, target: /^(Digital Transformation|ICT4D)$/.test(a.title) ? '_blank' : '_self' })),
       missionPillars: [
         { imgId: 'pillar-blue-economy', imgSrc: './assets/pa-blue-economy.webp', tag: 'Sustainable oceans', title: 'Blue Economy', href: './practice-blue-economy.html' },
         { imgId: 'pillar-social', imgSrc: './assets/pillar-social-development.jpg', tag: 'Inclusive growth', title: 'Social Development', href: './practice-social-development-health-inclusion.html' },
@@ -1366,7 +1367,7 @@ class Component extends DCLogic {
         if (key) flags[key] = true;
         const imgId = 'pa-home-' + a.title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
         const imgSrc = this.PA_IMAGES[a.title] || '';
-        const isIct = a.title === 'Digital Transformation';
+        const isIct = a.title === 'Digital Transformation' || a.title === 'ICT4D';
         const n = window.getPracticeAreaProjects ? window.getPracticeAreaProjects(slug).length : 0;
         const short = (a.blurb || '').length > 82 ? a.blurb.slice(0, 80).replace(/\s+\S*$/, '') + '…' : (a.blurb || '');
         return { name: a.title, href: isIct ? 'https://iossoftinc.com/' : a.file, target: isIct ? '_blank' : '_self', imgId, accId: imgId + '-acc', imgSrc, countLabel: n ? n + ' projects' : '', blurb: short, ...flags };

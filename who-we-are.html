@@ -5,24 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <script src="./support.js"></script>
 <script src="./i18n.js"></script>
-<script>
-/* Published-site link guard: any leftover link to an editor file name (*.dc.html) is sent to its GitHub page. */
-(function(){
-  var named={'IOS Partners Home':'index','IOS Partners Our Work':'our-work','IOS Partners Contact':'contact','IOS Partners Who We Are':'who-we-are','IOS Partners News':'news'};
-  function slug(s){return s.toLowerCase().replace(/&/g,'and').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');}
-  function fix(h){
-    if(!h||h.indexOf('.dc.html')<0||/MapPopup\.dc\.html/.test(h))return h;
-    var m=decodeURIComponent(h).match(/^(.*?)([^\/]+)\.dc\.html(#.*)?$/); if(!m)return h;
-    var base=m[2], out=named[base]||(base.indexOf('Practice Area - ')===0?'practice-'+slug(base.slice(16)):null);
-    return out? m[1]+out+'.html'+(m[3]||'') : h;
-  }
-  window.iosFixHref=fix;
-  function sweep(root){var a=(root.querySelectorAll?root:document).querySelectorAll('a[href*=".dc.html"]');for(var i=0;i<a.length;i++){var n=fix(a[i].getAttribute('href'));if(n!==a[i].getAttribute('href'))a[i].setAttribute('href',n);}}
-  document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('a[href]');if(!a)return;var h=a.getAttribute('href'),n=fix(h);if(n!==h){a.setAttribute('href',n);}},true);
-  function start(){sweep(document);new MutationObserver(function(){sweep(document);}).observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['href']});}
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
-})();
-</script>
 </head>
 <body>
 <x-dc>
@@ -30,7 +12,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
   <script src="./image-slot.js"></script>
-  <script src="./cursor-fx.js"></script>
+  
   <script src="./practice-areas-data.js"></script>
   <script src="./globe.js"></script>
   <style>
@@ -73,6 +55,9 @@
       h1 { font-size:28px !important; }
       [data-2col-input] { grid-template-columns:1fr !important; }
     }
+  
+    :focus-visible { outline:2px solid #82C44D; outline-offset:2px; border-radius:4px; }
+    [data-form-card] input::placeholder, [data-form-card] textarea::placeholder, [data-dark-search]::placeholder { color:rgba(255,255,255,0.72); }
   </style>
 </helmet>
 
@@ -99,6 +84,7 @@
       </div>
       <a href="./index.html#our-work" class="nav-link" style="color:oklch(0.28 0.09 264);font-weight:500;font-size:15px;white-space:nowrap">{{ txtOurWork }}</a>
       <a href="./who-we-are.html" class="nav-link" data-active="true" style="color:oklch(0.28 0.09 264);font-weight:500;font-size:15px;white-space:nowrap">{{ txtAboutUs }}</a>
+      <a href="./index.html#cta" class="nav-link" style="color:oklch(0.28 0.09 264);font-weight:500;font-size:15px;white-space:nowrap">{{ txtContactUs }}</a>
     </nav>
     <div data-actions-desktop style="display:flex;align-items:center;gap:14px">
       <a href="./index.html#cta" style="background:#82C44D;color:#ffffff;font-weight:600;font-size:14.5px;padding:12px 22px;border-radius:9px;white-space:nowrap" style-hover="background:#6fa93e">{{ txtWorkWithUs }}</a>
@@ -128,6 +114,7 @@
       <a href="./index.html#practice-areas" onClick="{{ closeMobileMenu }}" style="color:oklch(0.28 0.09 264);font-weight:500;font-size:16px">{{ txtPracticeAreas }}</a>
       <a href="./index.html#our-work" onClick="{{ closeMobileMenu }}" style="color:oklch(0.28 0.09 264);font-weight:500;font-size:16px">{{ txtOurWork }}</a>
       <a href="./who-we-are.html" onClick="{{ closeMobileMenu }}" style="color:oklch(0.28 0.09 264);font-weight:500;font-size:16px">{{ txtAboutUs }}</a>
+      <a href="./index.html#cta" onClick="{{ closeMobileMenu }}" style="color:oklch(0.28 0.09 264);font-weight:500;font-size:16px">{{ txtContactUs }}</a>
       <a href="./index.html#cta" onClick="{{ closeMobileMenu }}" style="background:#82C44D;color:#ffffff;font-weight:600;font-size:15px;padding:12px 20px;border-radius:9px;text-align:center;margin-top:4px">{{ txtWorkWithUs }}</a>
       <div style="display:flex;gap:10px;flex-wrap:wrap">
         <sc-for list="{{ langs }}" as="l" hint-placeholder-count="4">
@@ -219,37 +206,46 @@
     </div>
   </section>
 
-  <footer style="background:oklch(0.2 0.08 264);color:white;padding:56px 56px 32px">
-    <div style="max-width:1180px;margin:0 auto;display:grid;grid-template-columns:0.8fr 0.6fr 1fr;gap:40px">
-      <div>
-        <img loading="lazy" decoding="async" src="./assets/ios-partners-logo-white.webp" alt="IOS Partners" style="height:44px;width:auto;margin-bottom:14px"/>
+  <footer data-footer style="background:oklch(0.2 0.08 264);color:white;padding:56px 56px 32px">
+    <div data-footer-grid style="max-width:1180px;margin:0 auto;display:grid;grid-template-columns:1fr 0.6fr 1.7fr;gap:40px">
+      <div style="display:flex;flex-direction:column;gap:14px;align-items:flex-start">
+        <img loading="lazy" decoding="async" src="./assets/ios-partners-logo-white.webp" alt="IOS Partners" style="height:44px;width:auto"/>
+        <div style="font-size:13.5px;line-height:1.6;color:rgba(255,255,255,0.86)">Headquarters<br/>Miami, Florida, USA</div>
+        <a href="tel:+13056482877" style="color:white;font-size:13.5px" style-hover="color:#82C44D">+1 305 648 2877</a>
+        <a href="https://www.linkedin.com/company/ios-partners-inc./" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:8px;color:white;font-size:13px;font-weight:600;border:1px solid rgba(255,255,255,0.35);padding:8px 14px;border-radius:8px" style-hover="border-color:#82C44D;color:#82C44D"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.45 20.45h-3.55v-5.57c0-1.33-.02-3.03-1.85-3.03-1.85 0-2.14 1.45-2.14 2.94v5.66H9.36V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.45v6.29zM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12zM7.12 20.45H3.56V9h3.56v11.45z"/></svg> Follow us on LinkedIn</a>
       </div>
       <div>
-        <div style="font-weight:600;font-size:13px;text-transform:uppercase;letter-spacing:0.04em;color:white;margin-bottom:16px">{{ txtSiteLinks }}</div>
-        <div style="display:flex;flex-direction:column;gap:12px;font-size:14px">
-          <a href="./index.html#our-work" style="color:white">{{ txtOurWork }}</a>
-          <a href="./index.html#cta" style="color:white">Contact us</a>
+        <div style="font-weight:600;font-size:13px;text-transform:uppercase;letter-spacing:0.04em;color:white;margin-bottom:16px">Company</div>
+        <div style="display:flex;flex-direction:column;gap:11px;font-size:14px">
+          <a href="./index.html#our-work" style="color:rgba(255,255,255,0.86)" style-hover="color:#82C44D">Our work</a>
+          <a href="./who-we-are.html" style="color:rgba(255,255,255,0.86)" style-hover="color:#82C44D">About us</a>
+          <a href="./index.html#cta" style="color:rgba(255,255,255,0.86)" style-hover="color:#82C44D">Careers</a>
+          <a href="./index.html#cta" style="color:rgba(255,255,255,0.86)" style-hover="color:#82C44D">Contact us</a>
         </div>
       </div>
       <div>
-        <div style="font-weight:600;font-size:13px;text-transform:uppercase;letter-spacing:0.04em;color:white;margin-bottom:16px">{{ txtPracticeAreas }}</div>
-        <div data-stack style="display:grid;grid-template-columns:1fr 1fr;gap:10px 16px;font-size:14px">
-          <a href="./practice-agriculture.html" style="color:white">Agriculture</a>
-          <a href="./practice-aviation.html" style="color:white">Aviation</a>
-          <a href="./practice-finance.html" style="color:white">Finance</a>
-          <a href="./practice-ict4d.html" style="color:white">ICT4D</a>
-          <a href="./practice-private-sector-development.html" style="color:white">Private Sector</a>
-          <a href="./practice-social-development-health-inclusion.html" style="color:white">Social Development</a>
+        <div style="font-weight:600;font-size:13px;text-transform:uppercase;letter-spacing:0.04em;color:white;margin-bottom:16px">Practice areas</div>
+        <div data-stack style="display:grid;grid-template-columns:1fr 1fr;gap:10px 20px;font-size:14px">
+          <a href="./practice-aviation.html" style="color:rgba(255,255,255,0.86)" style-hover="color:#82C44D">Aviation</a>
+          <a href="./practice-agriculture.html" style="color:rgba(255,255,255,0.86)" style-hover="color:#82C44D">Agriculture</a>
+          <a href="./practice-finance.html" style="color:rgba(255,255,255,0.86)" style-hover="color:#82C44D">Finance</a>
+          <a href="./practice-tourism.html" style="color:rgba(255,255,255,0.86)" style-hover="color:#82C44D">Tourism</a>
+          <a href="./practice-blue-economy.html" style="color:rgba(255,255,255,0.86)" style-hover="color:#82C44D">Blue Economy</a>
+          <a href="https://iossoftinc.com/" target="_blank" rel="noopener" style="color:rgba(255,255,255,0.86)" style-hover="color:#82C44D">Digital Transformation</a>
+          <a href="./practice-infrastructure-development.html" style="color:rgba(255,255,255,0.86)" style-hover="color:#82C44D">Infrastructure Development</a>
+          <a href="./practice-ports-maritime.html" style="color:rgba(255,255,255,0.86)" style-hover="color:#82C44D">Ports & Maritime</a>
+          <a href="./practice-private-sector-development.html" style="color:rgba(255,255,255,0.86)" style-hover="color:#82C44D">Private Sector Development</a>
+          <a href="./practice-public-administration-reform.html" style="color:rgba(255,255,255,0.86)" style-hover="color:#82C44D">Public Administration & Reform</a>
+          <a href="./practice-public-private-partnerships.html" style="color:rgba(255,255,255,0.86)" style-hover="color:#82C44D">Public-Private Partnerships (PPP)</a>
+          <a href="./practice-special-economic-zones.html" style="color:rgba(255,255,255,0.86)" style-hover="color:#82C44D">Special Economic Zones</a>
+          <a href="./practice-social-development-health-inclusion.html" style="color:rgba(255,255,255,0.86)" style-hover="color:#82C44D">Social Development & Health Inclusion</a>
+          <a href="./practice-trade-investment.html" style="color:rgba(255,255,255,0.86)" style-hover="color:#82C44D">Trade & Investment</a>
+          <a href="./practice-usg-practice.html" style="color:rgba(255,255,255,0.86)" style-hover="color:#82C44D">USG Practice</a>
         </div>
       </div>
     </div>
-    <div style="max-width:1180px;margin:40px auto 0;padding-top:24px;border-top:1px solid oklch(0.3 0.01 250);display:flex;justify-content:space-between;font-size:12.5px;color:white">
+    <div style="max-width:1180px;margin:40px auto 0;padding-top:24px;border-top:1px solid oklch(0.3 0.01 250);font-size:12.5px;color:rgba(255,255,255,0.8)">
       <span>© 2026 IOS Partners, Inc. {{ txtRights }}</span>
-      <div style="display:flex;gap:20px">
-        <a href="https://www.linkedin.com/company/ios-partners-inc./" target="_blank" rel="noopener" aria-label="LinkedIn" style="color:white;display:flex;align-items:center" style-hover="color:#82C44D">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.45 20.45h-3.55v-5.57c0-1.33-.02-3.03-1.85-3.03-1.85 0-2.14 1.45-2.14 2.94v5.66H9.36V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.45v6.29zM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12zM7.12 20.45H3.56V9h3.56v11.45z"/></svg>
-        </a>
-      </div>
     </div>
   </footer>
 </div>
@@ -323,14 +319,14 @@ class Component extends DCLogic {
   };
   practiceAreas = [
     'Agriculture', 'Aviation', 'Finance', 'Tourism', 'Blue Economy',
-    'ICT4D', 'Infrastructure Development', 'Ports & Maritime', 'Private Sector Development',
+    'Digital Transformation', 'Infrastructure Development', 'Ports & Maritime', 'Private Sector Development',
     'Public Administration & Reform', 'Public-Private Partnerships (PPP)', 'Special Economic Zones',
     'Social Development & Health Inclusion', 'Trade & Investment', 'USG Practice'
   ];
 
   stats = [
     { num: 25, suffix: '+ years', label: 'of experience in international economic development' },
-    { num: 350, suffix: '+ projects', label: 'implemented worldwide' },
+    { num: 400, suffix: '+ projects', label: 'implemented worldwide' },
     { num: 130, suffix: '+ countries', label: 'we worked in' },
     { num: 15, suffix: ' offices', label: 'established across the globe' }
   ];
@@ -441,7 +437,7 @@ class Component extends DCLogic {
       heroStyle: { opacity: this.state.heroRevealed ? 1 : 0, transform: this.state.heroRevealed ? 'translateY(0)' : 'translateY(18px)', transition: 'opacity 0.7s ease, transform 0.7s ease' },
       statStyle: { opacity: this.state.heroRevealed ? 1 : 0, transform: this.state.heroRevealed ? 'translateY(0)' : 'translateY(18px)', transition: 'opacity 0.6s ease 0.15s, transform 0.6s ease 0.15s' },
       practiceAreas: this.practiceAreas,
-      navPracticeAreas: Object.values(window.PRACTICE_AREAS || {}).map((a) => ({ name: a.title, href: a.title === 'ICT4D' ? 'https://iossoftinc.com/' : a.file, target: a.title === 'ICT4D' ? '_blank' : '_self' })),
+      navPracticeAreas: Object.values(window.PRACTICE_AREAS || {}).map((a) => ({ name: a.title, href: /^(Digital Transformation|ICT4D)$/.test(a.title) ? 'https://iossoftinc.com/' : a.file, target: /^(Digital Transformation|ICT4D)$/.test(a.title) ? '_blank' : '_self' })),
       stats: this.stats.map((s, i) => ({ label: s.label, display: (this.state.statCounts[i] || 0) + s.suffix })),
       teamGroups: this.teamGroups.map((g) => ({ ...g, people: g.people.map((p) => ({ ...p, photo: './assets/team/' + p.id + '.webp' })) })),
       showTeam: this.state.showTeam,

@@ -211,7 +211,7 @@ function initGlobe(canvas){
         var areaMatches = !af || af==='All' || (pdata[pname]||[]).some(function(p){return (p.area||'').split('|').map(function(a){return a.trim();}).indexOf(af)!==-1;});
         var searchMatches = !sq || pname.toLowerCase().indexOf(sq)!==-1 || (pdata[pname]||[]).some(function(p){return (p.area||'').toLowerCase().indexOf(sq)!==-1 || (p.title||'').toLowerCase().indexOf(sq)!==-1;});
         var matches = areaMatches && searchMatches;
-        var dim = matches?1:0.16;
+        var dim = matches?1:0.42;
         var pr=Math.max(2.5,Math.min(7,2.5+Math.log(pcnt+1)*1.2))*pp.z;
         var ppulse=0.5+0.5*Math.sin(t*1.3+ci*0.37);
         var isAct=(pname===window.__iosActiveCountry);
@@ -223,7 +223,7 @@ function initGlobe(canvas){
         ctx.arc(pp.x,pp.y,pr*2.5+3*ppulse,0,Math.PI*2); ctx.fill();
         ctx.beginPath();
         ctx.globalAlpha=dim;
-        ctx.fillStyle=isAct?acc:'rgba('+rgb+',0.72)';
+        ctx.fillStyle=isAct?acc:(matches?'rgba('+rgb+',0.72)':'rgba(175,188,205,0.85)');
         ctx.shadowColor=acc; ctx.shadowBlur=(isAct?18:6)*dim;
         ctx.arc(pp.x,pp.y,pr,0,Math.PI*2); ctx.fill();
         ctx.shadowBlur=0;
@@ -260,7 +260,22 @@ function initGlobe(canvas){
   startLoop(draw, canvas);
 
   // drag to spin
-  function down(e){ dragging=true; autoOK=false; lastX=(e.touches?e.touches[0].clientX:e.clientX); lastY=(e.touches?e.touches[0].clientY:e.clientY); }
+  var touchUI = window.matchMedia && window.matchMedia('(hover: none)').matches;
+  var touchOn = !touchUI, tapTip = null;
+  if (touchUI) {
+    canvas.style.touchAction = 'pan-y';
+    var host = canvas.parentElement;
+    if (host) {
+      if (getComputedStyle(host).position === 'static') host.style.position = 'relative';
+      tapTip = document.createElement('div');
+      tapTip.textContent = 'Tap to explore the map';
+      tapTip.style.cssText = 'position:absolute;left:50%;bottom:14px;transform:translateX(-50%);background:rgba(3,16,31,.82);color:#fff;font:600 12px Montserrat,sans-serif;padding:8px 14px;border-radius:99px;border:1px solid rgba(130,196,77,.6);pointer-events:none;z-index:5;transition:opacity .25s';
+      host.appendChild(tapTip);
+    }
+    canvas.addEventListener('click', function(ev){ if (!touchOn) { touchOn = true; canvas.style.touchAction = 'none'; if (tapTip) tapTip.style.opacity = '0'; ev.stopImmediatePropagation(); } }, true);
+    document.addEventListener('touchstart', function(ev){ if (touchOn && !canvas.contains(ev.target) && !(ev.target.closest && ev.target.closest('[data-popup-wrap]'))) { touchOn = false; canvas.style.touchAction = 'pan-y'; if (tapTip) tapTip.style.opacity = '1'; } }, { passive: true });
+  }
+  function down(e){ if (e.touches && !touchOn) return; dragging=true; autoOK=false; lastX=(e.touches?e.touches[0].clientX:e.clientX); lastY=(e.touches?e.touches[0].clientY:e.clientY); }
   function move(e){
     if(!dragging) return;
     var x=(e.touches?e.touches[0].clientX:e.clientX), y=(e.touches?e.touches[0].clientY:e.clientY);

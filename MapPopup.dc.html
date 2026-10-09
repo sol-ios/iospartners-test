@@ -16,7 +16,13 @@
           <div translate="no" style="font-family:Montserrat;font-weight:600;font-size:19px;color:oklch(0.28 0.09 264);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0">{{ country }}</div>
           <div style="font-family:Montserrat;font-weight:600;font-size:13px;color:#ffffff;background:oklch(0.28 0.09 264);padding:4px 12px;border-radius:99px;white-space:nowrap">{{ counter }}</div>
         </div>
-        <button onClick="{{ close }}" aria-label="Close" style="background:none;border:none;font-size:20px;cursor:pointer;color:oklch(0.5 0.01 250)">✕</button>
+        <div style="display:flex;align-items:center;gap:10px;flex-shrink:0">
+          <button onClick="{{ share }}" aria-label="Copy a link to this project" style="display:inline-flex;align-items:center;gap:6px;background:white;border:1px solid oklch(0.88 0.005 95);color:oklch(0.28 0.09 264);font-family:Montserrat;font-weight:600;font-size:12.5px;padding:7px 12px;border-radius:8px;cursor:pointer;white-space:nowrap" style-hover="border-color:#82C44D;color:#5f9636">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+            {{ shareLabel }}
+          </button>
+          <button onClick="{{ close }}" aria-label="Close" style="background:none;border:none;font-size:20px;cursor:pointer;color:oklch(0.5 0.01 250)">✕</button>
+        </div>
       </div>
 
       <div data-popup-pad style="display:flex;gap:8px;padding:14px 24px 0;flex-shrink:0">
@@ -68,7 +74,7 @@
         <button onClick="{{ prev }}" aria-label="Previous project" style="display:flex;align-items:center;justify-content:center;border:none;background:#82C44D;color:#ffffff;border-radius:12px;width:48px;height:48px;cursor:pointer;box-shadow:0 8px 20px rgba(130,196,77,0.35);transition:transform 0.15s ease,background 0.15s ease" style-hover="background:#6fa93e;transform:translateY(-1px)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"></path></svg></button>
         <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
           <span style="font-family:Montserrat;font-weight:600;font-size:15px;color:oklch(0.28 0.09 264)">{{ counter }}</span>
-          <span data-popup-hint style="font-size:11.5px;color:oklch(0.55 0.01 250)">Browse this country's projects</span>
+          <span data-popup-hint style="font-size:11.5px;color:oklch(0.55 0.01 250)">{{ browseHint }}</span>
         </div>
         <button onClick="{{ next }}" aria-label="Next project" style="display:flex;align-items:center;justify-content:center;border:none;background:#82C44D;color:#ffffff;border-radius:12px;width:48px;height:48px;cursor:pointer;box-shadow:0 8px 20px rgba(130,196,77,0.35);transition:transform 0.15s ease,background 0.15s ease" style-hover="background:#6fa93e;transform:translateY(-1px)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg></button>
       </div>
@@ -78,15 +84,41 @@
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props="{&quot;country&quot;: {&quot;editor&quot;: &quot;text&quot;, &quot;default&quot;: &quot;&quot;, &quot;tsType&quot;: &quot;string&quot;}, &quot;data&quot;: {&quot;editor&quot;: null, &quot;tsType&quot;: &quot;Record&lt;string, any[]&gt;&quot;}, &quot;onClose&quot;: {&quot;editor&quot;: null, &quot;tsType&quot;: &quot;() =&gt; void&quot;}}">
 class Component extends DCLogic {
-  state = { country: null, area: 'All', idx: 0, query: '', focused: false };
+  state = { country: null, area: 'All', idx: 0, query: '', focused: false, copied: false };
 
-  componentDidMount() { this.syncCountry(); }
+  componentDidMount() {
+    this.syncCountry();
+    this._esc = (e) => { if (e.key === 'Escape' && this.state.country) this.close(); };
+    window.addEventListener('keydown', this._esc);
+    this.openFromHash();
+    this._onData = () => this.openFromHash();
+    window.addEventListener('ios-data-updated', this._onData);
+  }
+  componentWillUnmount() { window.removeEventListener('keydown', this._esc); window.removeEventListener('ios-data-updated', this._onData); }
+  openFromHash() {
+    const m = location.hash.match(/^#project=([^~]+)~(.+)$/);
+    if (!m) return;
+    const country = decodeURIComponent(m[1]), title = decodeURIComponent(m[2]);
+    const list = this.data[country] || [];
+    const idx = list.findIndex((p) => p.title === title);
+    if (!list.length) return;
+    this.setState({ country, area: 'All', idx: Math.max(0, idx), query: '' });
+    window.__iosActiveCountry = country;
+  }
+  share = () => {
+    const p = this.list()[this.state.idx % Math.max(1, this.list().length)];
+    if (!p) return;
+    const url = location.origin + location.pathname + '#project=' + encodeURIComponent(this.state.country) + '~' + encodeURIComponent(p.title);
+    const done = () => { this.setState({ copied: true }); clearTimeout(this._ct); this._ct = setTimeout(() => this.setState({ copied: false }), 2000); };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(url).then(done, () => window.prompt('Copy this link:', url));
+    else window.prompt('Copy this link:', url);
+  };
   componentDidUpdate(prev) { if (prev.country !== this.props.country) this.syncCountry(); }
   syncCountry() { this.setState({ country: this.props.country || null, area: 'All', idx: 0, query: '' }); }
 
   SECTOR_IMAGES = {
     'Agriculture': './assets/pa-agriculture.webp', 'Aviation': './assets/pa-aviation.webp', 'Tourism': './assets/pa-tourism.webp',
-    'Finance': './assets/pa-finance.webp', 'Blue Economy': './assets/pa-blue-economy.webp', 'ICT4D': './assets/pa-ict4d.webp',
+    'Finance': './assets/pa-finance.webp', 'Blue Economy': './assets/pa-blue-economy.webp', 'Digital Transformation': './assets/pa-ict4d.webp',
     'Information and Communication Technology for Development': './assets/pa-ict4d.webp',
     'Infrastructure Development': './assets/pa-infrastructure.webp', 'Transport & Infrastructure': './assets/pa-infrastructure.webp',
     'Ports & Maritime': './assets/pa-ports-maritime.webp', 'Private Sector Development': './assets/pa-private-sector.webp',
@@ -158,9 +190,32 @@ class Component extends DCLogic {
     return out.length ? out.slice(0, 9) : null;
   }
 
-  shift = (d) => () => this.setState((s) => { const n = this.list().length; return n ? { idx: (s.idx + d + n) % n } : null; });
+  // Arrows walk through this country's projects, then continue into the next / previous country
+  // (keeping the active sector filter when that country has projects in it).
+  countryOrder() {
+    const data = this.data, area = this.state.area;
+    return Object.keys(data).filter((c) => (data[c] || []).length && (area === 'All' || data[c].some((p) => this.areasOf(p).includes(area))))
+      .sort((a, b) => a.localeCompare(b));
+  }
+  shift = (d) => () => {
+    const n = this.list().length, idx = this.state.idx;
+    if (n && idx + d >= 0 && idx + d < n) { this.setState({ idx: idx + d }); return; }
+    const order = this.countryOrder();
+    if (!order.length) return;
+    let i = order.indexOf(this.state.country);
+    i = i < 0 ? 0 : (i + d + order.length) % order.length;
+    const next = order[i];
+    const area = this.state.area;
+    const count = (this.data[next] || []).filter((p) => area === 'All' || this.areasOf(p).includes(area)).length;
+    this.setState({ country: next, query: '', idx: d < 0 ? Math.max(0, count - 1) : 0 });
+    window.__iosActiveCountry = next;
+  };
   setArea = (a) => () => this.setState({ area: a, idx: 0 });
-  close = () => { if (this.props.onClose) this.props.onClose(); };
+  close = () => {
+    this.setState({ country: null });
+    if (/^#project=/.test(location.hash)) history.replaceState(null, '', location.pathname + location.search);
+    if (this.props.onClose) this.props.onClose();
+  };
 
   renderVals() {
     const country = this.state.country;
@@ -181,6 +236,11 @@ class Component extends DCLogic {
       country: country || '',
       flagUrl: window.iosFlagUrl ? window.iosFlagUrl(country) : null,
       counter: list.length ? (idx + 1) + ' / ' + list.length : '0 / 0',
+      browseHint: (() => {
+        const order = this.countryOrder(), i = order.indexOf(country);
+        if (list.length && idx < list.length - 1) return 'Next project in ' + country;
+        return order.length > 1 ? 'Next: ' + order[(i + 1) % order.length] : "Browse this country's projects";
+      })(),
       project,
       empty: !!country && !list.length,
       sectors: sectorNames.length > 2 ? sectorNames.map((name) => {
@@ -200,6 +260,8 @@ class Component extends DCLogic {
       prev: this.shift(-1),
       next: this.shift(1),
       close: this.close,
+      share: this.share,
+      shareLabel: this.state.copied ? 'Link copied ✓' : 'Share',
       stop: (e) => e.stopPropagation()
     };
   }
