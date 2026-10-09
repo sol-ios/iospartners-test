@@ -40,6 +40,31 @@
     .nav-link::after { content:''; position:absolute; left:0; right:0; bottom:-7px; height:2px; background:#82C44D; transform:scaleX(0); transform-origin:left center; transition:transform 0.32s cubic-bezier(0.22,1,0.36,1); }
     .nav-link:hover::after { transform:scaleX(1); }
     .nav-link[data-active]::after { transform:scaleX(1); }
+  
+    /* phone layout (shared across pages) */
+    @media (max-width:860px) {
+      header { padding:10px 18px !important; gap:12px !important; }
+      header img[alt="IOS Partners"] { height:46px !important; }
+      footer { padding:40px 20px 24px !important; }
+      h1 { font-size:32px !important; line-height:1.15 !important; letter-spacing:-0.01em !important; }
+      h2 { font-size:25px !important; line-height:1.25 !important; }
+      input, textarea, select { font-size:16px !important; }
+      [data-form-card] { padding:24px 18px 26px !important; border-radius:14px !important; }
+      [data-forms-grid] { margin-top:16px !important; }
+      [data-popup-wrap] { padding:0 !important; align-items:flex-end !important; }
+      [data-popup-card] { max-height:92vh !important; border-radius:18px 18px 0 0 !important; }
+      [data-popup-pad] { padding-left:16px !important; padding-right:16px !important; }
+      [data-popup-photo] { height:150px !important; }
+      [data-popup-hint] { display:none !important; }
+      [data-pa-foot], [data-footer-grid] { grid-template-columns:1fr !important; gap:28px !important; }
+      [data-stats-strip] { grid-template-columns:repeat(2,1fr) !important; }
+      [data-stack] { grid-template-columns:1fr !important; }
+      img, canvas, video { max-width:100%; }
+    }
+    @media (max-width:420px) {
+      h1 { font-size:28px !important; }
+      [data-2col-input] { grid-template-columns:1fr !important; }
+    }
   </style>
 </helmet>
 
@@ -202,42 +227,7 @@
       </div>
       <div style="text-align:center;margin-top:10px;font-size:12.5px;font-weight:300;color:oklch(0.55 0.01 250)">{{ txtDragRotate }}</div>
 
-      <sc-if value="{{ selectedCountry }}">
-        <div style="position:fixed;inset:0;background:rgba(20,30,45,0.6);display:flex;align-items:center;justify-content:center;z-index:200;padding:24px" onClick="{{ closeCountryModal }}">
-          <div style="background:white;border-radius:18px;max-width:640px;width:100%;box-shadow:0 30px 90px rgba(0,0,0,0.35);overflow:hidden;display:flex;flex-direction:column;max-height:88vh" onClick="{{ stopPropagation }}">
-            <div style="display:flex;justify-content:space-between;align-items:center;padding:20px 24px;border-bottom:1px solid oklch(0.92 0.005 95);flex-shrink:0">
-              <div style="display:flex;align-items:center;gap:10px">
-                <span style="font-size:24px;line-height:1">{{ selectedCountryFlag }}</span>
-                <div style="font-family:Montserrat;font-weight:600;font-size:19px;color:oklch(0.28 0.09 264)">{{ selectedCountry }}</div>
-                <div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:0.1em;text-transform:uppercase;color:#5f9636;background:rgba(130,196,77,0.12);border:1px solid rgba(130,196,77,0.3);padding:3px 9px;border-radius:99px">{{ modalCounterText }}</div>
-              </div>
-              <button onClick="{{ closeCountryModal }}" style="background:none;border:none;font-size:20px;cursor:pointer;color:oklch(0.5 0.01 250)">✕</button>
-            </div>
-            <sc-if value="{{ modalCurrentProject }}">
-              <div style="overflow-y:auto;flex:1;min-height:0">
-                <div style="height:160px;flex-shrink:0;position:relative">
-                  <image-slot id="{{ modalCurrentProject.imgId }}" src="{{ modalCurrentProject.imgSrc }}" shape="rect" placeholder="Project photo" fit="cover" style="width:100%;height:100%"></image-slot>
-                  <div style="position:absolute;bottom:12px;left:16px;font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:0.1em;text-transform:uppercase;color:#82C44D;background:rgba(20,30,45,0.85);padding:5px 11px;border-radius:4px">Infrastructure Development</div>
-                </div>
-                <div style="padding:22px 24px 26px">
-                  <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px">
-                    <span style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:0.08em;text-transform:uppercase;padding:4px 10px;border-radius:4px;background:{{ modalCurrentProject.statusBg }};color:{{ modalCurrentProject.statusFg }};border:1px solid {{ modalCurrentProject.statusBd }}">{{ modalCurrentProject.status }}</span>
-                    <sc-if value="{{ modalCurrentProject.agency }}"><span style="font-size:12.5px;font-weight:300;color:oklch(0.5 0.01 250)">{{ modalCurrentProject.agency }}</span></sc-if>
-                    
-                  </div>
-                  <div style="font-family:Montserrat;font-weight:500;font-size:16.5px;line-height:1.4;color:oklch(0.22 0.01 250)">{{ modalCurrentProject.title }}</div>
-                  <sc-if value="{{ modalCurrentProject.description }}"><p style="font-size:13.5px;font-weight:300;color:oklch(0.42 0.01 250);line-height:1.65;margin:10px 0 0">{{ modalCurrentProject.description }}</p></sc-if>
-                </div>
-              </div>
-            </sc-if>
-            <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 24px;border-top:1px solid oklch(0.92 0.005 95);flex-shrink:0">
-              <button onClick="{{ shiftModalPrev }}" style="border:1px solid oklch(0.88 0.005 95);background:white;border-radius:8px;width:36px;height:36px;cursor:pointer;font-size:15px">←</button>
-              <span style="font-size:12px;font-weight:300;color:oklch(0.55 0.01 250)">Use arrows to browse this country's projects</span>
-              <button onClick="{{ shiftModalNext }}" style="border:1px solid oklch(0.88 0.005 95);background:white;border-radius:8px;width:36px;height:36px;cursor:pointer;font-size:15px">→</button>
-            </div>
-          </div>
-        </div>
-      </sc-if>
+      <dc-import name="MapPopup" country="{{ selectedCountry }}" data="{{ popupData }}" on-close="{{ closeCountryModal }}" hint-size="0px,0px"></dc-import>
     </div>
   </section>
 
@@ -264,7 +254,7 @@
       </div>
       <div>
         <div style="font-weight:600;font-size:13px;text-transform:uppercase;letter-spacing:0.04em;color:white;margin-bottom:16px">{{ txtPracticeAreas }}</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px 16px;font-size:14px">
+        <div data-stack style="display:grid;grid-template-columns:1fr 1fr;gap:10px 16px;font-size:14px">
           <sc-for list="{{ practiceAreas }}" as="pa" hint-placeholder-count="16">
             <a href="{{ pa.href }}" target="{{ pa.target }}" style="color:white">{{ pa.name }}</a>
           </sc-for>
@@ -668,6 +658,14 @@ class Component extends DCLogic {
   shiftModalNext = () => this.shiftModal(1);
 
   renderVals() {
+    const v = this._rvBase();
+    v.popupData = this.scopedData;
+    v.selectedCountryFlagUrl = window.iosFlagUrl ? window.iosFlagUrl(this.state.selectedCountry) : null;
+    const p = v.modalCurrentProject;
+    if (p) { const logo = window.iosLogoFor ? window.iosLogoFor(p.agency) : null; v.modalCurrentProject = { ...p, logoSrc: logo, agencyTextOnly: !!p.agency && !logo }; }
+    return v;
+  }
+  _rvBase() {
     const meta = (window.PRACTICE_AREAS && window.PRACTICE_AREAS[SLUG]) || { title: 'Infrastructure Development', blurb: '' };
     const all = this.areaProjects;
     const imgAssign = this.allocateImages(all.slice(0, 9));

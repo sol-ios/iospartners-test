@@ -2,9 +2,10 @@
    window.__IOS_PROJECT_DATA__. project-data.js stays as the offline fallback.
    To add a project: add a row to the sheet. The site picks it up on next page load. */
 (function () {
+  function fullSizeImage(u) { return (u || '').trim().replace(/-\d{2,4}x\d{2,4}(\.(?:jpe?g|png|webp))(\?.*)?$/i, '$1'); }
   var SHEET_ID = '14iSlCVkLh96VfDUmS2zILfWjxb2D90MoE59RvF4w480';
   var SHEET_GID = '471787958';
-  var CACHE_KEY = 'ios-sheet-projects-v5';
+  var CACHE_KEY = 'ios-sheet-projects-v6';
 
   var URLS = [
     'https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/gviz/tq?tqx=out:csv&gid=' + SHEET_GID,
@@ -90,7 +91,7 @@
       // the sheet lists a project once per category; merge those into one entry
       var dup = list.filter(function (p) { return p.title === title; })[0];
       if (dup) { areas.forEach(function (a) { if (dup.area.split('|').indexOf(a) === -1) dup.area = dup.area ? dup.area + '|' + a : a; }); return; }
-      var img = get('image').replace(/^http:\/\//i, 'https://');
+      var img = fullSizeImage(get('image').replace(/^http:\/\//i, 'https://'));
       list.push({
         title: title, area: area, agency: get('agency'), status: get('status'),
         year: get('year'), description: get('description'), image: img

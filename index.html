@@ -45,12 +45,37 @@
       [data-forms-grid] { grid-template-columns:1fr !important; max-width:none !important; }
       [data-2col-input] { grid-template-columns:1fr !important; }
       [data-footer-grid] { grid-template-columns:1fr !important; gap:32px !important; }
-      [data-filters-grid] { grid-template-columns:1fr 1fr !important; }
+      [data-filters-grid] { flex-wrap:nowrap !important; overflow-x:auto; scrollbar-width:none; margin:0 -28px; padding:0 28px 6px !important; }
     }
     .nav-link { position:relative; }
     .nav-link::after { content:''; position:absolute; left:0; right:0; bottom:-7px; height:2px; background:#82C44D; transform:scaleX(0); transform-origin:left center; transition:transform 0.32s cubic-bezier(0.22,1,0.36,1); }
     .nav-link:hover::after { transform:scaleX(1); }
     .nav-link[data-active]::after { transform:scaleX(1); }
+  
+    /* phone layout (shared across pages) */
+    @media (max-width:860px) {
+      header { padding:10px 18px !important; gap:12px !important; }
+      header img[alt="IOS Partners"] { height:46px !important; }
+      footer { padding:40px 20px 24px !important; }
+      h1 { font-size:32px !important; line-height:1.15 !important; letter-spacing:-0.01em !important; }
+      h2 { font-size:25px !important; line-height:1.25 !important; }
+      input, textarea, select { font-size:16px !important; }
+      [data-form-card] { padding:24px 18px 26px !important; border-radius:14px !important; }
+      [data-forms-grid] { margin-top:16px !important; }
+      [data-popup-wrap] { padding:0 !important; align-items:flex-end !important; }
+      [data-popup-card] { max-height:92vh !important; border-radius:18px 18px 0 0 !important; }
+      [data-popup-pad] { padding-left:16px !important; padding-right:16px !important; }
+      [data-popup-photo] { height:150px !important; }
+      [data-popup-hint] { display:none !important; }
+      [data-pa-foot], [data-footer-grid] { grid-template-columns:1fr !important; gap:28px !important; }
+      [data-stats-strip] { grid-template-columns:repeat(2,1fr) !important; }
+      [data-stack] { grid-template-columns:1fr !important; }
+      img, canvas, video { max-width:100%; }
+    }
+    @media (max-width:420px) {
+      h1 { font-size:28px !important; }
+      [data-2col-input] { grid-template-columns:1fr !important; }
+    }
   </style>
 </helmet>
 
@@ -251,7 +276,7 @@
   </section>
 
   <!-- MISSION PILLARS -->
-  <section data-mission-pillars style="display:grid;grid-template-columns:repeat(3,1fr)">
+  <section data-mission-pillars data-stack style="display:grid;grid-template-columns:repeat(3,1fr)">
     <sc-for list="{{ missionPillars }}" as="m" hint-placeholder-count="3">
       <a href="{{ m.href }}" onMouseEnter="{{ m.onEnter }}" onMouseLeave="{{ m.onLeave }}" style="position:relative;aspect-ratio:16/8;display:block;overflow:hidden;color:white" class="pillar-card">
         <div class="pillar-img" style="width:100%;height:100%;transition:transform 0.5s ease">
@@ -276,16 +301,51 @@
         <p style="color:oklch(0.5 0.01 250);font-weight:400;font-size:15.5px;max-width:720px;margin:0 auto">IOS Partners has undertaken over 350 assignments in Sub-Saharan Africa, the Middle East &amp; North Africa, Asia-Pacific, Latin America and the Caribbean, and Eastern Europe. We have an established and broad-based partnership with specialized professionals and partnership firms around the world.</p>
       </div>
 
-      <div data-filters-grid style="display:grid;grid-template-columns:repeat(5,auto);gap:10px;justify-content:center;max-width:920px;margin:0 auto 24px">
-        <sc-for list="{{ filters }}" as="f" hint-placeholder-count="12">
-          <button onClick="{{ f.onClick }}" style="border:1px solid {{ f.border }};background:{{ f.bg }};color:{{ f.color }};font-size:13px;font-weight:500;padding:8px 16px;border-radius:99px;cursor:pointer">{{ f.label }}</button>
-        </sc-for>
+      <div style="position:relative;margin-top:28px;border-radius:22px;overflow:hidden;background:radial-gradient(ellipse 90% 70% at 50% 62%,oklch(0.24 0.065 264) 0%,oklch(0.15 0.045 264) 72%);box-shadow:0 24px 60px rgba(10,20,40,0.22);border:1px solid oklch(0.3 0.06 264)">
+        <div style="position:relative;z-index:2;padding:22px 28px 18px;border-bottom:1px solid rgba(255,255,255,0.08)">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;margin-bottom:16px">
+            <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;flex:1;min-width:0">
+            <div style="display:flex;align-items:center;gap:10px">
+              <span style="width:8px;height:8px;border-radius:50%;background:#82C44D;box-shadow:0 0 0 4px rgba(130,196,77,0.18)"></span>
+              <span style="font-family:'JetBrains Mono',monospace;font-size:11.5px;letter-spacing:0.16em;text-transform:uppercase;color:#9fd97a;white-space:nowrap">Filter by sector</span>
+            </div>
+            <div style="position:relative;flex:1;min-width:220px">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="2" stroke-linecap="round" style="position:absolute;left:14px;top:50%;transform:translateY(-50%);pointer-events:none"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
+              <input type="text" placeholder="Search country, client or sector…" value="{{ mapSearchQuery }}" onChange="{{ setMapSearchQuery }}" onFocus="{{ showMapSuggestions }}" onBlur="{{ hideMapSuggestions }}" onKeyDown="{{ mapSearchKeyDown }}" style="width:100%;box-sizing:border-box;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.18);border-radius:99px;padding:9px 16px 9px 38px;font-family:Montserrat;font-size:13px;color:white;outline:none" style-focus="border-color:#82C44D;background:rgba(255,255,255,0.12)"/>
+              <sc-if value="{{ mapSuggestions }}">
+                <div style="position:absolute;top:calc(100% + 8px);left:0;right:0;background:white;border-radius:14px;box-shadow:0 18px 40px rgba(0,0,0,0.35);z-index:20;overflow:hidden;padding:6px">
+                  <sc-for list="{{ mapSuggestions }}" as="ms" hint-placeholder-count="5">
+                    <div onMouseDown="{{ ms.onPick }}" style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:9px 12px;border-radius:9px;cursor:pointer;font-size:13px;color:oklch(0.25 0.02 264)" style-hover="background:oklch(0.96 0.01 140)">
+                      <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ ms.label }}</span>
+                      <span style="flex-shrink:0;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:#5f9636;background:rgba(130,196,77,0.12);padding:2px 8px;border-radius:99px">{{ ms.type }}</span>
+                    </div>
+                  </sc-for>
+                </div>
+              </sc-if>
+            </div>
+            </div>
+            <div style="display:flex;align-items:baseline;gap:18px;font-family:Montserrat;color:white">
+              <div style="display:flex;align-items:baseline;gap:6px"><span style="font-size:22px;font-weight:600">{{ filterCountryCount }}</span><span style="font-size:12px;color:rgba(255,255,255,0.6)">countries</span></div>
+              <div style="width:1px;height:18px;background:rgba(255,255,255,0.18)"></div>
+              <div style="display:flex;align-items:baseline;gap:6px"><span style="font-size:22px;font-weight:600">{{ filterProjectCount }}</span><span style="font-size:12px;color:rgba(255,255,255,0.6)">projects</span></div>
+            </div>
+          </div>
+          <div data-filters-grid style="display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-start;padding-bottom:6px">
+            <sc-for list="{{ filters }}" as="f" hint-placeholder-count="10">
+              <button onClick="{{ f.onClick }}" style="display:inline-flex;align-items:center;gap:8px;border:1px solid {{ f.border }};background:{{ f.bg }};color:{{ f.color }};box-shadow:{{ f.glow }};font-family:Montserrat;font-size:12.5px;font-weight:500;padding:8px 14px;border-radius:99px;cursor:pointer;white-space:nowrap;backdrop-filter:blur(6px);transition:transform 0.2s ease,background 0.2s ease,box-shadow 0.2s ease" style-hover="transform:translateY(-1px)">
+                {{ f.label }}
+                <span style="font-family:'JetBrains Mono',monospace;font-size:10.5px;padding:1px 7px;border-radius:99px;background:{{ f.countBg }};color:{{ f.countColor }}">{{ f.count }}</span>
+              </button>
+            </sc-for>
+          </div>
+        </div>
+        <div style="position:relative;width:100%;aspect-ratio:16/7.2;margin-top:12px">
+          <canvas ref="{{ setMapRef }}" style="width:100%;height:100%;display:block"></canvas>
+        </div>
+        <div style="display:flex;justify-content:center;padding:6px 28px 18px;border-top:1px solid rgba(255,255,255,0.08);margin-top:12px">
+          <span style="font-size:12px;color:rgba(255,255,255,0.6);letter-spacing:0.02em;padding-top:12px">Drag to rotate · click a highlighted dot to explore a project</span>
+        </div>
       </div>
-
-      <div style="position:relative;width:100%;aspect-ratio:16/8;background:radial-gradient(ellipse at 50% 40%,oklch(0.22 0.06 264) 0%,oklch(0.13 0.04 264) 70%);border-radius:20px;overflow:hidden;box-shadow:0 20px 50px rgba(10,20,40,0.2)">
-        <canvas ref="{{ setMapRef }}" style="width:100%;height:100%;display:block"></canvas>
-      </div>
-      <div style="text-align:center;margin-top:10px;font-size:12.5px;color:oklch(0.55 0.01 250)">Drag to rotate · click a highlighted dot to explore a project</div>
     </div>
   </section>
 
@@ -466,7 +526,7 @@
       </div>
       <div data-forms-grid style="display:grid;grid-template-columns:1fr;gap:32px;max-width:560px;margin:24px auto 0">
         <sc-if value="{{ showJoinForm }}" hint-placeholder-val="{{ true }}">
-        <div style="padding:36px 44px 40px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.14);border-radius:16px;width:100%">
+        <div data-form-card style="box-sizing:border-box;padding:36px 44px 40px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.14);border-radius:16px;width:100%">
           <div style="width:56px;height:56px;border-radius:12px;background:rgba(130,196,77,0.15);display:flex;align-items:center;justify-content:center;margin-bottom:18px">
             <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#82C44D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
           </div>
@@ -477,7 +537,7 @@
           </sc-if>
           <sc-if value="{{ ctaNotSubmitted }}" hint-placeholder-val="{{ true }}">
             <form onSubmit="{{ submitCtaForm }}" style="display:flex;flex-direction:column;gap:14px">
-              <div data-2col-input style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+              <div data-2col-input data-stack style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
                 <input type="text" placeholder="Name" value="{{ ctaFields.name }}" onChange="{{ setCtaFieldName }}" required="" style="width:100%;box-sizing:border-box;padding:12px 14px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.06);color:#ffffff;border-radius:10px;font-size:14px;font-family:Montserrat;caret-color:#ffffff"/>
                 <input type="text" placeholder="Last name" value="{{ ctaFields.lastName }}" onChange="{{ setCtaFieldLastName }}" required="" style="width:100%;box-sizing:border-box;padding:12px 14px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.06);color:#ffffff;border-radius:10px;font-size:14px;font-family:Montserrat;caret-color:#ffffff"/>
               </div>
@@ -494,7 +554,7 @@
         </div>
         </sc-if>
         <sc-if value="{{ showPartnerForm }}" hint-placeholder-val="{{ false }}">
-        <div style="padding:36px 44px 40px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.14);border-radius:16px;width:100%">
+        <div data-form-card style="box-sizing:border-box;padding:36px 44px 40px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.14);border-radius:16px;width:100%">
           <div style="width:56px;height:56px;border-radius:12px;background:rgba(130,196,77,0.15);display:flex;align-items:center;justify-content:center;margin-bottom:18px">
             <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#82C44D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21V7l9-4 9 4v14"/><path d="M9 21v-6h6v6"/><path d="M9 11h.01M15 11h.01M9 15h.01M15 15h.01"/></svg>
           </div>
@@ -505,14 +565,28 @@
           </sc-if>
           <sc-if value="{{ firmNotSubmitted }}" hint-placeholder-val="{{ true }}">
             <form onSubmit="{{ submitFirmForm }}" style="display:flex;flex-direction:column;gap:14px">
-              <input type="text" placeholder="Company name" value="{{ firmFields.companyName }}" onChange="{{ setFirmFieldCompanyName }}" required="" style="width:100%;box-sizing:border-box;padding:12px 14px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.06);color:#ffffff;border-radius:10px;font-size:14px;font-family:Montserrat;caret-color:#ffffff"/>
-              <input type="text" placeholder="Website" value="{{ firmFields.website }}" onChange="{{ setFirmFieldWebsite }}" style="width:100%;box-sizing:border-box;padding:12px 14px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.06);color:#ffffff;border-radius:10px;font-size:14px;font-family:Montserrat;caret-color:#ffffff"/>
+              <div data-2col-input data-stack style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+                <input type="text" placeholder="First name" value="{{ firmFields.firstName }}" onChange="{{ setFirmFieldFirstName }}" required="{{ true }}" style="width:100%;box-sizing:border-box;padding:12px 14px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.06);color:#ffffff;border-radius:10px;font-size:14px;font-family:Montserrat;caret-color:#ffffff"/>
+                <input type="text" placeholder="Last name" value="{{ firmFields.lastName }}" onChange="{{ setFirmFieldLastName }}" required="{{ true }}" style="width:100%;box-sizing:border-box;padding:12px 14px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.06);color:#ffffff;border-radius:10px;font-size:14px;font-family:Montserrat;caret-color:#ffffff"/>
+              </div>
+              <div data-2col-input data-stack style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+                <input type="text" placeholder="Company website" value="{{ firmFields.website }}" onChange="{{ setFirmFieldWebsite }}" style="width:100%;box-sizing:border-box;padding:12px 14px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.06);color:#ffffff;border-radius:10px;font-size:14px;font-family:Montserrat;caret-color:#ffffff"/>
+                <input type="text" placeholder="LinkedIn URL or username" value="{{ firmFields.linkedin }}" onChange="{{ setFirmFieldLinkedin }}" style="width:100%;box-sizing:border-box;padding:12px 14px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.06);color:#ffffff;border-radius:10px;font-size:14px;font-family:Montserrat;caret-color:#ffffff"/>
+              </div>
+              <input type="text" placeholder="Link to project" value="{{ firmFields.projectLink }}" onChange="{{ setFirmFieldProjectLink }}" style="width:100%;box-sizing:border-box;padding:12px 14px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.06);color:#ffffff;border-radius:10px;font-size:14px;font-family:Montserrat;caret-color:#ffffff"/>
+              <div data-2col-input data-stack style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+                <input type="text" placeholder="Client name (donor)" value="{{ firmFields.client }}" onChange="{{ setFirmFieldClient }}" style="width:100%;box-sizing:border-box;padding:12px 14px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.06);color:#ffffff;border-radius:10px;font-size:14px;font-family:Montserrat;caret-color:#ffffff"/>
+                <input type="text" placeholder="Country / region" value="{{ firmFields.region }}" onChange="{{ setFirmFieldRegion }}" style="width:100%;box-sizing:border-box;padding:12px 14px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.06);color:#ffffff;border-radius:10px;font-size:14px;font-family:Montserrat;caret-color:#ffffff"/>
+              </div>
+              <label style="display:flex;flex-direction:column;gap:6px;font-size:12px;color:rgba(255,255,255,0.6)">Deadline
+                <input type="date" placeholder="Deadline" value="{{ firmFields.deadline }}" onChange="{{ setFirmFieldDeadline }}" style="width:100%;box-sizing:border-box;padding:12px 14px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.06);color:#ffffff;border-radius:10px;font-size:14px;font-family:Montserrat;caret-color:#ffffff;color-scheme:dark"/>
+              </label>
+              <textarea placeholder="Tell us more about what we can do together" value="{{ firmFields.message }}" onChange="{{ setFirmFieldMessage }}" rows="3" style="width:100%;box-sizing:border-box;padding:12px 14px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.06);color:#ffffff;border-radius:10px;font-size:14px;font-family:Montserrat;caret-color:#ffffff;resize:vertical"></textarea>
               <label style="display:flex;align-items:center;gap:10px;padding:12px 14px;border:1px dashed rgba(255,255,255,0.3);background:rgba(255,255,255,0.04);color:rgba(255,255,255,0.75);border-radius:10px;font-size:13.5px;cursor:pointer">
                 <input type="file" onChange="{{ setFirmFile }}" style="display:none"/>
-                <span style="background:rgba(255,255,255,0.12);padding:6px 12px;border-radius:8px;font-weight:600;font-size:12.5px;color:white;white-space:nowrap">Upload profile</span>
+                <span style="background:rgba(255,255,255,0.12);padding:6px 12px;border-radius:8px;font-weight:600;font-size:12.5px;color:white;white-space:nowrap">Upload attachment</span>
                 <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ firmFields.profileFileName }}</span>
               </label>
-              <textarea placeholder="What we can do together" value="{{ firmFields.message }}" onChange="{{ setFirmFieldMessage }}" rows="3" style="width:100%;box-sizing:border-box;padding:12px 14px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.06);color:#ffffff;border-radius:10px;font-size:14px;font-family:Montserrat;resize:vertical;caret-color:#ffffff"></textarea>
               <button type="submit" style="align-self:flex-start;display:inline-flex;align-items:center;gap:8px;background:#82C44D;color:#ffffff;font-weight:600;font-size:15px;padding:14px 28px;border:none;border-radius:10px;transition:transform 0.2s ease,box-shadow 0.2s ease;cursor:pointer" style-hover="background:#6fa93e;transform:translateY(-2px);box-shadow:0 10px 24px rgba(130,196,77,0.35)">Contact us →</button>
             </form>
           </sc-if>
@@ -536,7 +610,7 @@
       </div>
       <div>
         <div style="font-weight:600;font-size:13px;text-transform:uppercase;letter-spacing:0.04em;color:white;margin-bottom:16px">{{ txtPracticeAreas }}</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px 16px;font-size:14px">
+        <div data-stack style="display:grid;grid-template-columns:1fr 1fr;gap:10px 16px;font-size:14px">
           <a href="./practice-agriculture.html" style="color:white">Agriculture</a>
           <a href="./practice-aviation.html" style="color:white">Aviation</a>
           <a href="./practice-finance.html" style="color:white">Finance</a>
@@ -556,62 +630,7 @@
     </div>
   </footer>
 
-  <sc-if value="{{ selectedCountry }}">
-    <div style="position:fixed;inset:0;background:rgba(20,30,45,0.6);display:flex;align-items:center;justify-content:center;z-index:200;padding:24px" onClick="{{ closeCountryModal }}">
-      <div style="background:white;border-radius:18px;max-width:760px;width:100%;box-shadow:0 30px 90px rgba(0,0,0,0.35);overflow:hidden;display:flex;flex-direction:column;max-height:88vh" onClick="{{ stopPropagation }}">
-        <div style="display:flex;justify-content:space-between;align-items:center;padding:20px 24px;border-bottom:1px solid oklch(0.92 0.005 95);flex-shrink:0">
-          <div style="display:flex;align-items:center;gap:10px">
-            <div style="font-family:Montserrat;font-weight:600;font-size:19px;color:oklch(0.28 0.09 264)">{{ selectedCountry }}</div>
-            <div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:0.1em;text-transform:uppercase;color:#5f9636;background:rgba(130,196,77,0.12);border:1px solid rgba(130,196,77,0.3);padding:3px 9px;border-radius:99px">{{ modalCounterText }}</div>
-          </div>
-          <button onClick="{{ closeCountryModal }}" style="background:none;border:none;font-size:20px;cursor:pointer;color:oklch(0.5 0.01 250)">✕</button>
-        </div>
-
-        <div style="display:flex;gap:8px;padding:14px 24px 0;overflow-x:auto;flex-shrink:0">
-          <div style="position:relative;width:100%">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="oklch(0.55 0.01 250)" stroke-width="2" style="position:absolute;left:12px;top:50%;transform:translateY(-50%)"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-            <input type="text" placeholder="Search by client, country, or sector…" value="{{ searchQuery }}" onChange="{{ setSearchQuery }}" onFocus="{{ showSearchSuggestions }}" onBlur="{{ hideSearchSuggestionsDelayed }}" style="width:100%;box-sizing:border-box;padding:9px 12px 9px 34px;border:1px solid oklch(0.88 0.005 95);border-radius:99px;font-size:13px;background:white"/>
-            <sc-if value="{{ searchSuggestions }}">
-              <div style="position:absolute;top:calc(100% + 6px);left:0;right:0;background:white;border:1px solid oklch(0.88 0.005 95);border-radius:12px;box-shadow:0 12px 30px rgba(0,0,0,0.15);z-index:30;max-height:220px;overflow-y:auto">
-                <sc-for list="{{ searchSuggestions }}" as="sug" hint-placeholder-count="5">
-                  <div onClick="{{ sug.onClick }}" style="padding:9px 14px;font-size:13px;color:oklch(0.3 0.01 250);cursor:pointer;border-bottom:1px solid oklch(0.95 0.003 95)" style-hover="background:oklch(0.97 0.003 95)">{{ sug.label }}</div>
-                </sc-for>
-              </div>
-            </sc-if>
-          </div>
-        </div>
-        <div style="display:flex;gap:8px;padding:12px 24px 14px;overflow-x:auto;border-bottom:1px solid oklch(0.92 0.005 95);flex-shrink:0">
-          <sc-for list="{{ modalSectors }}" as="sec" hint-placeholder-count="4">
-            <button onClick="{{ sec.onClick }}" style="border:1px solid oklch(0.88 0.005 95);background:white;color:oklch(0.4 0.01 250);font-size:12.5px;font-weight:500;padding:6px 14px;border-radius:99px;cursor:pointer;white-space:nowrap">{{ sec.name }}</button>
-          </sc-for>
-        </div>
-
-        <sc-if value="{{ modalCurrentProject }}">
-          <div style="overflow-y:auto;padding:0;flex:1;min-height:0">
-            <div style="height:150px;flex-shrink:0;position:relative">
-              <image-slot id="{{ modalCurrentProject.imgId }}" src="{{ modalCurrentProject.imgSrc }}" shape="rect" placeholder="Project photo" fit="cover" style="width:100%;height:100%"></image-slot>
-              <div style="position:absolute;bottom:12px;left:16px;font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:0.1em;text-transform:uppercase;color:#82C44D;background:rgba(20,30,45,0.85);padding:5px 11px;border-radius:4px">{{ modalCurrentProject.area }}</div>
-            </div>
-            <div style="padding:22px 24px 26px">
-              <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px">
-                <span style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:0.08em;text-transform:uppercase;padding:4px 10px;border-radius:4px;background:{{ modalCurrentProject.statusBg }};color:{{ modalCurrentProject.statusFg }};border:1px solid {{ modalCurrentProject.statusBd }}">{{ modalCurrentProject.status }}</span>
-                <sc-if value="{{ modalCurrentProject.agency }}"><span style="font-size:12.5px;color:oklch(0.5 0.01 250)">{{ modalCurrentProject.agency }}</span></sc-if>
-                
-              </div>
-              <div style="font-family:Montserrat;font-weight:600;font-size:16.5px;line-height:1.4;color:oklch(0.22 0.01 250);margin-bottom:12px">{{ modalCurrentProject.title }}</div>
-              <p style="font-size:14px;font-weight:300;color:oklch(0.42 0.01 250);line-height:1.7;margin:0">{{ modalCurrentProject.description }}</p>
-            </div>
-          </div>
-        </sc-if>
-
-        <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 24px;border-top:1px solid oklch(0.92 0.005 95);flex-shrink:0">
-          <button onClick="{{ shiftModalPrev }}" style="border:1px solid oklch(0.88 0.005 95);background:white;border-radius:8px;width:36px;height:36px;cursor:pointer;font-size:15px">←</button>
-          <span style="font-size:12px;color:oklch(0.55 0.01 250)">Use arrows to browse this country's projects</span>
-          <button onClick="{{ shiftModalNext }}" style="border:1px solid oklch(0.88 0.005 95);background:white;border-radius:8px;width:36px;height:36px;cursor:pointer;font-size:15px">→</button>
-        </div>
-      </div>
-    </div>
-  </sc-if>
+  <dc-import name="MapPopup" country="{{ selectedCountry }}" data="{{ popupData }}" on-close="{{ closeCountryModal }}" hint-size="0px,0px"></dc-import>
 </div>
 
 </x-dc>
@@ -619,7 +638,7 @@
 class Component extends DCLogic {
   state = { dropdownOpen: false, activeFilter: 'All', newsletterEmail: '', selectedCountry: null, modalAreaFilter: 'All', modalProjectIdx: 0, lang: 'EN', paPage: 0,
     langOpen: false, mobileMenuOpen: false, ctaModalOpen: false, ctaSubmitted: false, ctaFields: { name: '', lastName: '', email: '', message: '', cvFileName: '' },
-    firmSubmitted: false, firmFields: { companyName: '', website: '', message: '', profileFileName: '' },
+    firmSubmitted: false, firmFields: { firstName: '', lastName: '', website: '', linkedin: '', projectLink: '', message: '', client: '', region: '', deadline: '', profileFileName: '' },
     ctaTab: 'join',
     revealed: { mission: false, practice: false, work: false, news: false, cta: false }, paModalArea: null,
     paAtStart: true, paAtEnd: false,
@@ -851,35 +870,71 @@ class Component extends DCLogic {
   setCtaFieldMessage = this.setCtaField('message');
   setCtaFile = (e) => { const f = e.target.files && e.target.files[0]; if (f) { this._cvFile = f; this.setState((s) => ({ ctaFields: { ...s.ctaFields, cvFileName: f.name } })); } };
   sendForm = (to, subject, fields, file, fileField, onDone) => {
-    const fd = new FormData();
-    fd.append('_subject', subject);
-    fd.append('_template', 'table');
-    fd.append('_captcha', 'false');
-    Object.entries(fields).forEach(([k, v]) => fd.append(k, v || ''));
-    if (file) fd.append(fileField, file, file.name);
-    fetch('https://formsubmit.co/ajax/' + to, { method: 'POST', headers: { Accept: 'application/json' }, body: fd })
+    // 1) Text fields go through FormSubmit's AJAX endpoint, so we get a real success/failure answer.
+    // 2) If there is a file, it follows as a multipart POST in a hidden iframe (AJAX can't carry files).
+    const sendFile = () => {
+      let frame = document.getElementById('ios-form-sink');
+      if (!frame) {
+        frame = document.createElement('iframe');
+        frame.id = 'ios-form-sink'; frame.name = 'ios-form-sink';
+        frame.style.cssText = 'position:absolute;width:0;height:0;border:0;visibility:hidden';
+        document.body.appendChild(frame);
+      }
+      const form = document.createElement('form');
+      form.method = 'POST'; form.action = 'https://formsubmit.co/' + to;
+      form.enctype = 'multipart/form-data'; form.target = 'ios-form-sink'; form.style.display = 'none';
+      const add = (n, v) => { const i = document.createElement('input'); i.type = 'hidden'; i.name = n; i.value = v || ''; form.appendChild(i); };
+      add('_subject', 'Attachment — ' + subject); add('_template', 'table'); add('_captcha', 'false');
+      add('From', Object.values(fields).slice(0, 2).join(' '));
+      const fi = document.createElement('input'); fi.type = 'file'; fi.name = 'attachment';
+      const dt = new DataTransfer(); dt.items.add(file); fi.files = dt.files; form.appendChild(fi);
+      document.body.appendChild(form);
+      form.submit();
+      setTimeout(() => form.remove(), 8000);
+    };
+    const payload = { _subject: subject, _template: 'table', _captcha: 'false' };
+    Object.entries(fields).forEach(([k, v]) => { payload[k] = v || ''; });
+    if (file) payload[fileField] = file.name + ' (sent in a separate email)';
+    fetch('https://formsubmit.co/ajax/' + to, { method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify(payload) })
       .then((r) => r.json())
-      .then((j) => { if (j && (j.success === true || j.success === 'true')) onDone(); else throw new Error(j && j.message); })
-      .catch(() => alert('Sorry, the message could not be sent. Please try again or email ' + to));
+      .then((j) => {
+        if (j && (j.success === true || j.success === 'true')) {
+          if (file && window.DataTransfer) sendFile();
+          onDone();
+        } else {
+          const msg = (j && j.message) || 'Unknown error';
+          console.warn('[form] FormSubmit said:', msg);
+          alert(/activat/i.test(msg)
+            ? 'This form is waiting for activation. The inbox owner (' + to + ') needs to click "Activate Form" in the email from FormSubmit.'
+            : 'Sorry, the message could not be sent (' + msg + '). Please email ' + to + ' directly.');
+        }
+      })
+      .catch(() => alert('Sorry, the message could not be sent. Please email ' + to + ' directly.'));
   };
   submitCtaForm = (e) => {
     e.preventDefault();
     const f = this.state.ctaFields;
-    this.sendForm('careers@iospartners.com', 'Join our team — ' + f.name + ' ' + (f.lastName || ''),
+    this.sendForm('iospartners@iospartners.com', 'Join our team — ' + f.name + ' ' + (f.lastName || ''),
       { Name: f.name, 'Last name': f.lastName, email: f.email, Project: f.message },
       this._cvFile, 'CV', () => this.setState({ ctaSubmitted: true }));
   };
   setFirmField = (name) => (e) => { const value = e.target.value; this.setState((s) => ({ firmFields: { ...s.firmFields, [name]: value } })); };
-  setFirmFieldCompanyName = this.setFirmField('companyName');
+  setFirmFieldFirstName = this.setFirmField('firstName');
+  setFirmFieldLastName = this.setFirmField('lastName');
   setFirmFieldWebsite = this.setFirmField('website');
+  setFirmFieldLinkedin = this.setFirmField('linkedin');
+  setFirmFieldProjectLink = this.setFirmField('projectLink');
+  setFirmFieldClient = this.setFirmField('client');
+  setFirmFieldRegion = this.setFirmField('region');
+  setFirmFieldDeadline = this.setFirmField('deadline');
   setFirmFieldMessage = this.setFirmField('message');
   setFirmFile = (e) => { const f = e.target.files && e.target.files[0]; if (f) { this._profileFile = f; this.setState((s) => ({ firmFields: { ...s.firmFields, profileFileName: f.name } })); } };
   submitFirmForm = (e) => {
     e.preventDefault();
     const f = this.state.firmFields;
-    this.sendForm('srich@iospartners.com', 'Partner with us — ' + f.companyName,
-      { Company: f.companyName, Website: f.website, 'What we can do together': f.message },
-      this._profileFile, 'Company profile', () => this.setState({ firmSubmitted: true }));
+    this.sendForm('iospartners@iospartners.com', 'Partner Portal — ' + f.firstName + ' ' + f.lastName,
+      { 'First name': f.firstName, 'Last name': f.lastName, 'Company website': f.website, LinkedIn: f.linkedin, 'Link to project': f.projectLink, 'What we can do together': f.message, 'Client name (donor)': f.client, 'Country / region': f.region, Deadline: f.deadline },
+      this._profileFile, 'Attachment', () => this.setState({ firmSubmitted: true }));
   };
   setCtaTabJoin = () => this.setState({ ctaTab: 'join' });
   setCtaTabPartner = () => this.setState({ ctaTab: 'partner' });
@@ -995,7 +1050,51 @@ class Component extends DCLogic {
   closeDropdown = () => this.setState({ dropdownOpen: false });
   filterLabels = { 'Information and Communication Technology for Development': 'ICT4D', 'Public Sector Governance and Public Enterprise Reform': 'Public Sector & Governance', 'Trade Facilitation and Investment Promotion': 'Trade & Investment Promotion', 'Social Development and Inclusion': 'Social Development & Inclusion' };
   setFilter = (f) => () => { window.__iosActiveFilter = f; this.setState({ activeFilter: f }); };
+  filterStats = () => {
+    const data = window.__IOS_PROJECT_DATA__ || {};
+    if (this._fsCache && this._fsCache.data === data && this._fsCache.f === this.state.activeFilter) return this._fsCache.out;
+    const canon = (a) => (a || '').split('|')[0].trim();
+    const perFilter = { All: 0 };
+    let countries = 0, projects = 0;
+    const af = this.state.activeFilter || 'All';
+    Object.values(data).forEach((arr) => {
+      let hit = false;
+      arr.forEach((p) => {
+        perFilter.All++;
+        const a = canon(p.area);
+        perFilter[a] = (perFilter[a] || 0) + 1;
+        if (af === 'All' || a === af) { projects++; hit = true; }
+      });
+      if (hit) countries++;
+    });
+    const out = { perFilter, filterCountryCount: countries, filterProjectCount: projects };
+    this._fsCache = { data, f: this.state.activeFilter, out };
+    return out;
+  };
   showSearchSuggestions = () => this.setState({ searchFocused: true });
+  showMapSuggestions = () => this.setState({ mapSearchFocused: true });
+  hideMapSuggestions = () => setTimeout(() => this.setState({ mapSearchFocused: false }), 150);
+  setMapSearchQuery = (e) => this.setState({ mapSearchQuery: e.target.value, mapSearchFocused: true });
+  computeMapSuggestions = () => {
+    const ql = (this.state.mapSearchQuery || '').toLowerCase().trim();
+    if (!ql) return null;
+    const data = this.projectData;
+    const canon = (a) => (a || '').split('|')[0].trim();
+    const out = [];
+    Object.keys(data).filter((c) => c.toLowerCase().includes(ql))
+      .sort((a, b) => (a.toLowerCase().startsWith(ql) ? 0 : 1) - (b.toLowerCase().startsWith(ql) ? 0 : 1))
+      .slice(0, 4).forEach((c) => out.push({ label: c, type: 'Country', onPick: () => this.setState({ mapSearchQuery: '', mapSearchFocused: false, selectedCountry: c, searchQuery: '', modalAreaFilter: 'All', modalProjectIdx: 0 }) }));
+    this.filters.filter((f) => f !== 'All' && ((this.filterLabels[f] || f).toLowerCase().includes(ql) || f.toLowerCase().includes(ql)))
+      .slice(0, 3).forEach((f) => out.push({ label: this.filterLabels[f] || f, type: 'Sector', onPick: () => { window.__iosActiveFilter = f; this.setState({ activeFilter: f, mapSearchQuery: '', mapSearchFocused: false }); } }));
+    const clients = {};
+    Object.entries(data).forEach(([c, arr]) => arr.forEach((p) => { const a = (p.agency || '').trim(); if (a && a.toLowerCase().includes(ql) && !clients[a]) clients[a] = c; }));
+    Object.keys(clients).slice(0, 3).forEach((a) => out.push({ label: a, type: 'Client', onPick: () => this.setState({ mapSearchQuery: '', mapSearchFocused: false, selectedCountry: clients[a], searchQuery: a, modalAreaFilter: 'All', modalProjectIdx: 0 }) }));
+    return out.length ? out.slice(0, 8) : null;
+  };
+  mapSearchKeyDown = (e) => {
+    if (e.key === 'Enter') { e.preventDefault(); const s = this.computeMapSuggestions(); if (s && s[0]) s[0].onPick(); }
+    if (e.key === 'Escape') this.setState({ mapSearchQuery: '', mapSearchFocused: false });
+  };
   hideSearchSuggestionsDelayed = () => setTimeout(() => this.setState({ searchFocused: false }), 150);
   pickSearchSuggestion = (country) => () => {
     if (this._searchTimer) clearTimeout(this._searchTimer);
@@ -1043,6 +1142,14 @@ class Component extends DCLogic {
   setNewsletter = (e) => this.setState({ newsletterEmail: e.target.value });
 
   renderVals() {
+    const v = this._rvBase();
+    v.popupData = this.projectData;
+    v.selectedCountryFlagUrl = window.iosFlagUrl ? window.iosFlagUrl(this.state.selectedCountry) : null;
+    const p = v.modalCurrentProject;
+    if (p) { const logo = window.iosLogoFor ? window.iosLogoFor(p.agency) : null; v.modalCurrentProject = { ...p, logoSrc: logo, agencyTextOnly: !!p.agency && !logo }; }
+    return v;
+  }
+  _rvBase() {
     return {
       dropdownOpen: this.state.dropdownOpen,
       ctaTab: this.state.ctaTab,
@@ -1172,7 +1279,13 @@ class Component extends DCLogic {
       firmNotSubmitted: !this.state.firmSubmitted,
       firmFields: this.state.firmFields,
       setFirmField: this.setFirmField,
-      setFirmFieldCompanyName: this.setFirmFieldCompanyName,
+      setFirmFieldFirstName: this.setFirmFieldFirstName,
+      setFirmFieldLastName: this.setFirmFieldLastName,
+      setFirmFieldLinkedin: this.setFirmFieldLinkedin,
+      setFirmFieldProjectLink: this.setFirmFieldProjectLink,
+      setFirmFieldClient: this.setFirmFieldClient,
+      setFirmFieldRegion: this.setFirmFieldRegion,
+      setFirmFieldDeadline: this.setFirmFieldDeadline,
       setFirmFieldWebsite: this.setFirmFieldWebsite,
       setFirmFieldMessage: this.setFirmFieldMessage,
       setFirmFile: this.setFirmFile,
@@ -1181,11 +1294,20 @@ class Component extends DCLogic {
       countedCountries: this.state.counted.countries + '+',
       countedYears: this.state.counted.years + '+',
       searchQuery: this.state.searchQuery || '',
+      mapSearchQuery: this.state.mapSearchQuery || '',
+      mapSuggestions: this.state.mapSearchFocused ? this.computeMapSuggestions() : null,
+      setMapSearchQuery: this.setMapSearchQuery,
+      showMapSuggestions: this.showMapSuggestions,
+      hideMapSuggestions: this.hideMapSuggestions,
+      mapSearchKeyDown: this.mapSearchKeyDown,
       searchSuggestions: this.state.searchFocused ? this.computeSuggestions() : null,
       setSearchQuery: this.setSearchQuery,
+      ...this.filterStats(),
       filters: this.filters.map((f) => {
         const on = this.state.activeFilter === f;
-        return { value: f, label: this.filterLabels[f] || f, onClick: this.setFilter(f), border: on ? '#82C44D' : 'oklch(0.88 0.005 95)', bg: on ? '#82C44D' : 'white', color: on ? '#ffffff' : 'oklch(0.35 0.01 250)' };
+        return { value: f, label: this.filterLabels[f] || f, count: this.filterStats().perFilter[f] || 0, onClick: this.setFilter(f),
+          border: on ? '#82C44D' : 'rgba(255,255,255,0.16)', bg: on ? '#82C44D' : 'rgba(255,255,255,0.06)', color: on ? '#ffffff' : 'rgba(255,255,255,0.85)',
+          glow: on ? '0 6px 18px rgba(130,196,77,0.35)' : 'none', countBg: on ? 'rgba(255,255,255,0.22)' : 'rgba(255,255,255,0.1)', countColor: on ? '#ffffff' : 'rgba(255,255,255,0.65)' };
       }),
       setFilter: this.setFilter,
       setMapRef: this.setMapRef,
@@ -1196,6 +1318,11 @@ class Component extends DCLogic {
       modalSectors: (this.state.selectedCountry ? this.getSectorsFor(this.state.selectedCountry) : []).map((sec) => ({
         name: sec,
         active: sec === this.state.modalAreaFilter,
+        border: sec === this.state.modalAreaFilter ? '#82C44D' : 'oklch(0.88 0.005 95)',
+        bg: sec === this.state.modalAreaFilter ? '#82C44D' : 'white',
+        color: sec === this.state.modalAreaFilter ? '#ffffff' : 'oklch(0.4 0.01 250)',
+        glow: sec === this.state.modalAreaFilter ? '0 4px 12px rgba(130,196,77,0.35)' : 'none',
+        weight: sec === this.state.modalAreaFilter ? 600 : 500,
         onClick: this.setModalAreaFilter(sec)
       })),
       shiftModalPrev: this.shiftModalPrev,

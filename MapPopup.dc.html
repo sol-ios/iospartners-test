@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<sc-if value="{{ open }}" hint-placeholder-val="{{ false }}">
+  <div data-popup-wrap style="position:fixed;inset:0;background:rgba(20,30,45,0.6);display:flex;align-items:center;justify-content:center;z-index:200;padding:24px" onClick="{{ close }}">
+    <div data-popup-card style="background:white;border-radius:18px;max-width:760px;width:100%;box-shadow:0 30px 90px rgba(0,0,0,0.35);overflow:hidden;display:flex;flex-direction:column;max-height:88vh;font-family:Montserrat,sans-serif" onClick="{{ stop }}">
+      <div data-popup-pad style="display:flex;justify-content:space-between;align-items:center;padding:20px 24px;border-bottom:1px solid oklch(0.92 0.005 95);flex-shrink:0">
+        <div style="display:flex;align-items:center;gap:10px;min-width:0">
+          <sc-if value="{{ flagUrl }}" hint-placeholder-val="{{ false }}"><span style="display:block;width:33px;height:22px;flex-shrink:0;border-radius:3px;overflow:hidden;box-shadow:0 0 0 1px rgba(20,30,45,0.12)"><image-slot id="popup-country-flag" src="{{ flagUrl }}" shape="rect" fit="cover" placeholder="Flag" style="width:100%;height:100%"></image-slot></span></sc-if>
+          <div style="font-family:Montserrat;font-weight:600;font-size:19px;color:oklch(0.28 0.09 264);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0">{{ country }}</div>
+          <div style="font-family:Montserrat;font-weight:600;font-size:13px;color:#ffffff;background:oklch(0.28 0.09 264);padding:4px 12px;border-radius:99px;white-space:nowrap">{{ counter }}</div>
+        </div>
+        <button onClick="{{ close }}" aria-label="Close" style="background:none;border:none;font-size:20px;cursor:pointer;color:oklch(0.5 0.01 250)">✕</button>
+      </div>
+
+      <div data-popup-pad style="display:flex;gap:8px;padding:14px 24px 0;flex-shrink:0">
+        <div style="position:relative;width:100%">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="oklch(0.55 0.01 250)" stroke-width="2" style="position:absolute;left:12px;top:50%;transform:translateY(-50%)"><circle cx="11" cy="11" r="8"></circle><path d="M21 21l-4.35-4.35"></path></svg>
+          <input type="text" placeholder="Search by client, country, or sector…" value="{{ query }}" onChange="{{ setQuery }}" onFocus="{{ focus }}" onBlur="{{ blur }}" onKeyDown="{{ keyDown }}" style="width:100%;box-sizing:border-box;padding:9px 12px 9px 34px;border:1px solid oklch(0.88 0.005 95);border-radius:99px;font-size:13px;font-family:Montserrat;background:white;outline:none" style-focus="border-color:#82C44D"/>
+          <sc-if value="{{ suggestions }}" hint-placeholder-val="{{ false }}">
+            <div style="position:absolute;top:calc(100% + 6px);left:0;right:0;background:white;border:1px solid oklch(0.88 0.005 95);border-radius:12px;box-shadow:0 12px 30px rgba(0,0,0,0.15);z-index:30;max-height:240px;overflow-y:auto;padding:4px">
+              <sc-for list="{{ suggestions }}" as="sug" hint-placeholder-count="5">
+                <div onMouseDown="{{ sug.onPick }}" style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:9px 12px;border-radius:8px;font-size:13px;color:oklch(0.3 0.01 250);cursor:pointer" style-hover="background:oklch(0.96 0.01 140)">
+                  <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ sug.label }}</span>
+                  <span style="flex-shrink:0;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:#5f9636;background:rgba(130,196,77,0.12);padding:2px 8px;border-radius:99px">{{ sug.type }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </sc-if>
+        </div>
+      </div>
+
+      <div data-popup-pad style="display:flex;gap:8px;padding:12px 24px 14px;overflow-x:auto;scrollbar-width:none;border-bottom:1px solid oklch(0.92 0.005 95);flex-shrink:0">
+        <sc-for list="{{ sectors }}" as="sec" hint-placeholder-count="4">
+          <button onClick="{{ sec.onClick }}" style="border:1px solid {{ sec.border }};background:{{ sec.bg }};color:{{ sec.color }};box-shadow:{{ sec.glow }};font-family:Montserrat;font-size:12.5px;font-weight:{{ sec.weight }};padding:6px 14px;border-radius:99px;cursor:pointer;white-space:nowrap;transition:background 0.15s ease,color 0.15s ease,box-shadow 0.15s ease">{{ sec.name }}</button>
+        </sc-for>
+      </div>
+
+      <sc-if value="{{ project }}" hint-placeholder-val="{{ false }}">
+        <div style="overflow-y:auto;flex:1;min-height:0">
+          <div data-popup-photo style="height:170px;flex-shrink:0;position:relative">
+            <image-slot id="{{ project.imgId }}" src="{{ project.imgSrc }}" shape="rect" placeholder="Project photo" fit="cover" style="width:100%;height:100%"></image-slot>
+            <div style="position:absolute;bottom:12px;left:16px;font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:0.1em;text-transform:uppercase;color:#82C44D;background:rgba(20,30,45,0.85);padding:5px 11px;border-radius:4px">{{ project.area }}</div>
+          </div>
+          <div data-popup-pad style="padding:22px 24px 26px">
+            <sc-if value="{{ project.agency }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+                <sc-if value="{{ project.logoSrc }}" hint-placeholder-val="{{ false }}"><span style="display:block;width:72px;height:28px;flex-shrink:0"><image-slot id="popup-client-logo" src="{{ project.logoSrc }}" shape="rect" fit="contain" placeholder="Logo" style="width:100%;height:100%"></image-slot></span></sc-if>
+                <span style="font-size:12.5px;font-weight:500;color:oklch(0.35 0.02 264);line-height:1.3">{{ project.agency }}</span>
+              </div>
+            </sc-if>
+            <div style="font-family:Montserrat;font-weight:600;font-size:16.5px;line-height:1.4;color:oklch(0.22 0.01 250);margin-bottom:12px">{{ project.title }}</div>
+            <p style="font-size:14px;font-weight:300;color:oklch(0.42 0.01 250);line-height:1.7;margin:0">{{ project.description }}</p>
+          </div>
+        </div>
+      </sc-if>
+      <sc-if value="{{ empty }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:40px 24px;text-align:center;font-size:14px;color:oklch(0.5 0.01 250)">No projects match this search.</div>
+      </sc-if>
+
+      <div data-popup-pad style="display:flex;align-items:center;justify-content:space-between;padding:14px 24px;border-top:1px solid oklch(0.92 0.005 95);flex-shrink:0">
+        <button onClick="{{ prev }}" aria-label="Previous project" style="display:flex;align-items:center;justify-content:center;border:none;background:#82C44D;color:#ffffff;border-radius:12px;width:48px;height:48px;cursor:pointer;box-shadow:0 8px 20px rgba(130,196,77,0.35);transition:transform 0.15s ease,background 0.15s ease" style-hover="background:#6fa93e;transform:translateY(-1px)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"></path></svg></button>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
+          <span style="font-family:Montserrat;font-weight:600;font-size:15px;color:oklch(0.28 0.09 264)">{{ counter }}</span>
+          <span data-popup-hint style="font-size:11.5px;color:oklch(0.55 0.01 250)">Browse this country's projects</span>
+        </div>
+        <button onClick="{{ next }}" aria-label="Next project" style="display:flex;align-items:center;justify-content:center;border:none;background:#82C44D;color:#ffffff;border-radius:12px;width:48px;height:48px;cursor:pointer;box-shadow:0 8px 20px rgba(130,196,77,0.35);transition:transform 0.15s ease,background 0.15s ease" style-hover="background:#6fa93e;transform:translateY(-1px)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg></button>
+      </div>
+    </div>
+  </div>
+</sc-if>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;country&quot;: {&quot;editor&quot;: &quot;text&quot;, &quot;default&quot;: &quot;&quot;, &quot;tsType&quot;: &quot;string&quot;}, &quot;data&quot;: {&quot;editor&quot;: null, &quot;tsType&quot;: &quot;Record&lt;string, any[]&gt;&quot;}, &quot;onClose&quot;: {&quot;editor&quot;: null, &quot;tsType&quot;: &quot;() =&gt; void&quot;}}">
+class Component extends DCLogic {
+  state = { country: null, area: 'All', idx: 0, query: '', focused: false };
+
+  componentDidMount() { this.syncCountry(); }
+  componentDidUpdate(prev) { if (prev.country !== this.props.country) this.syncCountry(); }
+  syncCountry() { this.setState({ country: this.props.country || null, area: 'All', idx: 0, query: '' }); }
+
+  SECTOR_IMAGES = {
+    'Agriculture': './assets/pa-agriculture.webp', 'Aviation': './assets/pa-aviation.webp', 'Tourism': './assets/pa-tourism.webp',
+    'Finance': './assets/pa-finance.webp', 'Blue Economy': './assets/pa-blue-economy.webp', 'ICT4D': './assets/pa-ict4d.webp',
+    'Information and Communication Technology for Development': './assets/pa-ict4d.webp',
+    'Infrastructure Development': './assets/pa-infrastructure.webp', 'Transport & Infrastructure': './assets/pa-infrastructure.webp',
+    'Ports & Maritime': './assets/pa-ports-maritime.webp', 'Private Sector Development': './assets/pa-private-sector.webp',
+    'Public Administration & Reform': './assets/pa-public-administration.webp', 'Public Sector Governance and Public Enterprise Reform': './assets/pa-public-administration.webp',
+    'Public-Private Partnerships (PPP)': './assets/pa-ppp.webp', 'Special Economic Zones': './assets/pa-special-economic-zones.webp',
+    'Social Development & Health Inclusion': './assets/pa-social-development.webp', 'Social Development and Inclusion': './assets/pa-social-development.webp',
+    'Trade & Investment': './assets/pa-trade-investment.webp', 'Trade Facilitation and Investment Promotion': './assets/pa-trade-investment.webp',
+    'USG Practice': './assets/pa-usg-practice.webp'
+  };
+
+  get data() { return this.props.data || window.__IOS_PROJECT_DATA__ || {}; }
+  areasOf = (p) => (p.area || '').split('|').map((a) => a.trim()).filter(Boolean);
+  realAgency = (a) => { const s = (a || '').trim(); return (!s || /^(n\/a|\?|-|none)$/i.test(s)) ? '' : s; };
+  matches = (p, q) => (p.title || '').toLowerCase().includes(q) || (p.area || '').toLowerCase().includes(q) || (p.agency || '').toLowerCase().includes(q);
+
+  list() {
+    let l = this.data[this.state.country] || [];
+    if (this.state.area !== 'All') l = l.filter((p) => this.areasOf(p).includes(this.state.area));
+    const q = this.state.query.toLowerCase().trim();
+    if (q && !(this.state.country || '').toLowerCase().includes(q)) {
+      const filtered = l.filter((p) => this.matches(p, q));
+      if (filtered.length) l = filtered;
+    }
+    return l;
+  }
+
+  describe = (p) => {
+    const t = (p.title || '').trim();
+    const agency = this.realAgency(p.agency);
+    const kind = /feasibility/i.test(t) ? 'A feasibility study'
+      : /evaluation|assessment|review|diagnostic/i.test(t) ? 'An independent evaluation'
+      : /technical assistance|advisory|advisor|support/i.test(t) ? 'A technical assistance engagement'
+      : /strategy|master plan|plan\b/i.test(t) ? 'A strategy assignment'
+      : /training|capacity/i.test(t) ? 'A capacity-building programme'
+      : /privatiz|privatisation|restructur|reform/i.test(t) ? 'A reform and restructuring mandate'
+      : /design|development|implement/i.test(t) ? 'A design and implementation assignment'
+      : 'An advisory assignment';
+    return kind + ' in ' + this.state.country + (agency ? ' for ' + agency : '') + ', covering ' + t.charAt(0).toLowerCase() + t.slice(1) + '.';
+  };
+
+  imageFor = (p, idx) => {
+    if (p.image) return p.image;
+    const a = this.areasOf(p)[0];
+    if (this.SECTOR_IMAGES[a]) return this.SECTOR_IMAGES[a];
+    const pool = Object.values(this.SECTOR_IMAGES);
+    let h = 0; const s = (p.title || '') + idx;
+    for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0;
+    return pool[h % pool.length];
+  };
+
+  goTo = (country, query) => this.setState({ country, area: 'All', idx: 0, query: query || '', focused: false });
+
+  suggestions() {
+    const q = this.state.query.toLowerCase().trim();
+    if (!q || !this.state.focused) return null;
+    const data = this.data, out = [];
+    Object.keys(data).filter((c) => c.toLowerCase().includes(q))
+      .sort((a, b) => (a.toLowerCase().startsWith(q) ? 0 : 1) - (b.toLowerCase().startsWith(q) ? 0 : 1))
+      .slice(0, 4).forEach((c) => out.push({ label: c, type: 'Country', onPick: () => this.goTo(c) }));
+    const sectors = {};
+    Object.entries(data).forEach(([c, arr]) => arr.forEach((p) => this.areasOf(p).forEach((a) => { if (a.toLowerCase().includes(q) && !sectors[a]) sectors[a] = c; })));
+    Object.keys(sectors).slice(0, 3).forEach((a) => out.push({ label: a, type: 'Sector', onPick: () => {
+      const here = (data[this.state.country] || []).some((p) => this.areasOf(p).includes(a));
+      this.setState({ country: here ? this.state.country : sectors[a], area: a, idx: 0, query: '', focused: false });
+    } }));
+    const clients = {};
+    Object.entries(data).forEach(([c, arr]) => arr.forEach((p) => { const a = this.realAgency(p.agency); if (a && a.toLowerCase().includes(q) && !clients[a]) clients[a] = c; }));
+    Object.keys(clients).slice(0, 3).forEach((a) => out.push({ label: a, type: 'Client', onPick: () => this.goTo(clients[a], a) }));
+    return out.length ? out.slice(0, 9) : null;
+  }
+
+  shift = (d) => () => this.setState((s) => { const n = this.list().length; return n ? { idx: (s.idx + d + n) % n } : null; });
+  setArea = (a) => () => this.setState({ area: a, idx: 0 });
+  close = () => { if (this.props.onClose) this.props.onClose(); };
+
+  renderVals() {
+    const country = this.state.country;
+    const list = country ? this.list() : [];
+    const idx = list.length ? this.state.idx % list.length : 0;
+    const p = list[idx];
+    const all = this.data[country] || [];
+    const sectorNames = ['All', ...Array.from(new Set(all.flatMap(this.areasOf)))];
+    let project = null;
+    if (p) {
+      const agency = this.realAgency(p.agency);
+      project = { ...p, agency, area: this.areasOf(p).join(' · '), description: p.description || this.describe(p),
+        logoSrc: window.iosLogoFor ? window.iosLogoFor(agency) : null,
+        imgSrc: this.imageFor(p, idx), imgId: ('popup-' + country + '-' + p.title).replace(/[^a-zA-Z0-9]+/g, '-').slice(0, 70) };
+    }
+    return {
+      open: !!country,
+      country: country || '',
+      flagUrl: window.iosFlagUrl ? window.iosFlagUrl(country) : null,
+      counter: list.length ? (idx + 1) + ' / ' + list.length : '0 / 0',
+      project,
+      empty: !!country && !list.length,
+      sectors: sectorNames.length > 2 ? sectorNames.map((name) => {
+        const on = name === this.state.area;
+        return { name, onClick: this.setArea(name), border: on ? '#82C44D' : 'oklch(0.88 0.005 95)', bg: on ? '#82C44D' : 'white',
+          color: on ? '#ffffff' : 'oklch(0.4 0.01 250)', glow: on ? '0 4px 12px rgba(130,196,77,0.35)' : 'none', weight: on ? 600 : 500 };
+      }) : [],
+      query: this.state.query,
+      suggestions: this.suggestions(),
+      setQuery: (e) => this.setState({ query: e.target.value, idx: 0, focused: true }),
+      focus: () => this.setState({ focused: true }),
+      blur: () => setTimeout(() => this.setState({ focused: false }), 150),
+      keyDown: (e) => {
+        if (e.key === 'Enter') { e.preventDefault(); const s = this.suggestions(); if (s && s[0]) s[0].onPick(); }
+        if (e.key === 'Escape') this.setState({ query: '', focused: false });
+      },
+      prev: this.shift(-1),
+      next: this.shift(1),
+      close: this.close,
+      stop: (e) => e.stopPropagation()
+    };
+  }
+}
+</script>
+</body>
+</html>

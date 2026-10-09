@@ -285,7 +285,8 @@ function initGlobe(canvas){
     }
     if(best){
       hoverG=best.country;
-      gtip.innerHTML='<b>'+best.country+'</b>&nbsp;<span style="font-weight:400;font-size:10px;color:rgba(207,224,239,0.72)">'+best.count+' project'+(best.count===1?'':'s')+'</span><div style="font-family:JetBrains Mono,monospace;font-size:9px;color:rgba(130,196,77,.55);margin-top:4px;letter-spacing:.06em">Click to explore \u2192</div>';
+      var fu=window.iosFlagUrl?window.iosFlagUrl(best.country):null;
+      gtip.innerHTML=(fu?'<img src="'+fu+'" alt="" style="width:18px;height:12px;object-fit:cover;border-radius:2px;box-shadow:0 0 0 1px rgba(255,255,255,0.25);vertical-align:-1px;margin-right:6px"/>':'')+'<b>'+best.country+'</b>&nbsp;<span style="font-weight:400;font-size:10px;color:rgba(207,224,239,0.72)">'+best.count+' project'+(best.count===1?'':'s')+'</span><div style="font-family:JetBrains Mono,monospace;font-size:9px;color:rgba(130,196,77,.55);margin-top:4px;letter-spacing:.06em">Click to explore \u2192</div>';
       gtip.style.display='block';
       var tw=gtip.offsetWidth||160;
       gtip.style.left=Math.max(4,Math.min(best.x+16,W-tw-4))+'px';

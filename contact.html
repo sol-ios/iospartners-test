@@ -29,6 +29,31 @@
     .nav-link::after { content:''; position:absolute; left:0; right:0; bottom:-7px; height:2px; background:#82C44D; transform:scaleX(0); transform-origin:left center; transition:transform 0.32s cubic-bezier(0.22,1,0.36,1); }
     .nav-link:hover::after { transform:scaleX(1); }
     .nav-link[data-active]::after { transform:scaleX(1); }
+  
+    /* phone layout (shared across pages) */
+    @media (max-width:860px) {
+      header { padding:10px 18px !important; gap:12px !important; }
+      header img[alt="IOS Partners"] { height:46px !important; }
+      footer { padding:40px 20px 24px !important; }
+      h1 { font-size:32px !important; line-height:1.15 !important; letter-spacing:-0.01em !important; }
+      h2 { font-size:25px !important; line-height:1.25 !important; }
+      input, textarea, select { font-size:16px !important; }
+      [data-form-card] { padding:24px 18px 26px !important; border-radius:14px !important; }
+      [data-forms-grid] { margin-top:16px !important; }
+      [data-popup-wrap] { padding:0 !important; align-items:flex-end !important; }
+      [data-popup-card] { max-height:92vh !important; border-radius:18px 18px 0 0 !important; }
+      [data-popup-pad] { padding-left:16px !important; padding-right:16px !important; }
+      [data-popup-photo] { height:150px !important; }
+      [data-popup-hint] { display:none !important; }
+      [data-pa-foot], [data-footer-grid] { grid-template-columns:1fr !important; gap:28px !important; }
+      [data-stats-strip] { grid-template-columns:repeat(2,1fr) !important; }
+      [data-stack] { grid-template-columns:1fr !important; }
+      img, canvas, video { max-width:100%; }
+    }
+    @media (max-width:420px) {
+      h1 { font-size:28px !important; }
+      [data-2col-input] { grid-template-columns:1fr !important; }
+    }
   </style>
 </helmet>
 
@@ -120,7 +145,7 @@
       </sc-if>
       <sc-if value="{{ notSubmitted }}" hint-placeholder-val="{{ true }}">
         <form onSubmit="{{ handleSubmit }}" style="display:flex;flex-direction:column;gap:18px">
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+          <div data-stack style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
             <div>
               <label style="display:block;font-size:13px;font-weight:600;color:oklch(0.4 0.01 250);margin-bottom:7px">First name</label>
               <input type="text" value="{{ fields.firstName }}" onChange="{{ setField('firstName') }}" style="width:100%;box-sizing:border-box;padding:12px 14px;border:1px solid oklch(0.88 0.005 95);border-radius:10px;font-size:14.5px;font-family:'Montserrat'" style-focus="outline:2px solid rgba(130,196,77,0.35);border-color:#82C44D"/>
@@ -221,7 +246,7 @@
       </div>
       <div>
         <div style="font-weight:600;font-size:13px;text-transform:uppercase;letter-spacing:0.04em;color:white;margin-bottom:16px">{{ txtPracticeAreas }}</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px 16px;font-size:14px">
+        <div data-stack style="display:grid;grid-template-columns:1fr 1fr;gap:10px 16px;font-size:14px">
           <a href="./practice-agriculture.html" style="color:white">Agriculture</a>
           <a href="./practice-aviation.html" style="color:white">Aviation</a>
           <a href="./practice-finance.html" style="color:white">Finance</a>
@@ -320,7 +345,7 @@ class Component extends DCLogic {
     e.preventDefault();
     const f = this.state.fields;
     const body = `Name: ${f.firstName} ${f.lastName}\nEmail: ${f.email}\nOrganization: ${f.organization}\nArea of interest: ${f.interest}\n\nMessage:\n${f.message}`;
-    window.location.href = 'mailto:srich@iospartners.com?subject=' + encodeURIComponent('Contact form — ' + f.firstName + ' ' + f.lastName) + '&body=' + encodeURIComponent(body);
+    window.location.href = 'mailto:iospartners@iospartners.com?subject=' + encodeURIComponent('Contact form — ' + f.firstName + ' ' + f.lastName) + '&body=' + encodeURIComponent(body);
     this.setState({ submitted: true });
   };
 
