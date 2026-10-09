@@ -897,14 +897,15 @@ class Component extends DCLogic {
   setCtaFieldMessage = this.setCtaField('message');
   setCtaFile = (e) => { const f = e.target.files && e.target.files[0]; if (f) { this._cvFile = f; this.setState((s) => ({ ctaFields: { ...s.ctaFields, cvFileName: f.name } })); } };
   sendForm = (to, subject, fields, file, fileField, onDone, honey) => {
-    // Real form POST to FormSubmit with its Google reCAPTCHA on. FormSubmit verifies the captcha
-    // on its own server, so bots posting straight to the endpoint are blocked too. The visitor
-    // passes "I'm not a robot" on FormSubmit's page, then returns here (#sent) and sees the thank-you.
+    // Real form POST to FormSubmit with its Google reCAPTCHA on (verified on FormSubmit's server).
+    // The captcha step opens inside a popup on this page; once it's passed, FormSubmit redirects the
+    // popup back to this site (same origin), which we detect to close it and show the thank-you.
+    const which = fileField === 'CV' ? 'cta' : 'firm';
     const form = document.createElement('form');
     form.method = 'POST'; form.action = 'https://formsubmit.co/' + to;
     form.enctype = 'multipart/form-data'; form.style.display = 'none';
     const add = (n, v) => { const i = document.createElement('input'); i.type = 'hidden'; i.name = n; i.value = v || ''; form.appendChild(i); };
-    const back = location.href.split('#')[0].split('?')[0] + '?sent=' + encodeURIComponent(fileField === 'CV' ? 'cta' : 'firm') + '#cta';
+    const back = location.href.split('#')[0].split('?')[0] + '?sent=' + which + '#cta';
     add('_subject', subject); add('_template', 'table'); add('_captcha', 'true'); add('_next', back);
     add('_honey', honey || '');
     Object.entries(fields).forEach(([k, v]) => add(k, v));
@@ -913,6 +914,43 @@ class Component extends DCLogic {
       const dt = new DataTransfer(); dt.items.add(file); fi.files = dt.files; form.appendChild(fi);
     }
     document.body.appendChild(form);
+
+    const name = 'ios-captcha-' + Date.now();
+    const overlay = document.createElement('div');
+    overlay.setAttribute('data-captcha-popup', '');
+    overlay.style.cssText = 'position:fixed;inset:0;z-index:10001;background:rgba(10,18,32,0.62);display:flex;align-items:center;justify-content:center;padding:20px;font-family:Montserrat,sans-serif';
+    overlay.innerHTML =
+      '<div style="background:#ffffff;border-radius:18px;width:100%;max-width:520px;box-shadow:0 30px 90px rgba(0,0,0,0.4);overflow:hidden;display:flex;flex-direction:column">' +
+        '<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px 22px;border-bottom:1px solid #eceae4">' +
+          '<div style="display:flex;align-items:center;gap:10px"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#82C44D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><path d="M9 12l2 2 4-4"></path></svg>' +
+          '<div><div style="font-weight:600;font-size:17px;color:#1f2f5c">Almost there</div><div style="font-size:12.5px;color:#6b7280">Confirm you\'re not a robot to send your message.</div></div></div>' +
+          '<button type="button" data-x aria-label="Close" style="background:none;border:none;font-size:20px;cursor:pointer;color:#6b7280">✕</button>' +
+        '</div>' +
+        '<div style="position:relative;height:440px;max-height:62vh;background:#f7f7f5">' +
+          '<div data-loading style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:13px;color:#6b7280">Loading security check…</div>' +
+          '<iframe name="' + name + '" title="Security check" style="position:relative;width:100%;height:100%;border:0;display:block;background:transparent"></iframe>' +
+        '</div>' +
+        '<div style="padding:12px 22px 16px;font-size:12px;color:#6b7280;text-align:center">Check not showing? <a href="#" data-newtab style="color:#5f9636;font-weight:600">Open it in a new tab</a></div>' +
+      '</div>';
+    document.body.appendChild(overlay);
+    const frame = overlay.querySelector('iframe');
+    const close = () => { overlay.remove(); form.remove(); };
+    overlay.querySelector('[data-x]').onclick = close;
+    overlay.addEventListener('click', (ev) => { if (ev.target === overlay) close(); });
+    overlay.querySelector('[data-newtab]').onclick = (ev) => {
+      ev.preventDefault();
+      form.target = '_blank'; form.submit();
+      overlay.remove(); setTimeout(() => form.remove(), 4000);
+    };
+    let loads = 0;
+    frame.addEventListener('load', () => {
+      loads++;
+      const ld = overlay.querySelector('[data-loading]'); if (ld) ld.remove();
+      let sameOrigin = false;
+      try { sameOrigin = !!frame.contentWindow.location.href && frame.contentWindow.location.host === location.host; } catch (err) {}
+      if (sameOrigin && loads > 0 && frame.contentWindow.location.href !== 'about:blank') { close(); onDone(); }
+    });
+    form.target = name;
     form.submit();
   };
   newHumanTest = () => ({ humanA: 2 + Math.floor(Math.random() * 8), humanB: 1 + Math.floor(Math.random() * 9) });
