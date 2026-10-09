@@ -5,6 +5,24 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <script src="./support.js"></script>
 <script src="./i18n.js"></script>
+<script>
+/* Published-site link guard: any leftover link to an editor file name (*.dc.html) is sent to its GitHub page. */
+(function(){
+  var named={'IOS Partners Home':'index','IOS Partners Our Work':'our-work','IOS Partners Contact':'contact','IOS Partners Who We Are':'who-we-are','IOS Partners News':'news'};
+  function slug(s){return s.toLowerCase().replace(/&/g,'and').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');}
+  function fix(h){
+    if(!h||h.indexOf('.dc.html')<0||/MapPopup\.dc\.html/.test(h))return h;
+    var m=decodeURIComponent(h).match(/^(.*?)([^\/]+)\.dc\.html(#.*)?$/); if(!m)return h;
+    var base=m[2], out=named[base]||(base.indexOf('Practice Area - ')===0?'practice-'+slug(base.slice(16)):null);
+    return out? m[1]+out+'.html'+(m[3]||'') : h;
+  }
+  window.iosFixHref=fix;
+  function sweep(root){var a=(root.querySelectorAll?root:document).querySelectorAll('a[href*=".dc.html"]');for(var i=0;i<a.length;i++){var n=fix(a[i].getAttribute('href'));if(n!==a[i].getAttribute('href'))a[i].setAttribute('href',n);}}
+  document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('a[href]');if(!a)return;var h=a.getAttribute('href'),n=fix(h);if(n!==h){a.setAttribute('href',n);}},true);
+  function start(){sweep(document);new MutationObserver(function(){sweep(document);}).observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['href']});}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
+})();
+</script>
 </head>
 <body>
 <x-dc>
