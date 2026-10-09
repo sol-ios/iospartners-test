@@ -276,7 +276,7 @@
 <script type="text/x-dc" data-dc-script>
 const SLUG = 'trade-investment';
 class Component extends DCLogic {
-  state = { dropdownOpen: false, scrolled: false, langOpen: false, mobileMenuOpen: false, lang: 'EN',
+  state = { dropdownOpen: false, scrolled: false, langOpen: false, mobileMenuOpen: false, lang: (window.iosGetLang ? window.iosGetLang() : 'EN'),
     selectedCountry: null, modalProjectIdx: 0, cardModalIdx: null };
   openDropdown = () => this.setState({ dropdownOpen: true });
   closeDropdown = () => this.setState({ dropdownOpen: false });
@@ -284,7 +284,7 @@ class Component extends DCLogic {
   closeLangMenu = () => this.setState({ langOpen: false });
   toggleMobileMenu = () => this.setState((s) => ({ mobileMenuOpen: !s.mobileMenuOpen }));
   closeMobileMenu = () => this.setState({ mobileMenuOpen: false });
-  setLang = (code) => () => this.setState({ lang: code, langOpen: false });
+  setLang = (code) => () => { if (window.iosSetLang) window.iosSetLang(code); this.setState({ lang: code, langOpen: false }); };
   t = (s) => window.tr(this.state.lang, s);
   stopPropagation = (e) => e.stopPropagation();
   LANGS = [{ code: 'EN', label: 'English' }, { code: 'ES', label: 'Español' }, { code: 'FR', label: 'Français' }, { code: 'PT', label: 'Português' }];
