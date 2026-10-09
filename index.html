@@ -5,24 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <script src="./support.js"></script>
 <script src="./i18n.js"></script>
-<script>
-/* Published-site link guard: any leftover link to an editor file name (*.dc.html) is sent to its GitHub page. */
-(function(){
-  var named={'IOS Partners Home':'index','IOS Partners Our Work':'our-work','IOS Partners Contact':'contact','IOS Partners Who We Are':'who-we-are','IOS Partners News':'news'};
-  function slug(s){return s.toLowerCase().replace(/&/g,'and').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');}
-  function fix(h){
-    if(!h||h.indexOf('.dc.html')<0||/MapPopup\.dc\.html/.test(h))return h;
-    var m=decodeURIComponent(h).match(/^(.*?)([^\/]+)\.dc\.html(#.*)?$/); if(!m)return h;
-    var base=m[2], out=named[base]||(base.indexOf('Practice Area - ')===0?'practice-'+slug(base.slice(16)):null);
-    return out? m[1]+out+'.html'+(m[3]||'') : h;
-  }
-  window.iosFixHref=fix;
-  function sweep(root){var a=(root.querySelectorAll?root:document).querySelectorAll('a[href*=".dc.html"]');for(var i=0;i<a.length;i++){var n=fix(a[i].getAttribute('href'));if(n!==a[i].getAttribute('href'))a[i].setAttribute('href',n);}}
-  document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('a[href]');if(!a)return;var h=a.getAttribute('href'),n=fix(h);if(n!==h){a.setAttribute('href',n);}},true);
-  function start(){sweep(document);new MutationObserver(function(){sweep(document);}).observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['href']});}
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
-})();
-</script>
 </head>
 <body>
 <x-dc>
@@ -43,11 +25,17 @@
     @keyframes fadeInUp { from { opacity:0; transform:translateY(22px); } to { opacity:1; transform:translateY(0); } }
     @keyframes floatSlow { 0%,100% { transform:translateY(0); } 50% { transform:translateY(-10px); } }
     @keyframes sweepBar { 0% { left:-40%; } 100% { left:100%; } }
+    #clients-track::-webkit-scrollbar { display:none; }
+    #clients-track img { -webkit-user-drag:none; pointer-events:auto; }
+    #clients-track { cursor:grab; }
+    #clients-track:active { cursor:grabbing; }
     @keyframes clientScroll { from { transform:translateX(0); } to { transform:translateX(-50%); } }
     body { cursor:none; }
     a, button, [onclick] { cursor:none; }
     @media (hover:none) { body, a, button { cursor:auto; } }
     .pillar-card:hover .pillar-img { transform:scale(1.08); }
+    .pa-card .pa-blurb { max-height:0; opacity:0; overflow:hidden; transition:max-height .3s ease, opacity .3s ease; }
+    .pa-card:hover .pa-blurb, .pa-card:focus-visible .pa-blurb { max-height:48px; opacity:1; }
     .pillar-card:hover .pillar-overlay { background:rgba(8,16,30,0.68); }
     .pillar-card:hover .pillar-text { opacity:1; transform:translateY(0); }
     @media (max-width:860px) {
@@ -94,6 +82,9 @@
       h1 { font-size:28px !important; }
       [data-2col-input] { grid-template-columns:1fr !important; }
     }
+  
+    :focus-visible { outline:2px solid #82C44D; outline-offset:2px; border-radius:4px; }
+    [data-form-card] input::placeholder, [data-form-card] textarea::placeholder, [data-dark-search]::placeholder { color:rgba(255,255,255,0.72); }
   </style>
 </helmet>
 
@@ -126,6 +117,7 @@
       </div>
       <a href="./index.html#our-work" class="nav-link" style="color:oklch(0.28 0.09 264);font-weight:500;font-size:15px;white-space:nowrap">{{ txtOurWork }}</a>
       <a href="./who-we-are.html" class="nav-link" style="color:oklch(0.28 0.09 264);font-weight:500;font-size:15px;white-space:nowrap">{{ txtAboutUs }}</a>
+      <a href="#cta" class="nav-link" style="color:oklch(0.28 0.09 264);font-weight:500;font-size:15px;white-space:nowrap">{{ txtContactUs }}</a>
     </nav>
     <div data-actions-desktop style="display:flex;align-items:center;gap:14px">
       <a href="#cta" style="background:#82C44D;color:#ffffff;font-weight:600;font-size:14.5px;padding:12px 22px;border-radius:9px;white-space:nowrap" style-hover="background:#6fa93e">{{ txtWorkWithUs }}</a>
@@ -155,6 +147,7 @@
       <a href="./index.html#practice-areas" onClick="{{ closeMobileMenu }}" style="color:oklch(0.28 0.09 264);font-weight:500;font-size:16px">{{ txtPracticeAreas }}</a>
       <a href="./index.html#our-work" onClick="{{ closeMobileMenu }}" style="color:oklch(0.28 0.09 264);font-weight:500;font-size:16px">{{ txtOurWork }}</a>
       <a href="./who-we-are.html" onClick="{{ closeMobileMenu }}" style="color:oklch(0.28 0.09 264);font-weight:500;font-size:16px">{{ txtAboutUs }}</a>
+      <a href="#cta" onClick="{{ closeMobileMenu }}" style="color:oklch(0.28 0.09 264);font-weight:500;font-size:16px">{{ txtContactUs }}</a>
       <a href="#cta" onClick="{{ closeMobileMenu }}" style="background:#82C44D;color:#ffffff;font-weight:600;font-size:15px;padding:12px 20px;border-radius:9px;text-align:center;margin-top:4px">{{ txtWorkWithUs }}</a>
       <div style="display:flex;gap:10px;flex-wrap:wrap">
         <sc-for list="{{ langs }}" as="l" hint-placeholder-count="4">
@@ -175,18 +168,17 @@
     </div>
     <div data-hero-grid style="position:relative;z-index:2;max-width:1280px;margin:0 auto;min-height:640px;display:grid;grid-template-columns:1fr 1fr;gap:32px;align-items:center;padding:64px 24px">
       <div style="text-align:left">
-        <h1 data-hero-title style="font-family:Montserrat;font-weight:600;font-size:48px;line-height:1.12;letter-spacing:-0.02em;margin:0 0 20px;color:white;animation:fadeInUp 0.8s ease both;text-shadow:0 2px 20px rgba(0,0,0,0.35)">Economic growth & sustainable development worldwide</h1>
-        <p data-hero-sub style="font-size:17px;color:rgba(255,255,255,0.8);margin:0 0 32px;max-width:480px;animation:fadeInUp 0.8s ease both;animation-delay:0.12s;text-shadow:0 1px 12px rgba(0,0,0,0.3)">Over 25 years of experience in international economic development in over 125 countries.</p>
+        <h1 data-hero-title style="font-family:Montserrat;font-weight:600;font-size:41px;line-height:1.14;letter-spacing:-0.02em;margin:0 0 20px;color:white;animation:fadeInUp 0.8s ease both;text-shadow:0 2px 20px rgba(0,0,0,0.35)">Economic growth & sustainable development worldwide</h1>
+        <p data-hero-sub style="font-size:17px;color:rgba(255,255,255,0.8);margin:0 0 32px;max-width:480px;animation:fadeInUp 0.8s ease both;animation-delay:0.12s;text-shadow:0 1px 12px rgba(0,0,0,0.3)">Over 25 years of experience in international economic development in over 130 countries.</p>
         <div style="display:flex;gap:14px;animation:fadeInUp 0.8s ease both;animation-delay:0.24s">
-          <a href="#our-work" style="background:#82C44D;color:#ffffff;font-weight:600;font-size:15px;padding:14px 24px;border-radius:10px;transition:transform 0.2s ease,box-shadow 0.2s ease" style-hover="background:#6fa93e;transform:translateY(-2px);box-shadow:0 10px 24px rgba(130,196,77,0.35)">Our projects</a>
-          <a href="#cta" style="background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.4);backdrop-filter:blur(4px);color:white;font-weight:600;font-size:15px;padding:14px 24px;border-radius:10px;transition:transform 0.2s ease" style-hover="transform:translateY(-2px);background:rgba(255,255,255,0.2)">{{ txtWorkWithUs }}</a>
+          <a href="#our-work" style="background:#82C44D;color:#ffffff;font-weight:600;font-size:15px;padding:14px 24px;border-radius:10px;transition:transform 0.2s ease,box-shadow 0.2s ease" style-hover="background:#6fa93e;transform:translateY(-2px);box-shadow:0 10px 24px rgba(130,196,77,0.35)">Explore our projects →</a>
         </div>
       </div>
       <div>
-        <div style="position:relative;width:100%;aspect-ratio:16/13;border-radius:20px;overflow:hidden">
+        <div role="button" tabindex="0" aria-label="Explore all projects on the map" onMouseDown="{{ heroGlobeDown }}" onClick="{{ heroGlobeClick }}" onKeyDown="{{ heroGlobeKey }}" style="position:relative;width:100%;aspect-ratio:16/13;border-radius:20px;overflow:hidden;cursor:pointer">
           <canvas ref="{{ setHeroGlobeRef }}" style="width:100%;height:100%;display:block"></canvas>
         </div>
-        <div style="text-align:center;margin-top:10px;font-size:12.5px;color:rgba(255,255,255,0.5)">Drag to rotate · click a highlighted dot to explore a project</div>
+        <a href="#our-work" style="display:block;text-align:center;margin-top:10px;font-size:13px;font-weight:500;color:rgba(255,255,255,0.88)" style-hover="color:#9fd97a">Explore all 400+ projects on the map ↓</a>
       </div>
     </div>
   </section>
@@ -214,7 +206,6 @@
     <div style="position:absolute;top:-100px;left:-80px;width:320px;height:320px;border-radius:50%;background:radial-gradient(circle,rgba(130,196,77,0.1) 0%,transparent 70%)"></div>
     <div style="max-width:1180px;margin:0 auto;position:relative;{{ practiceStyle }}">
       <div style="text-align:center;margin-bottom:8px">
-        <div style="display:inline-block;background:rgba(130,196,77,0.12);border:1px solid rgba(130,196,77,0.3);color:#5f9636;font-weight:600;font-size:13px;letter-spacing:0.18em;text-transform:uppercase;font-family:'JetBrains Mono',monospace;padding:7px 16px;border-radius:99px;margin-bottom:14px">{{ txtWhatWeDo }}</div>
       </div>
       <div style="text-align:center;margin-bottom:24px">
         <h2 style="font-family:Montserrat;font-weight:600;font-size:28px;margin:0 0 14px;color:oklch(0.28 0.09 264)">{{ txtOurPracticeAreas }}</h2>
@@ -226,7 +217,7 @@
       <div style="position:relative">
         <div ref="{{ setPaTrackRef }}" style="display:grid;grid-auto-flow:column;grid-template-rows:repeat(2,1fr);gap:12px;overflow-x:auto;scroll-behavior:smooth;scroll-snap-type:x mandatory;scrollbar-width:none;padding-bottom:4px">
         <sc-for list="{{ practiceCardsAll }}" as="pa" hint-placeholder-count="16">
-          <a href="{{ pa.href }}" target="{{ pa.target }}" style="position:relative;width:190px;height:150px;border-radius:14px;overflow:hidden;display:block;transition:transform 0.25s ease,box-shadow 0.25s ease;scroll-snap-align:start" style-hover="transform:translateY(-4px);box-shadow:0 14px 26px rgba(20,30,45,0.24)">
+          <a href="{{ pa.href }}" target="{{ pa.target }}" class="pa-card" style="position:relative;width:190px;height:150px;border-radius:14px;overflow:hidden;display:block;transition:transform 0.25s ease,box-shadow 0.25s ease;scroll-snap-align:start" style-hover="transform:translateY(-4px);box-shadow:0 14px 26px rgba(20,30,45,0.24)">
             <image-slot id="{{ pa.imgId }}" src="{{ pa.imgSrc }}" shape="rect" placeholder="{{ pa.name }} photo" fit="cover" style="width:100%;height:100%"></image-slot>
             <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,20,35,0.12) 0%,rgba(10,20,35,0.3) 45%,rgba(10,20,35,0.82) 100%)"></div>
             <div style="position:absolute;inset:0;display:flex;flex-direction:column;justify-content:space-between;padding:11px">
@@ -241,7 +232,11 @@
                 <sc-if value="{{ pa.isHeart }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 20s-7-4.4-9.5-9C1 8 2.5 4.5 6 4.5c2 0 3.5 1.2 4.5 3 1-1.8 2.5-3 4.5-3 3.5 0 5 3.5 3.5 6.5-2.5 4.6-9.5 9-9.5 9Z"/></svg></sc-if>
                 <sc-if value="{{ pa.isShield }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3Z"/></svg></sc-if>
               </div>
-              <span style="color:white;font-weight:600;font-size:13px;line-height:1.25;text-shadow:0 1px 6px rgba(0,0,0,0.35)">{{ pa.name }}</span>
+              <div style="display:flex;flex-direction:column;gap:3px">
+                <span style="color:white;font-weight:600;font-size:13px;line-height:1.25;text-shadow:0 1px 6px rgba(0,0,0,0.35)">{{ pa.name }}</span>
+                <sc-if value="{{ pa.countLabel }}"><span style="color:#cfeab8;font-size:11px;font-weight:500">{{ pa.countLabel }}</span></sc-if>
+                <span class="pa-blurb" style="color:rgba(255,255,255,0.92);font-size:11px;line-height:1.35;font-weight:400">{{ pa.blurb }}</span>
+              </div>
             </div>
           </a>
         </sc-for>
@@ -316,7 +311,7 @@
       <div style="text-align:center;margin-bottom:16px">
         <div style="display:inline-block;background:rgba(130,196,77,0.12);border:1px solid rgba(130,196,77,0.3);color:#5f9636;font-weight:600;font-size:13px;letter-spacing:0.18em;text-transform:uppercase;font-family:'JetBrains Mono',monospace;padding:7px 16px;border-radius:99px;margin-bottom:14px">Our work</div>
         <h2 style="font-family:Montserrat;font-weight:600;font-size:30px;margin:0 0 12px;color:oklch(0.28 0.09 264)">{{ txtDiversePortfolio }}</h2>
-        <p style="color:oklch(0.5 0.01 250);font-weight:400;font-size:15.5px;max-width:720px;margin:0 auto">IOS Partners has undertaken over 350 assignments in Sub-Saharan Africa, the Middle East &amp; North Africa, Asia-Pacific, Latin America and the Caribbean, and Eastern Europe. We have an established and broad-based partnership with specialized professionals and partnership firms around the world.</p>
+        <p style="color:oklch(0.5 0.01 250);font-weight:400;font-size:15.5px;max-width:720px;margin:0 auto">IOS Partners has undertaken over 400 assignments in Sub-Saharan Africa, the Middle East &amp; North Africa, Asia-Pacific, Latin America and the Caribbean, and Eastern Europe. We have an established and broad-based partnership with specialized professionals and partnership firms around the world.</p>
       </div>
 
       <div style="position:relative;margin-top:28px;border-radius:22px;overflow:hidden;background:radial-gradient(ellipse 90% 70% at 50% 62%,oklch(0.24 0.065 264) 0%,oklch(0.15 0.045 264) 72%);box-shadow:0 24px 60px rgba(10,20,40,0.22);border:1px solid oklch(0.3 0.06 264)">
@@ -329,7 +324,7 @@
             </div>
             <div style="position:relative;flex:1;min-width:220px">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="2" stroke-linecap="round" style="position:absolute;left:14px;top:50%;transform:translateY(-50%);pointer-events:none"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
-              <input type="text" placeholder="Search country, client or sector…" value="{{ mapSearchQuery }}" onChange="{{ setMapSearchQuery }}" onFocus="{{ showMapSuggestions }}" onBlur="{{ hideMapSuggestions }}" onKeyDown="{{ mapSearchKeyDown }}" style="width:100%;box-sizing:border-box;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.18);border-radius:99px;padding:9px 16px 9px 38px;font-family:Montserrat;font-size:13px;color:white;outline:none" style-focus="border-color:#82C44D;background:rgba(255,255,255,0.12)"/>
+              <input data-dark-search type="text" placeholder="Search country, client or sector…" value="{{ mapSearchQuery }}" onChange="{{ setMapSearchQuery }}" onFocus="{{ showMapSuggestions }}" onBlur="{{ hideMapSuggestions }}" onKeyDown="{{ mapSearchKeyDown }}" style="width:100%;box-sizing:border-box;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.18);border-radius:99px;padding:9px 16px 9px 38px;font-family:Montserrat;font-size:13px;color:white;outline:none" style-focus="border-color:#82C44D;background:rgba(255,255,255,0.12)"/>
               <sc-if value="{{ mapSuggestions }}">
                 <div style="position:absolute;top:calc(100% + 8px);left:0;right:0;background:white;border-radius:14px;box-shadow:0 18px 40px rgba(0,0,0,0.35);z-index:20;overflow:hidden;padding:6px">
                   <sc-for list="{{ mapSuggestions }}" as="ms" hint-placeholder-count="5">
@@ -352,7 +347,6 @@
             <sc-for list="{{ filters }}" as="f" hint-placeholder-count="10">
               <button onClick="{{ f.onClick }}" style="display:inline-flex;align-items:center;gap:8px;border:1px solid {{ f.border }};background:{{ f.bg }};color:{{ f.color }};box-shadow:{{ f.glow }};font-family:Montserrat;font-size:12.5px;font-weight:500;padding:8px 14px;border-radius:99px;cursor:pointer;white-space:nowrap;backdrop-filter:blur(6px);transition:transform 0.2s ease,background 0.2s ease,box-shadow 0.2s ease" style-hover="transform:translateY(-1px)">
                 {{ f.label }}
-                <span style="font-family:'JetBrains Mono',monospace;font-size:10.5px;padding:1px 7px;border-radius:99px;background:{{ f.countBg }};color:{{ f.countColor }}">{{ f.count }}</span>
               </button>
             </sc-for>
           </div>
@@ -361,7 +355,7 @@
           <canvas ref="{{ setMapRef }}" style="width:100%;height:100%;display:block"></canvas>
         </div>
         <div style="display:flex;justify-content:center;padding:6px 28px 18px;border-top:1px solid rgba(255,255,255,0.08);margin-top:12px">
-          <span style="font-size:12px;color:rgba(255,255,255,0.6);letter-spacing:0.02em;padding-top:12px">Drag to rotate · click a highlighted dot to explore a project</span>
+          <span style="font-size:12px;color:rgba(255,255,255,0.82);letter-spacing:0.02em;padding-top:12px">Drag to rotate · click a highlighted dot to explore a project</span>
         </div>
       </div>
     </div>
@@ -371,159 +365,187 @@
   <section ref="{{ setNewsRef }}" id="clients" style="max-width:1180px;margin:0 auto;padding:72px 24px 96px;overflow:hidden">
     <div style="{{ newsStyle }}">
       <h2 style="font-family:Montserrat;font-weight:600;font-size:28px;text-align:center;margin:0 0 32px;color:oklch(0.28 0.09 264)">{{ txtTrustedBy }}</h2>
-      <div style="position:relative;overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,black 8%,black 92%,transparent);mask-image:linear-gradient(90deg,transparent,black 8%,black 92%,transparent)">
-        <div style="display:flex;gap:20px;width:max-content;animation:clientScroll 28s linear infinite">
-            <div style="flex-shrink:0;width:150px;height:80px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
-              <img loading="lazy" decoding="async" src="./assets/client-adb.webp" alt="Asian Development Bank" style="height:32px;width:auto;max-width:110px;object-fit:contain;display:block"/>
+      <div id="clients-track" style="position:relative;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;-ms-overflow-style:none;touch-action:pan-x;user-select:none;-webkit-mask-image:linear-gradient(90deg,transparent,black 8%,black 92%,transparent);mask-image:linear-gradient(90deg,transparent,black 8%,black 92%,transparent)">
+        <div style="display:flex;gap:0;width:max-content">
+            <div style="flex-shrink:0;width:118px;height:88px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
+              <img loading="lazy" decoding="async" src="./assets/client-adb.webp" alt="Asian Development Bank" style="height:44px;width:66px;max-width:none;object-fit:contain;display:block;filter:grayscale(1);opacity:0.62;transition:filter .3s ease,opacity .3s ease" style-hover="filter:none;opacity:1"/>
             </div>
-            <div style="flex-shrink:0;width:150px;height:80px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
-              <img loading="lazy" decoding="async" src="./assets/client-aecom.webp" alt="AECOM" style="height:32px;width:auto;max-width:110px;object-fit:contain;display:block"/>
+            <div style="flex-shrink:0;width:195px;height:88px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
+              <img loading="lazy" decoding="async" src="./assets/client-aecom.webp" alt="AECOM" style="height:39px;width:143px;max-width:none;object-fit:contain;display:block;filter:grayscale(1);opacity:0.62;transition:filter .3s ease,opacity .3s ease" style-hover="filter:none;opacity:1"/>
             </div>
-            <div style="flex-shrink:0;width:150px;height:80px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
-              <img loading="lazy" decoding="async" src="./assets/client-afdb.webp" alt="African Development Bank" style="height:32px;width:auto;max-width:110px;object-fit:contain;display:block"/>
+            <div style="flex-shrink:0;width:106px;height:88px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
+              <img loading="lazy" decoding="async" src="./assets/client-afdb.webp" alt="African Development Bank" style="height:54px;width:54px;max-width:none;object-fit:contain;display:block;filter:grayscale(1);opacity:0.62;transition:filter .3s ease,opacity .3s ease" style-hover="filter:none;opacity:1"/>
             </div>
-            <div style="flex-shrink:0;width:150px;height:80px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
-              <img loading="lazy" decoding="async" src="./assets/client-apec.webp" alt="APEC" style="height:32px;width:auto;max-width:110px;object-fit:contain;display:block"/>
+            <div style="flex-shrink:0;width:160px;height:88px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
+              <img loading="lazy" decoding="async" src="./assets/client-apec.webp" alt="APEC" style="height:59px;width:108px;max-width:none;object-fit:contain;display:block;filter:grayscale(1);opacity:0.62;transition:filter .3s ease,opacity .3s ease" style-hover="filter:none;opacity:1"/>
             </div>
-            <div style="flex-shrink:0;width:150px;height:80px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
-              <img loading="lazy" decoding="async" src="./assets/client-asi.webp" alt="Adam Smith International" style="height:32px;width:auto;max-width:110px;object-fit:contain;display:block"/>
+            <div style="flex-shrink:0;width:179px;height:88px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
+              <img loading="lazy" decoding="async" src="./assets/client-asi.webp" alt="Adam Smith International" style="height:42px;width:127px;max-width:none;object-fit:contain;display:block;filter:grayscale(1);opacity:0.62;transition:filter .3s ease,opacity .3s ease" style-hover="filter:none;opacity:1"/>
             </div>
-            <div style="flex-shrink:0;width:150px;height:80px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
-              <img loading="lazy" decoding="async" src="./assets/client-booz.webp" alt="Booz &amp; Company" style="height:46px;width:auto;max-width:150px;object-fit:contain;display:block"/>
+            <div style="flex-shrink:0;width:199px;height:88px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
+              <img loading="lazy" decoding="async" src="./assets/client-booz.webp" alt="Booz &amp; Company" style="height:54px;width:147px;max-width:none;object-fit:contain;display:block;filter:grayscale(1);opacity:0.62;transition:filter .3s ease,opacity .3s ease" style-hover="filter:none;opacity:1"/>
             </div>
-            <div style="flex-shrink:0;width:150px;height:80px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
-              <img loading="lazy" decoding="async" src="./assets/client-chemonics.webp" alt="Chemonics" style="height:32px;width:auto;max-width:110px;object-fit:contain;display:block"/>
+            <div style="flex-shrink:0;width:191px;height:88px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
+              <img loading="lazy" decoding="async" src="./assets/client-ustda.webp" alt="USTDA" style="height:45px;width:139px;max-width:none;object-fit:contain;display:block;filter:grayscale(1);opacity:0.62;transition:filter .3s ease,opacity .3s ease" style-hover="filter:none;opacity:1"/>
             </div>
-            <div style="flex-shrink:0;width:150px;height:80px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
-              <img loading="lazy" decoding="async" src="./assets/client-deloitte.webp" alt="Deloitte" style="height:32px;width:auto;max-width:110px;object-fit:contain;display:block"/>
+            <div style="flex-shrink:0;width:182px;height:88px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
+              <img loading="lazy" decoding="async" src="./assets/client-chemonics.webp" alt="Chemonics" style="height:28px;width:130px;max-width:none;object-fit:contain;display:block;filter:grayscale(1);opacity:0.62;transition:filter .3s ease,opacity .3s ease" style-hover="filter:none;opacity:1"/>
             </div>
-            <div style="flex-shrink:0;width:150px;height:80px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
-              <img loading="lazy" decoding="async" src="./assets/client-ebrd.webp" alt="European Bank for Reconstruction and Development" style="height:46px;width:auto;max-width:150px;object-fit:contain;display:block"/>
+            <div style="flex-shrink:0;width:185px;height:88px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
+              <img loading="lazy" decoding="async" src="./assets/client-deloitte.webp" alt="Deloitte" style="height:35px;width:133px;max-width:none;object-fit:contain;display:block;filter:grayscale(1);opacity:0.62;transition:filter .3s ease,opacity .3s ease" style-hover="filter:none;opacity:1"/>
             </div>
-            <div style="flex-shrink:0;width:150px;height:80px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
-              <img loading="lazy" decoding="async" src="./assets/client-ecowas.webp" alt="ECOWAS" style="height:32px;width:auto;max-width:110px;object-fit:contain;display:block"/>
+            <div style="flex-shrink:0;width:188px;height:88px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
+              <img loading="lazy" decoding="async" src="./assets/client-ebrd.webp" alt="European Bank for Reconstruction and Development" style="height:33px;width:136px;max-width:none;object-fit:contain;display:block;filter:grayscale(1);opacity:0.62;transition:filter .3s ease,opacity .3s ease" style-hover="filter:none;opacity:1"/>
             </div>
-            <div style="flex-shrink:0;width:150px;height:80px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
-              <img loading="lazy" decoding="async" src="./assets/client-ifc.png" alt="IFC" style="height:40px;width:auto;max-width:130px;object-fit:contain;display:block"/>
+            <div style="flex-shrink:0;width:108px;height:88px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
+              <img loading="lazy" decoding="async" src="./assets/client-ecowas.webp" alt="ECOWAS" style="height:56px;width:56px;max-width:none;object-fit:contain;display:block;filter:grayscale(1);opacity:0.62;transition:filter .3s ease,opacity .3s ease" style-hover="filter:none;opacity:1"/>
             </div>
-            <div style="flex-shrink:0;width:150px;height:80px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
-              <img loading="lazy" decoding="async" src="./assets/client-worldbank.webp" alt="The World Bank" style="height:44px;width:auto;max-width:140px;object-fit:contain;display:block"/>
+            <div style="flex-shrink:0;width:185px;height:88px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
+              <img loading="lazy" decoding="async" src="./assets/client-ifc.png" alt="IFC" style="height:60px;width:133px;max-width:none;object-fit:contain;display:block;filter:grayscale(1);opacity:0.62;transition:filter .3s ease,opacity .3s ease" style-hover="filter:none;opacity:1"/>
             </div>
-            <div style="flex-shrink:0;width:150px;height:80px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
-              <img loading="lazy" decoding="async" src="./assets/client-ey.png" alt="EY" style="height:42px;width:auto;max-width:130px;object-fit:contain;display:block"/>
+            <div style="flex-shrink:0;width:156px;height:88px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
+              <img loading="lazy" decoding="async" src="./assets/client-worldbank.webp" alt="The World Bank" style="height:53px;width:104px;max-width:none;object-fit:contain;display:block;filter:grayscale(1);opacity:0.62;transition:filter .3s ease,opacity .3s ease" style-hover="filter:none;opacity:1"/>
             </div>
-            <div style="flex-shrink:0;width:150px;height:80px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
-              <img loading="lazy" decoding="async" src="./assets/client-grantthornton.png" alt="Grant Thornton" style="height:32px;width:auto;max-width:150px;object-fit:contain;display:block"/>
+            <div style="flex-shrink:0;width:140px;height:88px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
+              <img loading="lazy" decoding="async" src="./assets/client-ey.png" alt="EY" style="height:64px;width:88px;max-width:none;object-fit:contain;display:block;filter:grayscale(1);opacity:0.62;transition:filter .3s ease,opacity .3s ease" style-hover="filter:none;opacity:1"/>
             </div>
-            <div style="flex-shrink:0;width:150px;height:80px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
-              <img loading="lazy" decoding="async" src="./assets/client-icao.jpeg" alt="ICAO" style="height:44px;width:auto;max-width:120px;object-fit:contain;display:block"/>
+            <div style="flex-shrink:0;width:187px;height:88px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
+              <img loading="lazy" decoding="async" src="./assets/client-grantthornton.png" alt="Grant Thornton" style="height:25px;width:135px;max-width:none;object-fit:contain;display:block;filter:grayscale(1);opacity:0.62;transition:filter .3s ease,opacity .3s ease" style-hover="filter:none;opacity:1"/>
             </div>
-            <div style="flex-shrink:0;width:150px;height:80px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
-              <img loading="lazy" decoding="async" src="./assets/client-idb.png" alt="Inter-American Development Bank" style="height:36px;width:auto;max-width:130px;object-fit:contain;display:block"/>
+            <div style="flex-shrink:0;width:117px;height:88px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
+              <img loading="lazy" decoding="async" src="./assets/client-icao.jpeg" alt="ICAO" style="height:54px;width:65px;max-width:none;object-fit:contain;display:block;filter:grayscale(1);opacity:0.62;transition:filter .3s ease,opacity .3s ease" style-hover="filter:none;opacity:1"/>
             </div>
-            <div style="flex-shrink:0;width:150px;height:80px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
-              <img loading="lazy" decoding="async" src="./assets/client-ifad.png" alt="IFAD" style="height:44px;width:auto;max-width:140px;object-fit:contain;display:block"/>
+            <div style="flex-shrink:0;width:183px;height:88px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
+              <img loading="lazy" decoding="async" src="./assets/client-idb.png" alt="Inter-American Development Bank" style="height:59px;width:131px;max-width:none;object-fit:contain;display:block;filter:grayscale(1);opacity:0.62;transition:filter .3s ease,opacity .3s ease" style-hover="filter:none;opacity:1"/>
             </div>
-            <div style="flex-shrink:0;width:150px;height:80px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
-              <img loading="lazy" decoding="async" src="./assets/client-louisberger.png" alt="Louis Berger" style="height:38px;width:auto;max-width:150px;object-fit:contain;display:block"/>
+            <div style="flex-shrink:0;width:129px;height:88px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
+              <img loading="lazy" decoding="async" src="./assets/client-ifad.png" alt="IFAD" style="height:58px;width:77px;max-width:none;object-fit:contain;display:block;filter:grayscale(1);opacity:0.62;transition:filter .3s ease,opacity .3s ease" style-hover="filter:none;opacity:1"/>
             </div>
-            <div style="flex-shrink:0;width:150px;height:80px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
-              <img loading="lazy" decoding="async" src="./assets/client-mcc2.png" alt="Millennium Challenge Corporation" style="height:44px;width:auto;max-width:120px;object-fit:contain;display:block"/>
+            <div style="flex-shrink:0;width:190px;height:88px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
+              <img loading="lazy" decoding="async" src="./assets/client-louisberger.png" alt="Louis Berger" style="height:44px;width:138px;max-width:none;object-fit:contain;display:block;filter:grayscale(1);opacity:0.62;transition:filter .3s ease,opacity .3s ease" style-hover="filter:none;opacity:1"/>
             </div>
-            <div style="flex-shrink:0;width:150px;height:80px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
-              <img loading="lazy" decoding="async" src="./assets/client-oecs.png" alt="Organisation of Eastern Caribbean States" style="height:40px;width:auto;max-width:150px;object-fit:contain;display:block"/>
+            <div style="flex-shrink:0;width:117px;height:88px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
+              <img loading="lazy" decoding="async" src="./assets/client-mcc2.png" alt="Millennium Challenge Corporation" style="height:58px;width:65px;max-width:none;object-fit:contain;display:block;filter:grayscale(1);opacity:0.62;transition:filter .3s ease,opacity .3s ease" style-hover="filter:none;opacity:1"/>
             </div>
-            <div style="flex-shrink:0;width:150px;height:80px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
-              <img loading="lazy" decoding="async" src="./assets/client-palladium.png" alt="Palladium" style="height:32px;width:auto;max-width:140px;object-fit:contain;display:block"/>
+            <div style="flex-shrink:0;width:193px;height:88px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
+              <img loading="lazy" decoding="async" src="./assets/client-oecs.png" alt="Organisation of Eastern Caribbean States" style="height:74px;width:141px;max-width:none;object-fit:contain;display:block;filter:grayscale(1);opacity:0.62;transition:filter .3s ease,opacity .3s ease" style-hover="filter:none;opacity:1"/>
             </div>
-            <div style="flex-shrink:0;width:150px;height:80px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
-              <img loading="lazy" decoding="async" src="./assets/client-sadc.png" alt="SADC" style="height:44px;width:auto;max-width:100px;object-fit:contain;display:block"/>
+            <div style="flex-shrink:0;width:170px;height:88px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
+              <img loading="lazy" decoding="async" src="./assets/client-palladium.png" alt="Palladium" style="height:48px;width:118px;max-width:none;object-fit:contain;display:block;filter:grayscale(1);opacity:0.62;transition:filter .3s ease,opacity .3s ease" style-hover="filter:none;opacity:1"/>
             </div>
-            <div style="flex-shrink:0;width:150px;height:80px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
-              <img loading="lazy" decoding="async" src="./assets/client-tmea.png" alt="TradeMark Africa" style="height:40px;width:auto;max-width:140px;object-fit:contain;display:block"/>
+            <div style="flex-shrink:0;width:109px;height:88px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
+              <img loading="lazy" decoding="async" src="./assets/client-sadc.png" alt="SADC" style="height:62px;width:57px;max-width:none;object-fit:contain;display:block;filter:grayscale(1);opacity:0.62;transition:filter .3s ease,opacity .3s ease" style-hover="filter:none;opacity:1"/>
             </div>
-            <div style="flex-shrink:0;width:150px;height:80px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
-              <img loading="lazy" decoding="async" src="./assets/client-usaid.webp" alt="USAID" style="height:40px;width:auto;max-width:140px;object-fit:contain;display:block"/>
+            <div style="flex-shrink:0;width:132px;height:88px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
+              <img loading="lazy" decoding="async" src="./assets/client-tmea.png" alt="TradeMark Africa" style="height:68px;width:80px;max-width:none;object-fit:contain;display:block;filter:grayscale(1);opacity:0.62;transition:filter .3s ease,opacity .3s ease" style-hover="filter:none;opacity:1"/>
             </div>
-            <div style="flex-shrink:0;width:150px;height:80px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
-              <img loading="lazy" decoding="async" src="./assets/client-ustda.webp" alt="USTDA" style="height:32px;width:auto;max-width:130px;object-fit:contain;display:block"/>
+            <div style="flex-shrink:0;width:160px;height:88px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
+              <img loading="lazy" decoding="async" src="./assets/client-usaid.webp" alt="USAID" style="height:86px;width:166px;max-width:none;object-fit:contain;display:block;filter:grayscale(1);opacity:0.62;transition:filter .3s ease,opacity .3s ease" style-hover="filter:none;opacity:1"/>
             </div>
-            <div style="flex-shrink:0;width:150px;height:80px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
-              <img loading="lazy" decoding="async" src="./assets/client-adb.webp" alt="Asian Development Bank" style="height:32px;width:auto;max-width:110px;object-fit:contain;display:block"/>
+            <div style="flex-shrink:0;width:118px;height:88px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
+              <img loading="lazy" decoding="async" src="./assets/client-adb.webp" alt="Asian Development Bank" style="height:44px;width:66px;max-width:none;object-fit:contain;display:block;filter:grayscale(1);opacity:0.62;transition:filter .3s ease,opacity .3s ease" style-hover="filter:none;opacity:1"/>
             </div>
-            <div style="flex-shrink:0;width:150px;height:80px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
-              <img loading="lazy" decoding="async" src="./assets/client-aecom.webp" alt="AECOM" style="height:32px;width:auto;max-width:110px;object-fit:contain;display:block"/>
+            <div style="flex-shrink:0;width:195px;height:88px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
+              <img loading="lazy" decoding="async" src="./assets/client-aecom.webp" alt="AECOM" style="height:39px;width:143px;max-width:none;object-fit:contain;display:block;filter:grayscale(1);opacity:0.62;transition:filter .3s ease,opacity .3s ease" style-hover="filter:none;opacity:1"/>
             </div>
-            <div style="flex-shrink:0;width:150px;height:80px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
-              <img loading="lazy" decoding="async" src="./assets/client-afdb.webp" alt="African Development Bank" style="height:32px;width:auto;max-width:110px;object-fit:contain;display:block"/>
+            <div style="flex-shrink:0;width:106px;height:88px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
+              <img loading="lazy" decoding="async" src="./assets/client-afdb.webp" alt="African Development Bank" style="height:54px;width:54px;max-width:none;object-fit:contain;display:block;filter:grayscale(1);opacity:0.62;transition:filter .3s ease,opacity .3s ease" style-hover="filter:none;opacity:1"/>
             </div>
-            <div style="flex-shrink:0;width:150px;height:80px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
-              <img loading="lazy" decoding="async" src="./assets/client-apec.webp" alt="APEC" style="height:32px;width:auto;max-width:110px;object-fit:contain;display:block"/>
+            <div style="flex-shrink:0;width:160px;height:88px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
+              <img loading="lazy" decoding="async" src="./assets/client-apec.webp" alt="APEC" style="height:59px;width:108px;max-width:none;object-fit:contain;display:block;filter:grayscale(1);opacity:0.62;transition:filter .3s ease,opacity .3s ease" style-hover="filter:none;opacity:1"/>
             </div>
-            <div style="flex-shrink:0;width:150px;height:80px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
-              <img loading="lazy" decoding="async" src="./assets/client-asi.webp" alt="Adam Smith International" style="height:32px;width:auto;max-width:110px;object-fit:contain;display:block"/>
+            <div style="flex-shrink:0;width:179px;height:88px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
+              <img loading="lazy" decoding="async" src="./assets/client-asi.webp" alt="Adam Smith International" style="height:42px;width:127px;max-width:none;object-fit:contain;display:block;filter:grayscale(1);opacity:0.62;transition:filter .3s ease,opacity .3s ease" style-hover="filter:none;opacity:1"/>
             </div>
-            <div style="flex-shrink:0;width:150px;height:80px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
-              <img loading="lazy" decoding="async" src="./assets/client-booz.webp" alt="Booz &amp; Company" style="height:46px;width:auto;max-width:150px;object-fit:contain;display:block"/>
+            <div style="flex-shrink:0;width:199px;height:88px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
+              <img loading="lazy" decoding="async" src="./assets/client-booz.webp" alt="Booz &amp; Company" style="height:54px;width:147px;max-width:none;object-fit:contain;display:block;filter:grayscale(1);opacity:0.62;transition:filter .3s ease,opacity .3s ease" style-hover="filter:none;opacity:1"/>
             </div>
-            <div style="flex-shrink:0;width:150px;height:80px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
-              <img loading="lazy" decoding="async" src="./assets/client-chemonics.webp" alt="Chemonics" style="height:32px;width:auto;max-width:110px;object-fit:contain;display:block"/>
+            <div style="flex-shrink:0;width:191px;height:88px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
+              <img loading="lazy" decoding="async" src="./assets/client-ustda.webp" alt="USTDA" style="height:45px;width:139px;max-width:none;object-fit:contain;display:block;filter:grayscale(1);opacity:0.62;transition:filter .3s ease,opacity .3s ease" style-hover="filter:none;opacity:1"/>
             </div>
-            <div style="flex-shrink:0;width:150px;height:80px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
-              <img loading="lazy" decoding="async" src="./assets/client-deloitte.webp" alt="Deloitte" style="height:32px;width:auto;max-width:110px;object-fit:contain;display:block"/>
+            <div style="flex-shrink:0;width:182px;height:88px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
+              <img loading="lazy" decoding="async" src="./assets/client-chemonics.webp" alt="Chemonics" style="height:28px;width:130px;max-width:none;object-fit:contain;display:block;filter:grayscale(1);opacity:0.62;transition:filter .3s ease,opacity .3s ease" style-hover="filter:none;opacity:1"/>
             </div>
-            <div style="flex-shrink:0;width:150px;height:80px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
-              <img loading="lazy" decoding="async" src="./assets/client-ebrd.webp" alt="European Bank for Reconstruction and Development" style="height:46px;width:auto;max-width:150px;object-fit:contain;display:block"/>
+            <div style="flex-shrink:0;width:185px;height:88px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
+              <img loading="lazy" decoding="async" src="./assets/client-deloitte.webp" alt="Deloitte" style="height:35px;width:133px;max-width:none;object-fit:contain;display:block;filter:grayscale(1);opacity:0.62;transition:filter .3s ease,opacity .3s ease" style-hover="filter:none;opacity:1"/>
             </div>
-            <div style="flex-shrink:0;width:150px;height:80px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
-              <img loading="lazy" decoding="async" src="./assets/client-ecowas.webp" alt="ECOWAS" style="height:32px;width:auto;max-width:110px;object-fit:contain;display:block"/>
+            <div style="flex-shrink:0;width:188px;height:88px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
+              <img loading="lazy" decoding="async" src="./assets/client-ebrd.webp" alt="European Bank for Reconstruction and Development" style="height:33px;width:136px;max-width:none;object-fit:contain;display:block;filter:grayscale(1);opacity:0.62;transition:filter .3s ease,opacity .3s ease" style-hover="filter:none;opacity:1"/>
             </div>
-            <div style="flex-shrink:0;width:150px;height:80px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
-              <img loading="lazy" decoding="async" src="./assets/client-ifc.png" alt="IFC" style="height:40px;width:auto;max-width:130px;object-fit:contain;display:block"/>
+            <div style="flex-shrink:0;width:108px;height:88px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
+              <img loading="lazy" decoding="async" src="./assets/client-ecowas.webp" alt="ECOWAS" style="height:56px;width:56px;max-width:none;object-fit:contain;display:block;filter:grayscale(1);opacity:0.62;transition:filter .3s ease,opacity .3s ease" style-hover="filter:none;opacity:1"/>
             </div>
-            <div style="flex-shrink:0;width:150px;height:80px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
-              <img loading="lazy" decoding="async" src="./assets/client-worldbank.webp" alt="The World Bank" style="height:44px;width:auto;max-width:140px;object-fit:contain;display:block"/>
+            <div style="flex-shrink:0;width:185px;height:88px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
+              <img loading="lazy" decoding="async" src="./assets/client-ifc.png" alt="IFC" style="height:60px;width:133px;max-width:none;object-fit:contain;display:block;filter:grayscale(1);opacity:0.62;transition:filter .3s ease,opacity .3s ease" style-hover="filter:none;opacity:1"/>
             </div>
-            <div style="flex-shrink:0;width:150px;height:80px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
-              <img loading="lazy" decoding="async" src="./assets/client-ey.png" alt="EY" style="height:42px;width:auto;max-width:130px;object-fit:contain;display:block"/>
+            <div style="flex-shrink:0;width:156px;height:88px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
+              <img loading="lazy" decoding="async" src="./assets/client-worldbank.webp" alt="The World Bank" style="height:53px;width:104px;max-width:none;object-fit:contain;display:block;filter:grayscale(1);opacity:0.62;transition:filter .3s ease,opacity .3s ease" style-hover="filter:none;opacity:1"/>
             </div>
-            <div style="flex-shrink:0;width:150px;height:80px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
-              <img loading="lazy" decoding="async" src="./assets/client-grantthornton.png" alt="Grant Thornton" style="height:32px;width:auto;max-width:150px;object-fit:contain;display:block"/>
+            <div style="flex-shrink:0;width:140px;height:88px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
+              <img loading="lazy" decoding="async" src="./assets/client-ey.png" alt="EY" style="height:64px;width:88px;max-width:none;object-fit:contain;display:block;filter:grayscale(1);opacity:0.62;transition:filter .3s ease,opacity .3s ease" style-hover="filter:none;opacity:1"/>
             </div>
-            <div style="flex-shrink:0;width:150px;height:80px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
-              <img loading="lazy" decoding="async" src="./assets/client-icao.jpeg" alt="ICAO" style="height:44px;width:auto;max-width:120px;object-fit:contain;display:block"/>
+            <div style="flex-shrink:0;width:187px;height:88px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
+              <img loading="lazy" decoding="async" src="./assets/client-grantthornton.png" alt="Grant Thornton" style="height:25px;width:135px;max-width:none;object-fit:contain;display:block;filter:grayscale(1);opacity:0.62;transition:filter .3s ease,opacity .3s ease" style-hover="filter:none;opacity:1"/>
             </div>
-            <div style="flex-shrink:0;width:150px;height:80px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
-              <img loading="lazy" decoding="async" src="./assets/client-idb.png" alt="Inter-American Development Bank" style="height:36px;width:auto;max-width:130px;object-fit:contain;display:block"/>
+            <div style="flex-shrink:0;width:117px;height:88px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
+              <img loading="lazy" decoding="async" src="./assets/client-icao.jpeg" alt="ICAO" style="height:54px;width:65px;max-width:none;object-fit:contain;display:block;filter:grayscale(1);opacity:0.62;transition:filter .3s ease,opacity .3s ease" style-hover="filter:none;opacity:1"/>
             </div>
-            <div style="flex-shrink:0;width:150px;height:80px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
-              <img loading="lazy" decoding="async" src="./assets/client-ifad.png" alt="IFAD" style="height:44px;width:auto;max-width:140px;object-fit:contain;display:block"/>
+            <div style="flex-shrink:0;width:183px;height:88px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
+              <img loading="lazy" decoding="async" src="./assets/client-idb.png" alt="Inter-American Development Bank" style="height:59px;width:131px;max-width:none;object-fit:contain;display:block;filter:grayscale(1);opacity:0.62;transition:filter .3s ease,opacity .3s ease" style-hover="filter:none;opacity:1"/>
             </div>
-            <div style="flex-shrink:0;width:150px;height:80px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
-              <img loading="lazy" decoding="async" src="./assets/client-louisberger.png" alt="Louis Berger" style="height:38px;width:auto;max-width:150px;object-fit:contain;display:block"/>
+            <div style="flex-shrink:0;width:129px;height:88px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
+              <img loading="lazy" decoding="async" src="./assets/client-ifad.png" alt="IFAD" style="height:58px;width:77px;max-width:none;object-fit:contain;display:block;filter:grayscale(1);opacity:0.62;transition:filter .3s ease,opacity .3s ease" style-hover="filter:none;opacity:1"/>
             </div>
-            <div style="flex-shrink:0;width:150px;height:80px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
-              <img loading="lazy" decoding="async" src="./assets/client-mcc2.png" alt="Millennium Challenge Corporation" style="height:44px;width:auto;max-width:120px;object-fit:contain;display:block"/>
+            <div style="flex-shrink:0;width:190px;height:88px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
+              <img loading="lazy" decoding="async" src="./assets/client-louisberger.png" alt="Louis Berger" style="height:44px;width:138px;max-width:none;object-fit:contain;display:block;filter:grayscale(1);opacity:0.62;transition:filter .3s ease,opacity .3s ease" style-hover="filter:none;opacity:1"/>
             </div>
-            <div style="flex-shrink:0;width:150px;height:80px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
-              <img loading="lazy" decoding="async" src="./assets/client-oecs.png" alt="Organisation of Eastern Caribbean States" style="height:40px;width:auto;max-width:150px;object-fit:contain;display:block"/>
+            <div style="flex-shrink:0;width:117px;height:88px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
+              <img loading="lazy" decoding="async" src="./assets/client-mcc2.png" alt="Millennium Challenge Corporation" style="height:58px;width:65px;max-width:none;object-fit:contain;display:block;filter:grayscale(1);opacity:0.62;transition:filter .3s ease,opacity .3s ease" style-hover="filter:none;opacity:1"/>
             </div>
-            <div style="flex-shrink:0;width:150px;height:80px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
-              <img loading="lazy" decoding="async" src="./assets/client-palladium.png" alt="Palladium" style="height:32px;width:auto;max-width:140px;object-fit:contain;display:block"/>
+            <div style="flex-shrink:0;width:193px;height:88px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
+              <img loading="lazy" decoding="async" src="./assets/client-oecs.png" alt="Organisation of Eastern Caribbean States" style="height:74px;width:141px;max-width:none;object-fit:contain;display:block;filter:grayscale(1);opacity:0.62;transition:filter .3s ease,opacity .3s ease" style-hover="filter:none;opacity:1"/>
             </div>
-            <div style="flex-shrink:0;width:150px;height:80px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
-              <img loading="lazy" decoding="async" src="./assets/client-sadc.png" alt="SADC" style="height:44px;width:auto;max-width:100px;object-fit:contain;display:block"/>
+            <div style="flex-shrink:0;width:170px;height:88px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
+              <img loading="lazy" decoding="async" src="./assets/client-palladium.png" alt="Palladium" style="height:48px;width:118px;max-width:none;object-fit:contain;display:block;filter:grayscale(1);opacity:0.62;transition:filter .3s ease,opacity .3s ease" style-hover="filter:none;opacity:1"/>
             </div>
-            <div style="flex-shrink:0;width:150px;height:80px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
-              <img loading="lazy" decoding="async" src="./assets/client-tmea.png" alt="TradeMark Africa" style="height:40px;width:auto;max-width:140px;object-fit:contain;display:block"/>
+            <div style="flex-shrink:0;width:109px;height:88px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
+              <img loading="lazy" decoding="async" src="./assets/client-sadc.png" alt="SADC" style="height:62px;width:57px;max-width:none;object-fit:contain;display:block;filter:grayscale(1);opacity:0.62;transition:filter .3s ease,opacity .3s ease" style-hover="filter:none;opacity:1"/>
             </div>
-            <div style="flex-shrink:0;width:150px;height:80px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
-              <img loading="lazy" decoding="async" src="./assets/client-usaid.webp" alt="USAID" style="height:40px;width:auto;max-width:140px;object-fit:contain;display:block"/>
+            <div style="flex-shrink:0;width:132px;height:88px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
+              <img loading="lazy" decoding="async" src="./assets/client-tmea.png" alt="TradeMark Africa" style="height:68px;width:80px;max-width:none;object-fit:contain;display:block;filter:grayscale(1);opacity:0.62;transition:filter .3s ease,opacity .3s ease" style-hover="filter:none;opacity:1"/>
             </div>
-            <div style="flex-shrink:0;width:150px;height:80px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
-              <img loading="lazy" decoding="async" src="./assets/client-ustda.webp" alt="USTDA" style="height:32px;width:auto;max-width:130px;object-fit:contain;display:block"/>
+            <div style="flex-shrink:0;width:160px;height:88px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
+              <img loading="lazy" decoding="async" src="./assets/client-usaid.webp" alt="USAID" style="height:86px;width:166px;max-width:none;object-fit:contain;display:block;filter:grayscale(1);opacity:0.62;transition:filter .3s ease,opacity .3s ease" style-hover="filter:none;opacity:1"/>
             </div>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- LINKEDIN -->
+  <section id="linkedin" style="background:oklch(0.975 0.003 95);padding:72px 24px">
+    <div style="max-width:1180px;margin:0 auto">
+      <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap;margin-bottom:28px">
+        <div>
+          <h2 style="font-family:Montserrat;font-weight:600;font-size:28px;margin:0 0 8px;color:oklch(0.28 0.09 264)">Latest news</h2>
+          <p style="margin:0;font-size:15px;color:oklch(0.45 0.01 250)">Project updates, publications and news from our teams.</p>
+        </div>
+        <a href="https://www.linkedin.com/company/ios-partners-inc./" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:8px;background:#82C44D;color:#ffffff;font-weight:600;font-size:14px;padding:11px 20px;border-radius:9px" style-hover="background:#6fa93e">
+          Read more
+        </a>
+      </div>
+      <div data-stack style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px">
+        <sc-for list="{{ newsPosts }}" as="post" hint-placeholder-count="3">
+          <a href="{{ post.url }}" target="_blank" rel="noopener" style="display:flex;flex-direction:column;background:white;border-radius:14px;overflow:hidden;box-shadow:0 10px 30px rgba(20,30,45,0.08);transition:transform 0.25s ease,box-shadow 0.25s ease" style-hover="transform:translateY(-4px);box-shadow:0 18px 40px rgba(20,30,45,0.14)">
+            <div style="height:180px;position:relative">
+              <image-slot id="{{ post.imgId }}" src="{{ post.img }}" shape="rect" fit="cover" placeholder="Post image" style="width:100%;height:100%"></image-slot>
+            </div>
+            <div style="padding:20px 22px 22px;display:flex;flex-direction:column;gap:12px;flex:1">
+              <div style="font-family:Montserrat;font-weight:600;font-size:16.5px;line-height:1.4;color:oklch(0.28 0.09 264)">{{ post.title }}</div>
+              <div style="margin-top:auto;font-size:14px;font-weight:600;color:#5f9636">Read more →</div>
+            </div>
+          </a>
+        </sc-for>
       </div>
     </div>
   </section>
@@ -535,7 +557,6 @@
     <div style="position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,0.05) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.05) 1px,transparent 1px);background-size:56px 56px;mask-image:linear-gradient(180deg,transparent,black 30%,black 70%,transparent)"></div>
     <div style="position:relative;max-width:1180px;margin:0 auto;padding:48px 24px;{{ ctaStyle }}">
       <div style="text-align:center;max-width:640px;margin:0 auto 40px">
-        <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(130,196,77,0.14);border:1px solid rgba(130,196,77,0.35);color:#9fd97a;font-size:12px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;font-family:'JetBrains Mono',monospace;padding:6px 14px;border-radius:99px;margin-bottom:20px">{{ txtWorkWithUs }}</div>
         <h2 style="font-family:Montserrat;font-weight:600;font-size:34px;line-height:1.2;margin:0;color:white">{{ txtHistoryTogether }}</h2>
       </div>
       <div style="display:flex;justify-content:center;gap:0;border-bottom:1px solid rgba(255,255,255,0.14);max-width:560px;margin:0 auto">
@@ -551,7 +572,8 @@
           <h3 style="font-family:Montserrat;font-weight:700;font-size:24px;margin:0 0 6px;color:white">{{ txtJoinTeam }}</h3>
           <p style="font-size:13.5px;color:rgba(255,255,255,0.6);margin:0 0 20px">{{ txtApplyIndividual }}</p>
           <sc-if value="{{ ctaSubmitted }}" hint-placeholder-val="{{ false }}">
-            <p style="color:#9fd97a;font-size:15px">Thanks — our team will be in touch within one business day.</p>
+            <p style="color:#9fd97a;font-size:15px;margin:0 0 12px">Thanks — our team will be in touch within one business day.</p>
+            <a href="#our-work" style="color:white;font-weight:600;font-size:14px;text-decoration:underline;text-underline-offset:3px" style-hover="color:#9fd97a">Meanwhile, explore our projects →</a>
           </sc-if>
           <sc-if value="{{ ctaNotSubmitted }}" hint-placeholder-val="{{ true }}">
             <form onSubmit="{{ submitCtaForm }}" style="display:flex;flex-direction:column;gap:14px">
@@ -561,13 +583,14 @@
               </div>
               <input type="email" placeholder="Email" value="{{ ctaFields.email }}" onChange="{{ setCtaFieldEmail }}" required="" style="width:100%;box-sizing:border-box;padding:12px 14px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.06);color:#ffffff;border-radius:10px;font-size:14px;font-family:Montserrat;caret-color:#ffffff"/>
               <label style="display:flex;align-items:center;gap:10px;padding:12px 14px;border:1px dashed rgba(255,255,255,0.3);background:rgba(255,255,255,0.04);color:rgba(255,255,255,0.75);border-radius:10px;font-size:13.5px;cursor:pointer">
-                <input type="file" onChange="{{ setCtaFile }}" style="display:none"/>
+                <input type="file" accept=".pdf,.doc,.docx" onChange="{{ setCtaFile }}" style="display:none"/>
                 <span style="background:rgba(255,255,255,0.12);padding:6px 12px;border-radius:8px;font-weight:600;font-size:12.5px;color:white;white-space:nowrap">Upload CV</span>
                 <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ ctaFields.cvFileName }}</span>
               </label>
+              <span style="font-size:12px;color:rgba(255,255,255,0.72);margin-top:-8px">PDF or Word · max 10 MB</span>
               <textarea placeholder="Explain the project" value="{{ ctaFields.message }}" onChange="{{ setCtaFieldMessage }}" rows="3" style="width:100%;box-sizing:border-box;padding:12px 14px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.06);color:#ffffff;border-radius:10px;font-size:14px;font-family:Montserrat;resize:vertical;caret-color:#ffffff"></textarea>
               <div style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden" aria-hidden="true"><label>Leave this empty<input type="text" tabindex="-1" autocomplete="off" value="{{ ctaHoney }}" onChange="{{ setCtaHoney }}"/></label></div>
-              <button type="submit" style="align-self:flex-start;display:inline-flex;align-items:center;gap:8px;background:#82C44D;color:#ffffff;font-weight:600;font-size:15px;padding:14px 28px;border:none;border-radius:10px;transition:transform 0.2s ease,box-shadow 0.2s ease;cursor:pointer" style-hover="background:#6fa93e;transform:translateY(-2px);box-shadow:0 10px 24px rgba(130,196,77,0.35)">Contact us →</button>
+              <button type="submit" style="align-self:flex-start;display:inline-flex;align-items:center;gap:8px;background:#82C44D;color:#ffffff;font-weight:600;font-size:15px;padding:14px 28px;border:none;border-radius:10px;transition:transform 0.2s ease,box-shadow 0.2s ease;cursor:pointer" style-hover="background:#6fa93e;transform:translateY(-2px);box-shadow:0 10px 24px rgba(130,196,77,0.35)">Send application →</button>
             </form>
           </sc-if>
         </div>
@@ -580,7 +603,8 @@
           <h3 style="font-family:Montserrat;font-weight:700;font-size:24px;margin:0 0 6px;color:white">{{ txtPartnerWithUs }}</h3>
           <p style="font-size:13.5px;color:rgba(255,255,255,0.6);margin:0 0 20px">{{ txtFirmsCollab }}</p>
           <sc-if value="{{ firmSubmitted }}" hint-placeholder-val="{{ false }}">
-            <p style="color:#9fd97a;font-size:15px">Thanks — our team will be in touch within one business day.</p>
+            <p style="color:#9fd97a;font-size:15px;margin:0 0 12px">Thanks — our team will be in touch within one business day.</p>
+            <a href="#our-work" style="color:white;font-weight:600;font-size:14px;text-decoration:underline;text-underline-offset:3px" style-hover="color:#9fd97a">Meanwhile, explore our projects →</a>
           </sc-if>
           <sc-if value="{{ firmNotSubmitted }}" hint-placeholder-val="{{ true }}">
             <form onSubmit="{{ submitFirmForm }}" style="display:flex;flex-direction:column;gap:14px">
@@ -589,25 +613,18 @@
                 <input type="text" placeholder="Last name" value="{{ firmFields.lastName }}" onChange="{{ setFirmFieldLastName }}" required="{{ true }}" style="width:100%;box-sizing:border-box;padding:12px 14px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.06);color:#ffffff;border-radius:10px;font-size:14px;font-family:Montserrat;caret-color:#ffffff"/>
               </div>
               <div data-2col-input data-stack style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
-                <input type="text" placeholder="Company website" value="{{ firmFields.website }}" onChange="{{ setFirmFieldWebsite }}" style="width:100%;box-sizing:border-box;padding:12px 14px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.06);color:#ffffff;border-radius:10px;font-size:14px;font-family:Montserrat;caret-color:#ffffff"/>
-                <input type="text" placeholder="LinkedIn URL or username" value="{{ firmFields.linkedin }}" onChange="{{ setFirmFieldLinkedin }}" style="width:100%;box-sizing:border-box;padding:12px 14px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.06);color:#ffffff;border-radius:10px;font-size:14px;font-family:Montserrat;caret-color:#ffffff"/>
+                <input type="email" placeholder="Email" value="{{ firmFields.email }}" onChange="{{ setFirmFieldEmail }}" required="{{ true }}" style="width:100%;box-sizing:border-box;padding:12px 14px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.06);color:#ffffff;border-radius:10px;font-size:14px;font-family:Montserrat;caret-color:#ffffff"/>
+                <input type="text" placeholder="Company website (optional)" value="{{ firmFields.website }}" onChange="{{ setFirmFieldWebsite }}" style="width:100%;box-sizing:border-box;padding:12px 14px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.06);color:#ffffff;border-radius:10px;font-size:14px;font-family:Montserrat;caret-color:#ffffff"/>
               </div>
-              <input type="text" placeholder="Link to project" value="{{ firmFields.projectLink }}" onChange="{{ setFirmFieldProjectLink }}" style="width:100%;box-sizing:border-box;padding:12px 14px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.06);color:#ffffff;border-radius:10px;font-size:14px;font-family:Montserrat;caret-color:#ffffff"/>
-              <div data-2col-input data-stack style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
-                <input type="text" placeholder="Client name (donor)" value="{{ firmFields.client }}" onChange="{{ setFirmFieldClient }}" style="width:100%;box-sizing:border-box;padding:12px 14px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.06);color:#ffffff;border-radius:10px;font-size:14px;font-family:Montserrat;caret-color:#ffffff"/>
-                <input type="text" placeholder="Country / region" value="{{ firmFields.region }}" onChange="{{ setFirmFieldRegion }}" style="width:100%;box-sizing:border-box;padding:12px 14px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.06);color:#ffffff;border-radius:10px;font-size:14px;font-family:Montserrat;caret-color:#ffffff"/>
-              </div>
-              <label style="display:flex;flex-direction:column;gap:6px;font-size:12px;color:rgba(255,255,255,0.6)">Deadline
-                <input type="date" placeholder="Deadline" value="{{ firmFields.deadline }}" onChange="{{ setFirmFieldDeadline }}" style="width:100%;box-sizing:border-box;padding:12px 14px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.06);color:#ffffff;border-radius:10px;font-size:14px;font-family:Montserrat;caret-color:#ffffff;color-scheme:dark"/>
-              </label>
               <textarea placeholder="Tell us more about what we can do together" value="{{ firmFields.message }}" onChange="{{ setFirmFieldMessage }}" rows="3" style="width:100%;box-sizing:border-box;padding:12px 14px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.06);color:#ffffff;border-radius:10px;font-size:14px;font-family:Montserrat;caret-color:#ffffff;resize:vertical"></textarea>
               <label style="display:flex;align-items:center;gap:10px;padding:12px 14px;border:1px dashed rgba(255,255,255,0.3);background:rgba(255,255,255,0.04);color:rgba(255,255,255,0.75);border-radius:10px;font-size:13.5px;cursor:pointer">
-                <input type="file" onChange="{{ setFirmFile }}" style="display:none"/>
+                <input type="file" accept=".pdf,.doc,.docx,.ppt,.pptx" onChange="{{ setFirmFile }}" style="display:none"/>
                 <span style="background:rgba(255,255,255,0.12);padding:6px 12px;border-radius:8px;font-weight:600;font-size:12.5px;color:white;white-space:nowrap">Upload attachment</span>
                 <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ firmFields.profileFileName }}</span>
               </label>
+              <span style="font-size:12px;color:rgba(255,255,255,0.72);margin-top:-8px">PDF, Word or PowerPoint · max 10 MB</span>
               <div style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden" aria-hidden="true"><label>Leave this empty<input type="text" tabindex="-1" autocomplete="off" value="{{ firmHoney }}" onChange="{{ setFirmHoney }}"/></label></div>
-              <button type="submit" style="align-self:flex-start;display:inline-flex;align-items:center;gap:8px;background:#82C44D;color:#ffffff;font-weight:600;font-size:15px;padding:14px 28px;border:none;border-radius:10px;transition:transform 0.2s ease,box-shadow 0.2s ease;cursor:pointer" style-hover="background:#6fa93e;transform:translateY(-2px);box-shadow:0 10px 24px rgba(130,196,77,0.35)">Contact us →</button>
+              <button type="submit" style="align-self:flex-start;display:inline-flex;align-items:center;gap:8px;background:#82C44D;color:#ffffff;font-weight:600;font-size:15px;padding:14px 28px;border:none;border-radius:10px;transition:transform 0.2s ease,box-shadow 0.2s ease;cursor:pointer" style-hover="background:#6fa93e;transform:translateY(-2px);box-shadow:0 10px 24px rgba(130,196,77,0.35)">Send proposal →</button>
             </form>
           </sc-if>
         </div>
@@ -617,36 +634,45 @@
   </section>
 
   <footer data-footer style="background:oklch(0.2 0.08 264);color:white;padding:56px 56px 32px">
-    <div data-footer-grid style="max-width:1180px;margin:0 auto;display:grid;grid-template-columns:0.8fr 0.6fr 1fr;gap:40px">
-      <div>
-        <img loading="lazy" decoding="async" src="./assets/ios-partners-logo-white.webp" alt="IOS Partners" style="height:44px;width:auto;margin-bottom:14px"/>
+    <div data-footer-grid style="max-width:1180px;margin:0 auto;display:grid;grid-template-columns:1fr 0.6fr 1.7fr;gap:40px">
+      <div style="display:flex;flex-direction:column;gap:14px;align-items:flex-start">
+        <img loading="lazy" decoding="async" src="./assets/ios-partners-logo-white.webp" alt="IOS Partners" style="height:44px;width:auto"/>
+        <div style="font-size:13.5px;line-height:1.6;color:rgba(255,255,255,0.86)">Headquarters<br/>Miami, Florida, USA</div>
+        <a href="tel:+13056482877" style="color:white;font-size:13.5px" style-hover="color:#82C44D">+1 305 648 2877</a>
+        <a href="https://www.linkedin.com/company/ios-partners-inc./" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:8px;color:white;font-size:13px;font-weight:600;border:1px solid rgba(255,255,255,0.35);padding:8px 14px;border-radius:8px" style-hover="border-color:#82C44D;color:#82C44D"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.45 20.45h-3.55v-5.57c0-1.33-.02-3.03-1.85-3.03-1.85 0-2.14 1.45-2.14 2.94v5.66H9.36V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.45v6.29zM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12zM7.12 20.45H3.56V9h3.56v11.45z"/></svg> Follow us on LinkedIn</a>
       </div>
       <div>
-        <div style="font-weight:600;font-size:13px;text-transform:uppercase;letter-spacing:0.04em;color:white;margin-bottom:16px">{{ txtSiteLinks }}</div>
-        <div style="display:flex;flex-direction:column;gap:12px;font-size:14px">
-          <a href="./index.html#our-work" style="color:white">{{ txtOurWork }}</a>
-          <a href="./index.html#cta" style="color:white">{{ txtWorkWithUs }}</a>
+        <div style="font-weight:600;font-size:13px;text-transform:uppercase;letter-spacing:0.04em;color:white;margin-bottom:16px">Company</div>
+        <div style="display:flex;flex-direction:column;gap:11px;font-size:14px">
+          <a href="./index.html#our-work" style="color:rgba(255,255,255,0.86)" style-hover="color:#82C44D">Our work</a>
+          <a href="./who-we-are.html" style="color:rgba(255,255,255,0.86)" style-hover="color:#82C44D">About us</a>
+          <a href="./index.html#cta" style="color:rgba(255,255,255,0.86)" style-hover="color:#82C44D">Careers</a>
+          <a href="./index.html#cta" style="color:rgba(255,255,255,0.86)" style-hover="color:#82C44D">Contact us</a>
         </div>
       </div>
       <div>
-        <div style="font-weight:600;font-size:13px;text-transform:uppercase;letter-spacing:0.04em;color:white;margin-bottom:16px">{{ txtPracticeAreas }}</div>
-        <div data-stack style="display:grid;grid-template-columns:1fr 1fr;gap:10px 16px;font-size:14px">
-          <a href="./practice-agriculture.html" style="color:white">Agriculture</a>
-          <a href="./practice-aviation.html" style="color:white">Aviation</a>
-          <a href="./practice-finance.html" style="color:white">Finance</a>
-          <a href="./practice-ict4d.html" style="color:white">ICT4D</a>
-          <a href="./practice-private-sector-development.html" style="color:white">Private Sector</a>
-          <a href="./practice-social-development-health-inclusion.html" style="color:white">Social Development</a>
+        <div style="font-weight:600;font-size:13px;text-transform:uppercase;letter-spacing:0.04em;color:white;margin-bottom:16px">Practice areas</div>
+        <div data-stack style="display:grid;grid-template-columns:1fr 1fr;gap:10px 20px;font-size:14px">
+          <a href="./practice-aviation.html" style="color:rgba(255,255,255,0.86)" style-hover="color:#82C44D">Aviation</a>
+          <a href="./practice-agriculture.html" style="color:rgba(255,255,255,0.86)" style-hover="color:#82C44D">Agriculture</a>
+          <a href="./practice-finance.html" style="color:rgba(255,255,255,0.86)" style-hover="color:#82C44D">Finance</a>
+          <a href="./practice-tourism.html" style="color:rgba(255,255,255,0.86)" style-hover="color:#82C44D">Tourism</a>
+          <a href="./practice-blue-economy.html" style="color:rgba(255,255,255,0.86)" style-hover="color:#82C44D">Blue Economy</a>
+          <a href="https://iossoftinc.com/" target="_blank" rel="noopener" style="color:rgba(255,255,255,0.86)" style-hover="color:#82C44D">Digital Transformation</a>
+          <a href="./practice-infrastructure-development.html" style="color:rgba(255,255,255,0.86)" style-hover="color:#82C44D">Infrastructure Development</a>
+          <a href="./practice-ports-maritime.html" style="color:rgba(255,255,255,0.86)" style-hover="color:#82C44D">Ports & Maritime</a>
+          <a href="./practice-private-sector-development.html" style="color:rgba(255,255,255,0.86)" style-hover="color:#82C44D">Private Sector Development</a>
+          <a href="./practice-public-administration-reform.html" style="color:rgba(255,255,255,0.86)" style-hover="color:#82C44D">Public Administration & Reform</a>
+          <a href="./practice-public-private-partnerships.html" style="color:rgba(255,255,255,0.86)" style-hover="color:#82C44D">Public-Private Partnerships (PPP)</a>
+          <a href="./practice-special-economic-zones.html" style="color:rgba(255,255,255,0.86)" style-hover="color:#82C44D">Special Economic Zones</a>
+          <a href="./practice-social-development-health-inclusion.html" style="color:rgba(255,255,255,0.86)" style-hover="color:#82C44D">Social Development & Health Inclusion</a>
+          <a href="./practice-trade-investment.html" style="color:rgba(255,255,255,0.86)" style-hover="color:#82C44D">Trade & Investment</a>
+          <a href="./practice-usg-practice.html" style="color:rgba(255,255,255,0.86)" style-hover="color:#82C44D">USG Practice</a>
         </div>
       </div>
     </div>
-    <div style="max-width:1180px;margin:40px auto 0;padding-top:24px;border-top:1px solid oklch(0.3 0.01 250);display:flex;justify-content:space-between;font-size:12.5px;color:white">
+    <div style="max-width:1180px;margin:40px auto 0;padding-top:24px;border-top:1px solid oklch(0.3 0.01 250);font-size:12.5px;color:rgba(255,255,255,0.8)">
       <span>© 2026 IOS Partners, Inc. {{ txtRights }}</span>
-      <div style="display:flex;gap:20px">
-        <a href="https://www.linkedin.com/company/ios-partners-inc./" target="_blank" rel="noopener" aria-label="LinkedIn" style="color:white;display:flex;align-items:center" style-hover="color:#82C44D">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.45 20.45h-3.55v-5.57c0-1.33-.02-3.03-1.85-3.03-1.85 0-2.14 1.45-2.14 2.94v5.66H9.36V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.45v6.29zM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12zM7.12 20.45H3.56V9h3.56v11.45z"/></svg>
-        </a>
-      </div>
     </div>
   </footer>
 
@@ -658,7 +684,7 @@
 class Component extends DCLogic {
   state = { humanA: 2 + Math.floor(Math.random() * 8), humanB: 1 + Math.floor(Math.random() * 9), ctaHoney: '', ctaHuman: '', ctaHumanError: '', firmHoney: '', firmHuman: '', firmHumanError: '', dropdownOpen: false, activeFilter: 'All', newsletterEmail: '', selectedCountry: null, modalAreaFilter: 'All', modalProjectIdx: 0, lang: (window.iosGetLang ? window.iosGetLang() : 'EN'), paPage: 0,
     langOpen: false, mobileMenuOpen: false, ctaModalOpen: false, ctaSubmitted: false, ctaFields: { name: '', lastName: '', email: '', message: '', cvFileName: '' },
-    firmSubmitted: false, firmFields: { firstName: '', lastName: '', website: '', linkedin: '', projectLink: '', message: '', client: '', region: '', deadline: '', profileFileName: '' },
+    firmSubmitted: false, firmFields: { firstName: '', lastName: '', email: '', website: '', message: '', profileFileName: '' },
     ctaTab: 'join',
     revealed: { mission: false, practice: false, work: false, news: false, cta: false }, paModalArea: null,
     paAtStart: true, paAtEnd: false,
@@ -666,6 +692,16 @@ class Component extends DCLogic {
     cursorDot: { x: -40, y: -40 }, cursorRing: { x: -40, y: -40 }, cursorTrail: { x: -40, y: -40 }, cursorHover: false, cursorVisible: false,
     scrolled: false };
 
+  // Paste LinkedIn post links here (open a post → ••• → "Copy link to post"). Up to 3 are shown.
+  NEWS_POSTS = [
+    { title: 'Development finance, public finance and emerging markets', img: './assets/pa-finance.webp', url: 'https://www.linkedin.com/posts/ios-partners-inc._developmentfinance-publicfinance-emergingmarkets-activity-7508179325511254016-uiJr' },
+    { title: 'Technology planning and digital transformation strategy', img: './assets/pa-ict4d.webp', url: 'https://www.linkedin.com/posts/iossoft_technologyplanning-technologystrategy-digitaltransformation-activity-7503102107294617600-h-Pu' },
+    { title: 'ICT4D, agentic AI and digital development', img: './assets/img-29-analytics-dashboard.webp', url: 'https://www.linkedin.com/posts/iossoft_ict4d-agenticai-digitaldevelopment-activity-7498052008977899521-jc_k' }
+  ];
+  linkedinEmbed = (u) => {
+    const m = String(u).match(/(activity|share|ugcPost)[:-](\d{15,})/);
+    return m ? 'https://www.linkedin.com/embed/feed/update/urn:li:' + (m[1] === 'ugcPost' ? 'ugcPost' : m[1]) + ':' + m[2] : null;
+  };
   PA_IMAGES = {
     'USG Practice': './assets/pa-usg-practice.webp',
     'Social Development & Health Inclusion': './assets/pa-social-development.webp',
@@ -680,7 +716,7 @@ class Component extends DCLogic {
     'Aviation': './assets/pa-aviation.webp',
     'Tourism': './assets/pa-tourism.webp',
     'Infrastructure Development': './assets/pa-infrastructure.webp',
-    'ICT4D': './assets/pa-ict4d.webp',
+    'Digital Transformation': './assets/pa-ict4d.webp',
     'Private Sector Development': './assets/pa-private-sector.webp',
     'Forestry & Environment': './assets/pa-forestry.webp'
   };
@@ -688,7 +724,7 @@ class Component extends DCLogic {
     'Agriculture': 'isGrowth', 'Blue Economy': 'isGrowth', 'Forestry & Environment': 'isGrowth',
     'Aviation': 'isPlane', 'Tourism': 'isPlane',
     'Finance': 'isCoin', 'Trade & Investment': 'isCoin',
-    'ICT4D': 'isChip',
+    'Digital Transformation': 'isChip',
     'Infrastructure Development': 'isBuilding', 'Special Economic Zones': 'isBuilding', 'Public Administration & Reform': 'isBuilding',
     'Ports & Maritime': 'isAnchor',
     'Private Sector Development': 'isChart', 'Public-Private Partnerships (PPP)': 'isChart',
@@ -696,10 +732,49 @@ class Component extends DCLogic {
     'USG Practice': 'isShield'
   };
 
+  initClientsTrack() {
+    const el = document.getElementById('clients-track');
+    if (!el || el.__ready) return;
+    el.__ready = true;
+    let hover = false, down = false, resumeAt = 0, sx = 0, sl = 0, last = 0;
+    const wrap = () => { const half = el.scrollWidth / 2; if (!half) return; if (el.scrollLeft >= half) el.scrollLeft -= half; else if (el.scrollLeft <= 0) el.scrollLeft += half; };
+    const hold = (ms) => { resumeAt = performance.now() + ms; };
+    let paused = false, moved = 0;
+    el.addEventListener('mouseleave', () => { down = false; });
+    el.addEventListener('pointerdown', (e) => { if (e.pointerType !== 'mouse') return; down = true; moved = 0; sx = e.clientX; sl = el.scrollLeft; });
+    window.addEventListener('pointermove', (e) => { if (!down) return; moved = Math.max(moved, Math.abs(e.clientX - sx)); el.scrollLeft = sl - (e.clientX - sx); wrap(); });
+    window.addEventListener('pointerup', () => { if (!down) return; down = false; if (moved < 5) paused = !paused; });
+    el.addEventListener('dragstart', (e) => e.preventDefault());
+    el.addEventListener('touchstart', () => hold(4000), { passive: true });
+    el.addEventListener('touchmove', () => hold(4000), { passive: true });
+    el.addEventListener('wheel', () => hold(2000), { passive: true });
+    el.addEventListener('scroll', wrap, { passive: true });
+    el.scrollLeft = 1;
+    let acc = 0;
+    const tick = (now) => {
+      const dt = last ? Math.min(now - last, 64) : 16; last = now;
+      if (!paused && !down && now >= resumeAt && !document.hidden) {
+        acc += dt * 0.035;
+        if (acc >= 1) { const n = Math.floor(acc); acc -= n; el.scrollLeft += n; wrap(); }
+      }
+      requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  }
+
   componentDidMount() {
+    setTimeout(() => this.initClientsTrack(), 300);
+    this._onEsc = (e) => { if (e.key === 'Escape') { if (this.state.paModalArea) this.closePaModal(); if (this.state.mobileMenuOpen) this.closeMobileMenu(); } };
+    window.addEventListener('keydown', this._onEsc);
     try {
       const sent = new URLSearchParams(location.search).get('sent');
       if (sent === 'cta' || sent === 'firm') {
+        // Inside the captcha window: tell the main page it worked, then close this window.
+        if (/^ios-captcha-/.test(window.name || '') && window.opener) {
+          try { window.opener.postMessage({ iosFormSent: sent }, location.origin); } catch (err) {}
+          setTimeout(() => window.close(), 50);
+          return;
+        }
         this.setState(sent === 'cta' ? { ctaSubmitted: true, ctaTab: 'join' } : { firmSubmitted: true, ctaTab: 'partner' });
         history.replaceState(null, '', location.pathname + '#cta');
       }
@@ -768,7 +843,7 @@ class Component extends DCLogic {
 
   startCount = () => {
     this.setState({ countStarted: true });
-    const targets = { projects: 350, countries: 125, years: 25 };
+    const targets = { projects: 400, countries: 130, years: 25 };
     const start = Date.now();
     const duration = 1200;
     const step = () => {
@@ -806,6 +881,13 @@ class Component extends DCLogic {
   get countryCoords() { return window.__IOS_COUNTRY_COORDS__ || {}; }
   get projectData() { return window.__IOS_PROJECT_DATA__ || {}; }
 
+  heroGlobeDown = (e) => { this._hgX = e.clientX; this._hgY = e.clientY; };
+  heroGlobeClick = (e) => {
+    if (this._hgX != null && Math.hypot(e.clientX - this._hgX, e.clientY - this._hgY) > 6) return;
+    const el = document.getElementById('our-work');
+    if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 70, behavior: 'smooth' });
+  };
+  heroGlobeKey = (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); this._hgX = null; this.heroGlobeClick(e); } };
   setHeroGlobeRef = (el) => {
     if (!el || this._heroGlobeMounted) return;
     this._heroGlobeMounted = true;
@@ -815,7 +897,7 @@ class Component extends DCLogic {
       window.__iosCC = this.countryCoords;
       if (window.IOSWorld && window.IOSWorld.initGlobe) {
         window.IOSWorld.initGlobe(el);
-        this.wireGlobeClicks(el);
+        
         requestAnimationFrame(() => window.dispatchEvent(new Event('resize')));
         setTimeout(() => window.dispatchEvent(new Event('resize')), 150);
       } else setTimeout(boot, 60);
@@ -895,7 +977,7 @@ class Component extends DCLogic {
   setCtaFieldLastName = this.setCtaField('lastName');
   setCtaFieldEmail = this.setCtaField('email');
   setCtaFieldMessage = this.setCtaField('message');
-  setCtaFile = (e) => { const f = e.target.files && e.target.files[0]; if (f) { this._cvFile = f; this.setState((s) => ({ ctaFields: { ...s.ctaFields, cvFileName: f.name } })); } };
+  setCtaFile = (e) => { const f = e.target.files && e.target.files[0]; if (f && f.size > 10485760) { alert('Please attach a file under 10 MB.'); e.target.value = ''; return; } if (f) { this._cvFile = f; this.setState((s) => ({ ctaFields: { ...s.ctaFields, cvFileName: f.name } })); } };
   sendForm = (to, subject, fields, file, fileField, onDone, honey) => {
     // Real form POST to FormSubmit with its Google reCAPTCHA on (verified on FormSubmit's server).
     // The captcha step opens inside a popup on this page; once it's passed, FormSubmit redirects the
@@ -915,41 +997,44 @@ class Component extends DCLogic {
     }
     document.body.appendChild(form);
 
+    // FormSubmit's captcha page refuses to load inside an iframe, so it opens in a small centered
+    // browser window. When the visitor passes it, FormSubmit sends that window back to this site
+    // (same origin), which we detect to close it and show the thank-you here.
     const name = 'ios-captcha-' + Date.now();
+    const w = 520, h = 640;
+    const left = Math.max(0, (window.screenX || 0) + (window.outerWidth - w) / 2);
+    const top = Math.max(0, (window.screenY || 0) + (window.outerHeight - h) / 2);
+    const win = window.open('', name, 'popup=yes,width=' + w + ',height=' + h + ',left=' + Math.round(left) + ',top=' + Math.round(top));
+    if (!win) { form.submit(); return; } // popups blocked: fall back to the full-page check
+
     const overlay = document.createElement('div');
     overlay.setAttribute('data-captcha-popup', '');
     overlay.style.cssText = 'position:fixed;inset:0;z-index:10001;background:rgba(10,18,32,0.62);display:flex;align-items:center;justify-content:center;padding:20px;font-family:Montserrat,sans-serif';
     overlay.innerHTML =
-      '<div style="background:#ffffff;border-radius:18px;width:100%;max-width:520px;box-shadow:0 30px 90px rgba(0,0,0,0.4);overflow:hidden;display:flex;flex-direction:column">' +
-        '<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px 22px;border-bottom:1px solid #eceae4">' +
-          '<div style="display:flex;align-items:center;gap:10px"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#82C44D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><path d="M9 12l2 2 4-4"></path></svg>' +
-          '<div><div style="font-weight:600;font-size:17px;color:#1f2f5c">Almost there</div><div style="font-size:12.5px;color:#6b7280">Confirm you\'re not a robot to send your message.</div></div></div>' +
-          '<button type="button" data-x aria-label="Close" style="background:none;border:none;font-size:20px;cursor:pointer;color:#6b7280">✕</button>' +
+      '<div style="background:#ffffff;border-radius:18px;width:100%;max-width:440px;box-shadow:0 30px 90px rgba(0,0,0,0.4);padding:28px 26px 22px;text-align:center">' +
+        '<svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#82C44D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:10px"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><path d="M9 12l2 2 4-4"></path></svg>' +
+        '<div style="font-weight:600;font-size:18px;color:#1f2f5c;margin-bottom:6px">Almost there</div>' +
+        '<div style="font-size:13.5px;color:#4b5563;line-height:1.55;margin-bottom:18px">Tick <b>"I\'m not a robot"</b> in the window that just opened to send your message.</div>' +
+        '<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">' +
+          '<button type="button" data-focus style="background:#82C44D;color:#ffffff;border:none;border-radius:10px;padding:11px 18px;font-family:Montserrat;font-weight:600;font-size:13.5px;cursor:pointer">Show the window</button>' +
+          '<button type="button" data-x style="background:#ffffff;color:#4b5563;border:1px solid #e5e7eb;border-radius:10px;padding:11px 18px;font-family:Montserrat;font-weight:500;font-size:13.5px;cursor:pointer">Cancel</button>' +
         '</div>' +
-        '<div style="position:relative;height:440px;max-height:62vh;background:#f7f7f5">' +
-          '<div data-loading style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:13px;color:#6b7280">Loading security check…</div>' +
-          '<iframe name="' + name + '" title="Security check" style="position:relative;width:100%;height:100%;border:0;display:block;background:transparent"></iframe>' +
-        '</div>' +
-        '<div style="padding:12px 22px 16px;font-size:12px;color:#6b7280;text-align:center">Check not showing? <a href="#" data-newtab style="color:#5f9636;font-weight:600">Open it in a new tab</a></div>' +
       '</div>';
     document.body.appendChild(overlay);
-    const frame = overlay.querySelector('iframe');
-    const close = () => { overlay.remove(); form.remove(); };
-    overlay.querySelector('[data-x]').onclick = close;
-    overlay.addEventListener('click', (ev) => { if (ev.target === overlay) close(); });
-    overlay.querySelector('[data-newtab]').onclick = (ev) => {
-      ev.preventDefault();
-      form.target = '_blank'; form.submit();
-      overlay.remove(); setTimeout(() => form.remove(), 4000);
+    let timer = null;
+    const onMsg = (ev) => { if (ev.origin === location.origin && ev.data && ev.data.iosFormSent) finish(true); };
+    window.addEventListener('message', onMsg);
+    const finish = (sent) => {
+      clearInterval(timer); window.removeEventListener('message', onMsg); overlay.remove(); form.remove();
+      try { if (!win.closed) win.close(); } catch (err) {}
+      if (sent) onDone();
     };
-    let loads = 0;
-    frame.addEventListener('load', () => {
-      loads++;
-      const ld = overlay.querySelector('[data-loading]'); if (ld) ld.remove();
-      let sameOrigin = false;
-      try { sameOrigin = !!frame.contentWindow.location.href && frame.contentWindow.location.host === location.host; } catch (err) {}
-      if (sameOrigin && loads > 0 && frame.contentWindow.location.href !== 'about:blank') { close(); onDone(); }
-    });
+    overlay.querySelector('[data-focus]').onclick = () => { try { win.focus(); } catch (err) {} };
+    overlay.querySelector('[data-x]').onclick = () => finish(false);
+    timer = setInterval(() => {
+      if (win.closed) { finish(false); return; }
+      try { if (win.location.host === location.host) finish(true); } catch (err) {}
+    }, 400);
     form.target = name;
     form.submit();
   };
@@ -988,13 +1073,14 @@ class Component extends DCLogic {
   setFirmFieldRegion = this.setFirmField('region');
   setFirmFieldDeadline = this.setFirmField('deadline');
   setFirmFieldMessage = this.setFirmField('message');
-  setFirmFile = (e) => { const f = e.target.files && e.target.files[0]; if (f) { this._profileFile = f; this.setState((s) => ({ firmFields: { ...s.firmFields, profileFileName: f.name } })); } };
+  setFirmFieldEmail = this.setFirmField('email');
+  setFirmFile = (e) => { const f = e.target.files && e.target.files[0]; if (f && f.size > 10485760) { alert('Please attach a file under 10 MB.'); e.target.value = ''; return; } if (f) { this._profileFile = f; this.setState((s) => ({ firmFields: { ...s.firmFields, profileFileName: f.name } })); } };
   submitFirmForm = (e) => {
     e.preventDefault();
     const f = this.state.firmFields;
     this.passHuman('firm', () =>
     this.sendForm('iospartners@iospartners.com', 'Partner Portal — ' + f.firstName + ' ' + f.lastName,
-      { 'First name': f.firstName, 'Last name': f.lastName, 'Company website': f.website, LinkedIn: f.linkedin, 'Link to project': f.projectLink, 'What we can do together': f.message, 'Client name (donor)': f.client, 'Country / region': f.region, Deadline: f.deadline },
+      { 'First name': f.firstName, 'Last name': f.lastName, email: f.email, 'Company website': f.website, 'What we can do together': f.message },
       this._profileFile, 'Attachment', () => this.setState({ firmSubmitted: true }), this.state.firmHoney));
   };
   setCtaTabJoin = () => this.setState({ ctaTab: 'join' });
@@ -1052,7 +1138,7 @@ class Component extends DCLogic {
 
   practiceAreas = [
     'Agriculture', 'Aviation', 'Finance', 'Tourism', 'Blue Economy',
-    'ICT4D', 'Infrastructure Development', 'Ports & Maritime', 'Private Sector Development',
+    'Digital Transformation', 'Infrastructure Development', 'Ports & Maritime', 'Private Sector Development',
     'Public Administration & Reform', 'Public-Private Partnerships (PPP)', 'Special Economic Zones',
     'Social Development & Health Inclusion', 'Trade & Investment', 'USG Practice'
   ];
@@ -1109,7 +1195,7 @@ class Component extends DCLogic {
   clearPillarHover = () => this.setState({ hoverPillarId: null });
   openDropdown = () => this.setState({ dropdownOpen: true });
   closeDropdown = () => this.setState({ dropdownOpen: false });
-  filterLabels = { 'Information and Communication Technology for Development': 'ICT4D', 'Public Sector Governance and Public Enterprise Reform': 'Public Sector & Governance', 'Trade Facilitation and Investment Promotion': 'Trade & Investment Promotion', 'Social Development and Inclusion': 'Social Development & Inclusion' };
+  filterLabels = { 'Information and Communication Technology for Development': 'Digital Transformation', 'Public Sector Governance and Public Enterprise Reform': 'Public Sector & Governance', 'Trade Facilitation and Investment Promotion': 'Trade & Investment Promotion', 'Social Development and Inclusion': 'Social Development & Inclusion' };
   setFilter = (f) => () => { window.__iosActiveFilter = f; this.setState({ activeFilter: f }); };
   filterStats = () => {
     const data = window.__IOS_PROJECT_DATA__ || {};
@@ -1128,7 +1214,7 @@ class Component extends DCLogic {
       });
       if (hit) countries++;
     });
-    const out = { perFilter, filterCountryCount: countries, filterProjectCount: projects };
+    const out = { perFilter, filterCountryCount: af === 'All' ? '130+' : countries, filterProjectCount: af === 'All' ? '400+' : projects };
     this._fsCache = { data, f: this.state.activeFilter, out };
     return out;
   };
@@ -1196,7 +1282,7 @@ class Component extends DCLogic {
   stopPropagation = (e) => e.stopPropagation();
   openPaModal = (area) => (e) => {
     e.preventDefault();
-    if (area.title === 'ICT4D') { window.open('https://iossoftinc.com/', '_blank'); return; }
+    if (area.title === 'Digital Transformation') { window.open('https://iossoftinc.com/', '_blank'); return; }
     this.setState({ paModalArea: area });
   };
   closePaModal = () => this.setState({ paModalArea: null });
@@ -1229,7 +1315,7 @@ class Component extends DCLogic {
       openDropdown: this.openDropdown,
       closeDropdown: this.closeDropdown,
       practiceAreas: this.practiceAreas,
-      navPracticeAreas: Object.values(window.PRACTICE_AREAS || {}).map((a) => ({ name: a.title, href: a.title === 'ICT4D' ? 'https://iossoftinc.com/' : a.file, target: a.title === 'ICT4D' ? '_blank' : '_self' })),
+      navPracticeAreas: Object.values(window.PRACTICE_AREAS || {}).map((a) => ({ name: a.title, href: a.title === 'Digital Transformation' ? 'https://iossoftinc.com/' : a.file, target: a.title === 'Digital Transformation' ? '_blank' : '_self' })),
       missionPillars: [
         { imgId: 'pillar-blue-economy', imgSrc: './assets/pa-blue-economy.webp', tag: 'Sustainable oceans', title: 'Blue Economy', href: './practice-blue-economy.html' },
         { imgId: 'pillar-social', imgSrc: './assets/pillar-social-development.jpg', tag: 'Inclusive growth', title: 'Social Development', href: './practice-social-development-health-inclusion.html' },
@@ -1246,8 +1332,10 @@ class Component extends DCLogic {
         if (key) flags[key] = true;
         const imgId = 'pa-home-' + a.title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
         const imgSrc = this.PA_IMAGES[a.title] || '';
-        const isIct = a.title === 'ICT4D';
-        return { name: a.title, href: isIct ? 'https://iossoftinc.com/' : a.file, target: isIct ? '_blank' : '_self', imgId, imgSrc, ...flags };
+        const isIct = a.title === 'Digital Transformation';
+        const n = window.getPracticeAreaProjects ? window.getPracticeAreaProjects(slug).length : 0;
+        const short = (a.blurb || '').length > 82 ? a.blurb.slice(0, 80).replace(/\s+\S*$/, '') + '…' : (a.blurb || '');
+        return { name: a.title, href: isIct ? 'https://iossoftinc.com/' : a.file, target: isIct ? '_blank' : '_self', imgId, imgSrc, countLabel: n ? n + ' projects' : '', blurb: short, ...flags };
       }),
       paModal: this.state.paModalArea ? {
         name: this.state.paModalArea.title,
@@ -1258,6 +1346,11 @@ class Component extends DCLogic {
         modalImgId: 'pa-modal-' + this.state.paModalArea.title.toLowerCase().replace(/[^a-z0-9]+/g, '-')
       } : null,
       closePaModal: this.closePaModal,
+      newsPosts: this.NEWS_POSTS.map((p, i) => ({ ...p, imgId: 'news-post-' + (i + 1) })),
+      setFirmFieldEmail: this.setFirmFieldEmail,
+      heroGlobeKey: this.heroGlobeKey,
+      heroGlobeClick: this.heroGlobeClick,
+      heroGlobeDown: this.heroGlobeDown,
       stopPropagation: this.stopPropagation,
       paPrev: this.paPrev,
       paNext: this.paNext,
