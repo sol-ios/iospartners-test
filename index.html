@@ -566,6 +566,7 @@
                 <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ ctaFields.cvFileName }}</span>
               </label>
               <textarea placeholder="Explain the project" value="{{ ctaFields.message }}" onChange="{{ setCtaFieldMessage }}" rows="3" style="width:100%;box-sizing:border-box;padding:12px 14px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.06);color:#ffffff;border-radius:10px;font-size:14px;font-family:Montserrat;resize:vertical;caret-color:#ffffff"></textarea>
+              <div style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden" aria-hidden="true"><label>Leave this empty<input type="text" tabindex="-1" autocomplete="off" value="{{ ctaHoney }}" onChange="{{ setCtaHoney }}"/></label></div>
               <button type="submit" style="align-self:flex-start;display:inline-flex;align-items:center;gap:8px;background:#82C44D;color:#ffffff;font-weight:600;font-size:15px;padding:14px 28px;border:none;border-radius:10px;transition:transform 0.2s ease,box-shadow 0.2s ease;cursor:pointer" style-hover="background:#6fa93e;transform:translateY(-2px);box-shadow:0 10px 24px rgba(130,196,77,0.35)">Contact us →</button>
             </form>
           </sc-if>
@@ -605,6 +606,7 @@
                 <span style="background:rgba(255,255,255,0.12);padding:6px 12px;border-radius:8px;font-weight:600;font-size:12.5px;color:white;white-space:nowrap">Upload attachment</span>
                 <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ firmFields.profileFileName }}</span>
               </label>
+              <div style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden" aria-hidden="true"><label>Leave this empty<input type="text" tabindex="-1" autocomplete="off" value="{{ firmHoney }}" onChange="{{ setFirmHoney }}"/></label></div>
               <button type="submit" style="align-self:flex-start;display:inline-flex;align-items:center;gap:8px;background:#82C44D;color:#ffffff;font-weight:600;font-size:15px;padding:14px 28px;border:none;border-radius:10px;transition:transform 0.2s ease,box-shadow 0.2s ease;cursor:pointer" style-hover="background:#6fa93e;transform:translateY(-2px);box-shadow:0 10px 24px rgba(130,196,77,0.35)">Contact us →</button>
             </form>
           </sc-if>
@@ -654,7 +656,7 @@
 </x-dc>
 <script type="text/x-dc" data-dc-script>
 class Component extends DCLogic {
-  state = { dropdownOpen: false, activeFilter: 'All', newsletterEmail: '', selectedCountry: null, modalAreaFilter: 'All', modalProjectIdx: 0, lang: (window.iosGetLang ? window.iosGetLang() : 'EN'), paPage: 0,
+  state = { humanA: 2 + Math.floor(Math.random() * 8), humanB: 1 + Math.floor(Math.random() * 9), ctaHoney: '', ctaHuman: '', ctaHumanError: '', firmHoney: '', firmHuman: '', firmHumanError: '', dropdownOpen: false, activeFilter: 'All', newsletterEmail: '', selectedCountry: null, modalAreaFilter: 'All', modalProjectIdx: 0, lang: (window.iosGetLang ? window.iosGetLang() : 'EN'), paPage: 0,
     langOpen: false, mobileMenuOpen: false, ctaModalOpen: false, ctaSubmitted: false, ctaFields: { name: '', lastName: '', email: '', message: '', cvFileName: '' },
     firmSubmitted: false, firmFields: { firstName: '', lastName: '', website: '', linkedin: '', projectLink: '', message: '', client: '', region: '', deadline: '', profileFileName: '' },
     ctaTab: 'join',
@@ -695,6 +697,13 @@ class Component extends DCLogic {
   };
 
   componentDidMount() {
+    try {
+      const sent = new URLSearchParams(location.search).get('sent');
+      if (sent === 'cta' || sent === 'firm') {
+        this.setState(sent === 'cta' ? { ctaSubmitted: true, ctaTab: 'join' } : { firmSubmitted: true, ctaTab: 'partner' });
+        history.replaceState(null, '', location.pathname + '#cta');
+      }
+    } catch (err) {}
     this._onSheetData = () => { window.__iosProjectData = this.projectData; window.__iosCC = this.countryCoords; this.forceUpdate(); };
     window.addEventListener('ios-data-updated', this._onSheetData);
     this._heroTimer = setInterval(() => {
@@ -887,54 +896,49 @@ class Component extends DCLogic {
   setCtaFieldEmail = this.setCtaField('email');
   setCtaFieldMessage = this.setCtaField('message');
   setCtaFile = (e) => { const f = e.target.files && e.target.files[0]; if (f) { this._cvFile = f; this.setState((s) => ({ ctaFields: { ...s.ctaFields, cvFileName: f.name } })); } };
-  sendForm = (to, subject, fields, file, fileField, onDone) => {
-    // 1) Text fields go through FormSubmit's AJAX endpoint, so we get a real success/failure answer.
-    // 2) If there is a file, it follows as a multipart POST in a hidden iframe (AJAX can't carry files).
-    const sendFile = () => {
-      let frame = document.getElementById('ios-form-sink');
-      if (!frame) {
-        frame = document.createElement('iframe');
-        frame.id = 'ios-form-sink'; frame.name = 'ios-form-sink';
-        frame.style.cssText = 'position:absolute;width:0;height:0;border:0;visibility:hidden';
-        document.body.appendChild(frame);
-      }
-      const form = document.createElement('form');
-      form.method = 'POST'; form.action = 'https://formsubmit.co/' + to;
-      form.enctype = 'multipart/form-data'; form.target = 'ios-form-sink'; form.style.display = 'none';
-      const add = (n, v) => { const i = document.createElement('input'); i.type = 'hidden'; i.name = n; i.value = v || ''; form.appendChild(i); };
-      add('_subject', 'Attachment — ' + subject); add('_template', 'table'); add('_captcha', 'false');
-      add('From', Object.values(fields).slice(0, 2).join(' '));
-      const fi = document.createElement('input'); fi.type = 'file'; fi.name = 'attachment';
+  sendForm = (to, subject, fields, file, fileField, onDone, honey) => {
+    // Real form POST to FormSubmit with its Google reCAPTCHA on. FormSubmit verifies the captcha
+    // on its own server, so bots posting straight to the endpoint are blocked too. The visitor
+    // passes "I'm not a robot" on FormSubmit's page, then returns here (#sent) and sees the thank-you.
+    const form = document.createElement('form');
+    form.method = 'POST'; form.action = 'https://formsubmit.co/' + to;
+    form.enctype = 'multipart/form-data'; form.style.display = 'none';
+    const add = (n, v) => { const i = document.createElement('input'); i.type = 'hidden'; i.name = n; i.value = v || ''; form.appendChild(i); };
+    const back = location.href.split('#')[0].split('?')[0] + '?sent=' + encodeURIComponent(fileField === 'CV' ? 'cta' : 'firm') + '#cta';
+    add('_subject', subject); add('_template', 'table'); add('_captcha', 'true'); add('_next', back);
+    add('_honey', honey || '');
+    Object.entries(fields).forEach(([k, v]) => add(k, v));
+    if (file) {
+      const fi = document.createElement('input'); fi.type = 'file'; fi.name = fileField;
       const dt = new DataTransfer(); dt.items.add(file); fi.files = dt.files; form.appendChild(fi);
-      document.body.appendChild(form);
-      form.submit();
-      setTimeout(() => form.remove(), 8000);
-    };
-    const payload = { _subject: subject, _template: 'table', _captcha: 'false' };
-    Object.entries(fields).forEach(([k, v]) => { payload[k] = v || ''; });
-    if (file) payload[fileField] = file.name + ' (sent in a separate email)';
-    fetch('https://formsubmit.co/ajax/' + to, { method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify(payload) })
-      .then((r) => r.json())
-      .then((j) => {
-        if (j && (j.success === true || j.success === 'true')) {
-          if (file && window.DataTransfer) sendFile();
-          onDone();
-        } else {
-          const msg = (j && j.message) || 'Unknown error';
-          console.warn('[form] FormSubmit said:', msg);
-          alert(/activat/i.test(msg)
-            ? 'This form is waiting for activation. The inbox owner (' + to + ') needs to click "Activate Form" in the email from FormSubmit.'
-            : 'Sorry, the message could not be sent (' + msg + '). Please email ' + to + ' directly.');
-        }
-      })
-      .catch(() => alert('Sorry, the message could not be sent. Please email ' + to + ' directly.'));
+    }
+    document.body.appendChild(form);
+    form.submit();
   };
+  newHumanTest = () => ({ humanA: 2 + Math.floor(Math.random() * 8), humanB: 1 + Math.floor(Math.random() * 9) });
+  _formOpenedAt = Date.now();
+  humanCheck = (p) => {
+    const s = this.state;
+    if ((s[p + 'Honey'] || '').trim()) return 'bot';
+    if (Date.now() - this._formOpenedAt < 3000) return 'Please take a moment and try again.';
+    if (parseInt((s[p + 'Human'] || '').trim(), 10) !== s.humanA + s.humanB) return 'Incorrect answer, please try again.';
+    return null;
+  };
+  passHuman = (p, send) => {
+    if ((this.state[p + 'Honey'] || '').trim()) { this.setState({ [p + 'Submitted']: true }); return; }
+    send();
+  };
+  setCtaHoney = (e) => this.setState({ ctaHoney: e.target.value });
+  setCtaHuman = (e) => this.setState({ ctaHuman: e.target.value, ctaHumanError: '' });
+  setFirmHoney = (e) => this.setState({ firmHoney: e.target.value });
+  setFirmHuman = (e) => this.setState({ firmHuman: e.target.value, firmHumanError: '' });
   submitCtaForm = (e) => {
     e.preventDefault();
     const f = this.state.ctaFields;
+    this.passHuman('cta', () =>
     this.sendForm('iospartners@iospartners.com', 'Join our team — ' + f.name + ' ' + (f.lastName || ''),
       { Name: f.name, 'Last name': f.lastName, email: f.email, Project: f.message },
-      this._cvFile, 'CV', () => this.setState({ ctaSubmitted: true }));
+      this._cvFile, 'CV', () => this.setState({ ctaSubmitted: true }), this.state.ctaHoney));
   };
   setFirmField = (name) => (e) => { const value = e.target.value; this.setState((s) => ({ firmFields: { ...s.firmFields, [name]: value } })); };
   setFirmFieldFirstName = this.setFirmField('firstName');
@@ -950,9 +954,10 @@ class Component extends DCLogic {
   submitFirmForm = (e) => {
     e.preventDefault();
     const f = this.state.firmFields;
+    this.passHuman('firm', () =>
     this.sendForm('iospartners@iospartners.com', 'Partner Portal — ' + f.firstName + ' ' + f.lastName,
       { 'First name': f.firstName, 'Last name': f.lastName, 'Company website': f.website, LinkedIn: f.linkedin, 'Link to project': f.projectLink, 'What we can do together': f.message, 'Client name (donor)': f.client, 'Country / region': f.region, Deadline: f.deadline },
-      this._profileFile, 'Attachment', () => this.setState({ firmSubmitted: true }));
+      this._profileFile, 'Attachment', () => this.setState({ firmSubmitted: true }), this.state.firmHoney));
   };
   setCtaTabJoin = () => this.setState({ ctaTab: 'join' });
   setCtaTabPartner = () => this.setState({ ctaTab: 'partner' });
@@ -1267,6 +1272,11 @@ class Component extends DCLogic {
       closeLangMenu: this.closeLangMenu,
       mobileMenuOpen: this.state.mobileMenuOpen,
       toggleMobileMenu: this.toggleMobileMenu,
+      humanA: this.state.humanA, humanB: this.state.humanB,
+      ctaHoney: this.state.ctaHoney, ctaHuman: this.state.ctaHuman, ctaHumanError: this.state.ctaHumanError, setCtaHoney: this.setCtaHoney, setCtaHuman: this.setCtaHuman,
+      ctaHumanBorder: this.state.ctaHumanError ? 'rgba(255,140,120,0.7)' : 'rgba(255,255,255,0.14)',
+      firmHoney: this.state.firmHoney, firmHuman: this.state.firmHuman, firmHumanError: this.state.firmHumanError, setFirmHoney: this.setFirmHoney, setFirmHuman: this.setFirmHuman,
+      firmHumanBorder: this.state.firmHumanError ? 'rgba(255,140,120,0.7)' : 'rgba(255,255,255,0.14)',
       closeMobileMenu: this.closeMobileMenu,
       langs: this.LANGS.map((l) => ({ label: l.label, onClick: this.setLang(l.code) })),
       missionStyle: this.revealStyle('mission'),
