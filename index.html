@@ -25,6 +25,21 @@
     @keyframes fadeInUp { from { opacity:0; transform:translateY(22px); } to { opacity:1; transform:translateY(0); } }
     @keyframes floatSlow { 0%,100% { transform:translateY(0); } 50% { transform:translateY(-10px); } }
     @keyframes sweepBar { 0% { left:-40%; } 100% { left:100%; } }
+    .pa-row:hover { flex:4.2 1 0 !important; }
+    .pa-row-info { opacity:0; transform:translateY(8px); transition:opacity 0.3s ease 0.15s, transform 0.4s ease 0.15s; pointer-events:none; }
+    .pa-row:hover .pa-row-info { opacity:1; transform:none; }
+    .pa-row:hover .pa-row-arrow { background:#82C44D; }
+    @media (max-width:900px) {
+      .pa-rows { display:grid !important; grid-template-columns:none !important; grid-template-rows:repeat(2,112px); grid-auto-flow:column; grid-auto-columns:150px; gap:8px !important; overflow-x:auto; scroll-snap-type:x mandatory; scrollbar-width:none; margin:0 -24px; padding:0 24px 4px; scroll-padding-left:24px; }
+      .pa-rows::-webkit-scrollbar { display:none; }
+      .pa-row-col { display:contents !important; }
+      .pa-row, .pa-row:hover { flex:none !important; height:112px !important; scroll-snap-align:start; }
+      .pa-row-bar { height:100% !important; box-sizing:border-box !important; padding:10px 12px 12px !important; align-items:flex-end !important; }
+      .pa-row-id { flex-direction:column !important; align-items:flex-start !important; gap:8px !important; }
+      .pa-row-id span:last-child { font-size:12.5px !important; line-height:1.25 !important; }
+      .pa-row-arrow, .pa-row-info { display:none !important; }
+      .pa-row-shade { background:linear-gradient(180deg,rgba(10,22,45,0.08) 0%,rgba(10,22,45,0.8) 100%) !important; }
+    }
     #clients-track::-webkit-scrollbar { display:none; }
     #clients-track img { -webkit-user-drag:none; pointer-events:auto; }
     #clients-track { cursor:grab; }
@@ -209,40 +224,59 @@
       </div>
       <div style="text-align:center;margin-bottom:24px">
         <h2 style="font-family:Montserrat;font-weight:600;font-size:28px;margin:0 0 14px;color:oklch(0.28 0.09 264)">{{ txtOurPracticeAreas }}</h2>
-        <div style="display:flex;gap:10px;justify-content:center">
-          <button onClick="{{ paPrev }}" style="width:38px;height:38px;border-radius:50%;border:1px solid oklch(0.88 0.005 95);background:white;cursor:pointer;font-size:16px;color:oklch(0.28 0.09 264)">←</button>
-          <button onClick="{{ paNext }}" style="width:38px;height:38px;border-radius:50%;border:1px solid oklch(0.88 0.005 95);background:white;cursor:pointer;font-size:16px;color:oklch(0.28 0.09 264)">→</button>
-        </div>
       </div>
-      <div style="position:relative">
-        <div ref="{{ setPaTrackRef }}" style="display:grid;grid-auto-flow:column;grid-template-rows:repeat(2,1fr);gap:12px;overflow-x:auto;scroll-behavior:smooth;scroll-snap-type:x mandatory;scrollbar-width:none;padding-bottom:4px">
-        <sc-for list="{{ practiceCardsAll }}" as="pa" hint-placeholder-count="16">
-          <a href="{{ pa.href }}" target="{{ pa.target }}" class="pa-card" style="position:relative;width:190px;height:150px;border-radius:14px;overflow:hidden;display:block;transition:transform 0.25s ease,box-shadow 0.25s ease;scroll-snap-align:start" style-hover="transform:translateY(-4px);box-shadow:0 14px 26px rgba(20,30,45,0.24)">
-            <image-slot id="{{ pa.imgId }}" src="{{ pa.imgSrc }}" shape="rect" placeholder="{{ pa.name }} photo" fit="cover" style="width:100%;height:100%"></image-slot>
-            <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,20,35,0.12) 0%,rgba(10,20,35,0.3) 45%,rgba(10,20,35,0.82) 100%)"></div>
-            <div style="position:absolute;inset:0;display:flex;flex-direction:column;justify-content:space-between;padding:11px">
-              <div style="width:30px;height:30px;border-radius:8px;background:rgba(255,255,255,0.16);backdrop-filter:blur(4px);border:1px solid rgba(255,255,255,0.3);display:flex;align-items:center;justify-content:center;color:white">
-                <sc-if value="{{ pa.isGrowth }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 21V10"/><path d="M12 10c0-4 3-7 7-7 0 4-3 7-7 7Z"/><path d="M12 14c0-3-2.5-5.5-6-5.5 0 3 2.5 5.5 6 5.5Z"/></svg></sc-if>
-                <sc-if value="{{ pa.isPlane }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12l18-7-7 18-2-8-8-3Z"/></svg></sc-if>
-                <sc-if value="{{ pa.isCoin }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="9" r="6.5"/><circle cx="15" cy="15" r="6.5"/></svg></sc-if>
-                <sc-if value="{{ pa.isChip }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="7" y="7" width="10" height="10" rx="1.5"/><path d="M9 3v4M15 3v4M9 21v-4M15 21v-4M3 9h4M3 15h4M21 9h-4M21 15h-4"/></svg></sc-if>
-                <sc-if value="{{ pa.isBuilding }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M4 21V9l8-5 8 5v12"/><path d="M9 21v-7h6v7"/></svg></sc-if>
-                <sc-if value="{{ pa.isAnchor }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="5" r="2"/><path d="M12 7v14M6 14a6 6 0 0012 0M4 14h4m8 0h4"/></svg></sc-if>
-                <sc-if value="{{ pa.isChart }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M11 20V4M18 20v-7"/></svg></sc-if>
-                <sc-if value="{{ pa.isHeart }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 20s-7-4.4-9.5-9C1 8 2.5 4.5 6 4.5c2 0 3.5 1.2 4.5 3 1-1.8 2.5-3 4.5-3 3.5 0 5 3.5 3.5 6.5-2.5 4.6-9.5 9-9.5 9Z"/></svg></sc-if>
-                <sc-if value="{{ pa.isShield }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3Z"/></svg></sc-if>
+      <div class="pa-rows" style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px 14px">
+        <div class="pa-row-col" style="display:flex;flex-direction:column;gap:8px;height:400px">
+          <sc-for list="{{ practiceColA }}" as="pa" hint-placeholder-count="8">
+            <a href="{{ pa.href }}" target="{{ pa.target }}" class="pa-row" style="position:relative;flex:1 1 0;min-height:0;border-radius:14px;overflow:hidden;display:block;background:oklch(0.28 0.09 264);transition:flex 0.55s cubic-bezier(0.2,0.8,0.2,1)">
+              <div style="position:absolute;left:0;right:0;top:50%;height:260px;transform:translateY(-50%)">
+                <image-slot id="{{ pa.accId }}" src="{{ pa.imgSrc }}" shape="rect" placeholder="{{ pa.name }} photo" fit="cover" style="width:100%;height:100%"></image-slot>
               </div>
-              <div style="display:flex;flex-direction:column;gap:3px">
-                <span style="color:white;font-weight:600;font-size:13px;line-height:1.25;text-shadow:0 1px 6px rgba(0,0,0,0.35)">{{ pa.name }}</span>
-                <sc-if value="{{ pa.countLabel }}"><span style="color:#cfeab8;font-size:11px;font-weight:500">{{ pa.countLabel }}</span></sc-if>
-                <span class="pa-blurb" style="color:rgba(255,255,255,0.92);font-size:11px;line-height:1.35;font-weight:400">{{ pa.blurb }}</span>
+              <div class="pa-row-shade" style="position:absolute;inset:0;background:linear-gradient(90deg,rgba(10,22,45,0.84) 0%,rgba(10,22,45,0.5) 45%,rgba(10,22,45,0.12) 100%)"></div>
+              <div class="pa-row-bar" style="position:absolute;left:0;right:0;top:0;padding:0 24px;height:49px;display:flex;align-items:center;justify-content:space-between;gap:12px">
+                <span class="pa-row-id" style="display:flex;align-items:center;gap:12px;min-width:0"><span style="flex-shrink:0;display:flex;color:white;filter:drop-shadow(0 1px 3px rgba(0,0,0,0.75)) drop-shadow(0 0 8px rgba(0,0,0,0.45))"><sc-if value="{{ pa.isGrowth }}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21V10"/><path d="M12 10c0-4 3-7 7-7 0 4-3 7-7 7Z"/><path d="M12 14c0-3-2.5-5.5-6-5.5 0 3 2.5 5.5 6 5.5Z"/></svg></sc-if><sc-if value="{{ pa.isPlane }}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12l18-7-7 18-2-8-8-3Z"/></svg></sc-if><sc-if value="{{ pa.isCoin }}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="9" r="6.5"/><circle cx="15" cy="15" r="6.5"/></svg></sc-if><sc-if value="{{ pa.isChip }}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="7" width="10" height="10" rx="1.5"/><path d="M9 3v4M15 3v4M9 21v-4M15 21v-4M3 9h4M3 15h4M21 9h-4M21 15h-4"/></svg></sc-if><sc-if value="{{ pa.isBuilding }}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21V9l8-5 8 5v12"/><path d="M9 21v-7h6v7"/></svg></sc-if><sc-if value="{{ pa.isAnchor }}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="2"/><path d="M12 7v14M6 14a6 6 0 0012 0M4 14h4m8 0h4"/></svg></sc-if><sc-if value="{{ pa.isChart }}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M11 20V4M18 20v-7"/></svg></sc-if><sc-if value="{{ pa.isHeart }}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20s-7-4.4-9.5-9C1 8 2.5 4.5 6 4.5c2 0 3.5 1.2 4.5 3 1-1.8 2.5-3 4.5-3 3.5 0 5 3.5 3.5 6.5-2.5 4.6-9.5 9-9.5 9Z"/></svg></sc-if><sc-if value="{{ pa.isShield }}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3Z"/></svg></sc-if><sc-if value="{{ pa.isWave }}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M2 10c2.5 0 2.5-3 5-3s2.5 3 5 3 2.5-3 5-3 2.5 3 5 3M2 15c2.5 0 2.5-3 5-3s2.5 3 5 3 2.5-3 5-3 2.5 3 5 3M2 20c2.5 0 2.5-3 5-3s2.5 3 5 3 2.5-3 5-3 2.5 3 5 3"/></svg></sc-if><sc-if value="{{ pa.isSun }}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></sc-if><sc-if value="{{ pa.isGlobe }}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/></svg></sc-if><sc-if value="{{ pa.isFactory }}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21V11l5 3v-3l5 3V5h4v16Z"/><path d="M3 21h18"/></svg></sc-if><sc-if value="{{ pa.isGov }}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V10M9.5 21V10M14.5 21V10M19 21V10M3 10l9-6 9 6"/></svg></sc-if><sc-if value="{{ pa.isLink }}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg></sc-if></span><span style="color:white;font-family:Montserrat;font-weight:500;font-size:14.5px;line-height:1.2;text-shadow:0 1px 8px rgba(0,0,0,0.45)">{{ pa.name }}</span></span>
+                <span class="pa-row-arrow" style="flex-shrink:0;width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,0.14);color:white;display:inline-flex;align-items:center;justify-content:center;font-size:14px;transition:background 0.3s ease">→</span>
               </div>
-            </div>
-          </a>
-        </sc-for>
+              <div class="pa-row-info" style="position:absolute;left:0;right:0;top:49px;padding:0 24px 18px;display:flex;flex-direction:column;gap:6px">
+                <span style="color:rgba(255,255,255,0.94);font-size:13.5px;line-height:1.5;font-weight:400;max-width:100%;text-shadow:0 1px 8px rgba(0,0,0,0.5)">{{ pa.blurb }}</span>
+              </div>
+            </a>
+          </sc-for>
         </div>
-        <div style="position:absolute;top:0;left:0;bottom:4px;width:60px;background:linear-gradient(90deg,white,transparent);pointer-events:none;opacity:{{ paFadeLeft }};transition:opacity 0.3s ease"></div>
-        <div style="position:absolute;top:0;right:0;bottom:4px;width:60px;background:linear-gradient(90deg,transparent,white);pointer-events:none;opacity:{{ paFadeRight }};transition:opacity 0.3s ease"></div>
+        <div class="pa-row-col" style="display:flex;flex-direction:column;gap:8px;height:400px">
+          <sc-for list="{{ practiceColB }}" as="pa" hint-placeholder-count="8">
+            <a href="{{ pa.href }}" target="{{ pa.target }}" class="pa-row" style="position:relative;flex:1 1 0;min-height:0;border-radius:14px;overflow:hidden;display:block;background:oklch(0.28 0.09 264);transition:flex 0.55s cubic-bezier(0.2,0.8,0.2,1)">
+              <div style="position:absolute;left:0;right:0;top:50%;height:260px;transform:translateY(-50%)">
+                <image-slot id="{{ pa.accId }}" src="{{ pa.imgSrc }}" shape="rect" placeholder="{{ pa.name }} photo" fit="cover" style="width:100%;height:100%"></image-slot>
+              </div>
+              <div class="pa-row-shade" style="position:absolute;inset:0;background:linear-gradient(90deg,rgba(10,22,45,0.84) 0%,rgba(10,22,45,0.5) 45%,rgba(10,22,45,0.12) 100%)"></div>
+              <div class="pa-row-bar" style="position:absolute;left:0;right:0;top:0;padding:0 24px;height:49px;display:flex;align-items:center;justify-content:space-between;gap:12px">
+                <span class="pa-row-id" style="display:flex;align-items:center;gap:12px;min-width:0"><span style="flex-shrink:0;display:flex;color:white;filter:drop-shadow(0 1px 3px rgba(0,0,0,0.75)) drop-shadow(0 0 8px rgba(0,0,0,0.45))"><sc-if value="{{ pa.isGrowth }}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21V10"/><path d="M12 10c0-4 3-7 7-7 0 4-3 7-7 7Z"/><path d="M12 14c0-3-2.5-5.5-6-5.5 0 3 2.5 5.5 6 5.5Z"/></svg></sc-if><sc-if value="{{ pa.isPlane }}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12l18-7-7 18-2-8-8-3Z"/></svg></sc-if><sc-if value="{{ pa.isCoin }}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="9" r="6.5"/><circle cx="15" cy="15" r="6.5"/></svg></sc-if><sc-if value="{{ pa.isChip }}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="7" width="10" height="10" rx="1.5"/><path d="M9 3v4M15 3v4M9 21v-4M15 21v-4M3 9h4M3 15h4M21 9h-4M21 15h-4"/></svg></sc-if><sc-if value="{{ pa.isBuilding }}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21V9l8-5 8 5v12"/><path d="M9 21v-7h6v7"/></svg></sc-if><sc-if value="{{ pa.isAnchor }}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="2"/><path d="M12 7v14M6 14a6 6 0 0012 0M4 14h4m8 0h4"/></svg></sc-if><sc-if value="{{ pa.isChart }}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M11 20V4M18 20v-7"/></svg></sc-if><sc-if value="{{ pa.isHeart }}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20s-7-4.4-9.5-9C1 8 2.5 4.5 6 4.5c2 0 3.5 1.2 4.5 3 1-1.8 2.5-3 4.5-3 3.5 0 5 3.5 3.5 6.5-2.5 4.6-9.5 9-9.5 9Z"/></svg></sc-if><sc-if value="{{ pa.isShield }}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3Z"/></svg></sc-if><sc-if value="{{ pa.isWave }}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M2 10c2.5 0 2.5-3 5-3s2.5 3 5 3 2.5-3 5-3 2.5 3 5 3M2 15c2.5 0 2.5-3 5-3s2.5 3 5 3 2.5-3 5-3 2.5 3 5 3M2 20c2.5 0 2.5-3 5-3s2.5 3 5 3 2.5-3 5-3 2.5 3 5 3"/></svg></sc-if><sc-if value="{{ pa.isSun }}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></sc-if><sc-if value="{{ pa.isGlobe }}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/></svg></sc-if><sc-if value="{{ pa.isFactory }}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21V11l5 3v-3l5 3V5h4v16Z"/><path d="M3 21h18"/></svg></sc-if><sc-if value="{{ pa.isGov }}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V10M9.5 21V10M14.5 21V10M19 21V10M3 10l9-6 9 6"/></svg></sc-if><sc-if value="{{ pa.isLink }}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg></sc-if></span><span style="color:white;font-family:Montserrat;font-weight:500;font-size:14.5px;line-height:1.2;text-shadow:0 1px 8px rgba(0,0,0,0.45)">{{ pa.name }}</span></span>
+                <span class="pa-row-arrow" style="flex-shrink:0;width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,0.14);color:white;display:inline-flex;align-items:center;justify-content:center;font-size:14px;transition:background 0.3s ease">→</span>
+              </div>
+              <div class="pa-row-info" style="position:absolute;left:0;right:0;top:49px;padding:0 24px 18px;display:flex;flex-direction:column;gap:6px">
+                <span style="color:rgba(255,255,255,0.94);font-size:13.5px;line-height:1.5;font-weight:400;max-width:100%;text-shadow:0 1px 8px rgba(0,0,0,0.5)">{{ pa.blurb }}</span>
+              </div>
+            </a>
+          </sc-for>
+        </div>
+        <div class="pa-row-col" style="display:flex;flex-direction:column;gap:8px;height:400px">
+          <sc-for list="{{ practiceColC }}" as="pa" hint-placeholder-count="8">
+            <a href="{{ pa.href }}" target="{{ pa.target }}" class="pa-row" style="position:relative;flex:1 1 0;min-height:0;border-radius:14px;overflow:hidden;display:block;background:oklch(0.28 0.09 264);transition:flex 0.55s cubic-bezier(0.2,0.8,0.2,1)">
+              <div style="position:absolute;left:0;right:0;top:50%;height:260px;transform:translateY(-50%)">
+                <image-slot id="{{ pa.accId }}" src="{{ pa.imgSrc }}" shape="rect" placeholder="{{ pa.name }} photo" fit="cover" style="width:100%;height:100%"></image-slot>
+              </div>
+              <div class="pa-row-shade" style="position:absolute;inset:0;background:linear-gradient(90deg,rgba(10,22,45,0.84) 0%,rgba(10,22,45,0.5) 45%,rgba(10,22,45,0.12) 100%)"></div>
+              <div class="pa-row-bar" style="position:absolute;left:0;right:0;top:0;padding:0 24px;height:49px;display:flex;align-items:center;justify-content:space-between;gap:12px">
+                <span class="pa-row-id" style="display:flex;align-items:center;gap:12px;min-width:0"><span style="flex-shrink:0;display:flex;color:white;filter:drop-shadow(0 1px 3px rgba(0,0,0,0.75)) drop-shadow(0 0 8px rgba(0,0,0,0.45))"><sc-if value="{{ pa.isGrowth }}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21V10"/><path d="M12 10c0-4 3-7 7-7 0 4-3 7-7 7Z"/><path d="M12 14c0-3-2.5-5.5-6-5.5 0 3 2.5 5.5 6 5.5Z"/></svg></sc-if><sc-if value="{{ pa.isPlane }}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12l18-7-7 18-2-8-8-3Z"/></svg></sc-if><sc-if value="{{ pa.isCoin }}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="9" r="6.5"/><circle cx="15" cy="15" r="6.5"/></svg></sc-if><sc-if value="{{ pa.isChip }}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="7" width="10" height="10" rx="1.5"/><path d="M9 3v4M15 3v4M9 21v-4M15 21v-4M3 9h4M3 15h4M21 9h-4M21 15h-4"/></svg></sc-if><sc-if value="{{ pa.isBuilding }}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21V9l8-5 8 5v12"/><path d="M9 21v-7h6v7"/></svg></sc-if><sc-if value="{{ pa.isAnchor }}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="2"/><path d="M12 7v14M6 14a6 6 0 0012 0M4 14h4m8 0h4"/></svg></sc-if><sc-if value="{{ pa.isChart }}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M11 20V4M18 20v-7"/></svg></sc-if><sc-if value="{{ pa.isHeart }}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20s-7-4.4-9.5-9C1 8 2.5 4.5 6 4.5c2 0 3.5 1.2 4.5 3 1-1.8 2.5-3 4.5-3 3.5 0 5 3.5 3.5 6.5-2.5 4.6-9.5 9-9.5 9Z"/></svg></sc-if><sc-if value="{{ pa.isShield }}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3Z"/></svg></sc-if><sc-if value="{{ pa.isWave }}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M2 10c2.5 0 2.5-3 5-3s2.5 3 5 3 2.5-3 5-3 2.5 3 5 3M2 15c2.5 0 2.5-3 5-3s2.5 3 5 3 2.5-3 5-3 2.5 3 5 3M2 20c2.5 0 2.5-3 5-3s2.5 3 5 3 2.5-3 5-3 2.5 3 5 3"/></svg></sc-if><sc-if value="{{ pa.isSun }}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></sc-if><sc-if value="{{ pa.isGlobe }}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/></svg></sc-if><sc-if value="{{ pa.isFactory }}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21V11l5 3v-3l5 3V5h4v16Z"/><path d="M3 21h18"/></svg></sc-if><sc-if value="{{ pa.isGov }}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V10M9.5 21V10M14.5 21V10M19 21V10M3 10l9-6 9 6"/></svg></sc-if><sc-if value="{{ pa.isLink }}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg></sc-if></span><span style="color:white;font-family:Montserrat;font-weight:500;font-size:14.5px;line-height:1.2;text-shadow:0 1px 8px rgba(0,0,0,0.45)">{{ pa.name }}</span></span>
+                <span class="pa-row-arrow" style="flex-shrink:0;width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,0.14);color:white;display:inline-flex;align-items:center;justify-content:center;font-size:14px;transition:background 0.3s ease">→</span>
+              </div>
+              <div class="pa-row-info" style="position:absolute;left:0;right:0;top:49px;padding:0 24px 18px;display:flex;flex-direction:column;gap:6px">
+                <span style="color:rgba(255,255,255,0.94);font-size:13.5px;line-height:1.5;font-weight:400;max-width:100%;text-shadow:0 1px 8px rgba(0,0,0,0.5)">{{ pa.blurb }}</span>
+              </div>
+            </a>
+          </sc-for>
+        </div>
       </div>
     </div>
 
@@ -721,13 +755,13 @@ class Component extends DCLogic {
     'Forestry & Environment': './assets/pa-forestry.webp'
   };
   ICON_KEYS = {
-    'Agriculture': 'isGrowth', 'Blue Economy': 'isGrowth', 'Forestry & Environment': 'isGrowth',
-    'Aviation': 'isPlane', 'Tourism': 'isPlane',
-    'Finance': 'isCoin', 'Trade & Investment': 'isCoin',
+    'Agriculture': 'isGrowth', 'Blue Economy': 'isWave', 'Forestry & Environment': 'isGrowth',
+    'Aviation': 'isPlane', 'Tourism': 'isSun',
+    'Finance': 'isCoin', 'Trade & Investment': 'isGlobe',
     'Digital Transformation': 'isChip',
-    'Infrastructure Development': 'isBuilding', 'Special Economic Zones': 'isBuilding', 'Public Administration & Reform': 'isBuilding',
+    'Infrastructure Development': 'isBuilding', 'Special Economic Zones': 'isFactory', 'Public Administration & Reform': 'isGov',
     'Ports & Maritime': 'isAnchor',
-    'Private Sector Development': 'isChart', 'Public-Private Partnerships (PPP)': 'isChart',
+    'Private Sector Development': 'isChart', 'Public-Private Partnerships (PPP)': 'isLink',
     'Social Development & Health Inclusion': 'isHeart',
     'USG Practice': 'isShield'
   };
@@ -1326,8 +1360,8 @@ class Component extends DCLogic {
           overlayBg: isHover ? 'rgba(8,16,30,0.68)' : 'rgba(8,16,30,0.28)',
           textOpacity: isHover ? 1 : 0, textShift: isHover ? 0 : 10 };
       }),
-      practiceCardsAll: Object.entries(window.PRACTICE_AREAS || {}).map(([slug, a]) => {
-        const flags = { isGrowth: false, isPlane: false, isCoin: false, isChip: false, isBuilding: false, isAnchor: false, isChart: false, isHeart: false, isShield: false };
+      practiceCardsAll: this._pcAll = Object.entries(window.PRACTICE_AREAS || {}).map(([slug, a]) => {
+        const flags = { isGrowth: false, isPlane: false, isCoin: false, isChip: false, isBuilding: false, isAnchor: false, isChart: false, isHeart: false, isShield: false, isWave: false, isSun: false, isGlobe: false, isFactory: false, isGov: false, isLink: false };
         const key = this.ICON_KEYS[a.title];
         if (key) flags[key] = true;
         const imgId = 'pa-home-' + a.title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
@@ -1335,8 +1369,11 @@ class Component extends DCLogic {
         const isIct = a.title === 'Digital Transformation';
         const n = window.getPracticeAreaProjects ? window.getPracticeAreaProjects(slug).length : 0;
         const short = (a.blurb || '').length > 82 ? a.blurb.slice(0, 80).replace(/\s+\S*$/, '') + '…' : (a.blurb || '');
-        return { name: a.title, href: isIct ? 'https://iossoftinc.com/' : a.file, target: isIct ? '_blank' : '_self', imgId, imgSrc, countLabel: n ? n + ' projects' : '', blurb: short, ...flags };
+        return { name: a.title, href: isIct ? 'https://iossoftinc.com/' : a.file, target: isIct ? '_blank' : '_self', imgId, accId: imgId + '-acc', imgSrc, countLabel: n ? n + ' projects' : '', blurb: short, ...flags };
       }),
+      practiceColA: this._pcAll.slice(0, Math.ceil(this._pcAll.length / 3)),
+      practiceColB: this._pcAll.slice(Math.ceil(this._pcAll.length / 3), Math.ceil(this._pcAll.length * 2 / 3)),
+      practiceColC: this._pcAll.slice(Math.ceil(this._pcAll.length * 2 / 3)),
       paModal: this.state.paModalArea ? {
         name: this.state.paModalArea.title,
         blurb: this.state.paModalArea.blurb,
