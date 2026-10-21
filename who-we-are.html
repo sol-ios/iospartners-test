@@ -25,7 +25,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
   <script src="./image-slot.js"></script>
   
-  <script src="./practice-areas-data.js"></script>
+  <script src="./practice-areas-data.js?v=2"></script>
+  <script>Object.values(window.PRACTICE_AREAS||{}).forEach(function(a){if(a.file&&/\.dc\.html|%20/.test(a.file)){a.file='./practice-'+decodeURIComponent(a.file).replace(/^\.\/Practice Area - /,'').replace(/\.dc\.html$/,'').toLowerCase().replace(/&/g,'and').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')+'.html';}});</script>
   <script src="./globe.js"></script>
   <style>
     body { margin: 0; background: #ffffff; font-family: 'Montserrat', sans-serif; }
