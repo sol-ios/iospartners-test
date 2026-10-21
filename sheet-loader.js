@@ -5,7 +5,7 @@
   function fullSizeImage(u) { return (u || '').trim().replace(/-\d{2,4}x\d{2,4}(\.(?:jpe?g|png|webp))(\?.*)?$/i, '$1'); }
   var SHEET_ID = '14iSlCVkLh96VfDUmS2zILfWjxb2D90MoE59RvF4w480';
   var SHEET_GID = '471787958';
-  var CACHE_KEY = 'ios-sheet-projects-v6';
+  var CACHE_KEY = 'ios-sheet-projects-v7';
 
   var URLS = [
     'https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/gviz/tq?tqx=out:csv&gid=' + SHEET_GID,
@@ -102,9 +102,14 @@
     return Object.keys(data).length ? { data: data, coords: coords } : null;
   }
 
+  function prune(data, coords) {
+    var out = {};
+    Object.keys(coords).forEach(function (k) { if (data[k] && data[k].length) out[k] = coords[k]; });
+    return out;
+  }
   function apply(parsed) {
     window.__IOS_PROJECT_DATA__ = parsed.data;
-    window.__IOS_COUNTRY_COORDS__ = Object.assign({}, window.__IOS_COUNTRY_COORDS__ || {}, parsed.coords);
+    window.__IOS_COUNTRY_COORDS__ = prune(parsed.data, Object.assign({}, window.__IOS_COUNTRY_COORDS__ || {}, parsed.coords));
     window.__iosSheetLoaded = true;
     try { window.dispatchEvent(new Event('ios-data-updated')); } catch (e) {}
   }
@@ -114,7 +119,7 @@
     var cached = JSON.parse(localStorage.getItem(CACHE_KEY) || 'null');
     if (cached && cached.data) {
       window.__IOS_PROJECT_DATA__ = cached.data;
-      window.__IOS_COUNTRY_COORDS__ = Object.assign({}, window.__IOS_COUNTRY_COORDS__ || {}, cached.coords || {});
+      window.__IOS_COUNTRY_COORDS__ = prune(cached.data, Object.assign({}, window.__IOS_COUNTRY_COORDS__ || {}, cached.coords || {}));
     }
   } catch (e) {}
 

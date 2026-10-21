@@ -78,7 +78,8 @@ window.IOS_AGENCY_LOGOS = [
     [/\bTMEA\b|trademark africa/i, './assets/client-tmea.png'],
     [/outreach aid to the america|\bOAA\b/i, './assets/client-oaa.png'],
     [/state of california/i, './assets/client-ca-gov.jpeg'],
-    [/lesotho national development|\bLNDC\b/i, './assets/client-lndc.png']
+    [/lesotho national development|\bLNDC\b/i, './assets/client-lndc.png'],
+    [/central bank of the bahamas|\bCBOB\b/i, './assets/client-cbob.png']
   ];
 window.iosLogoFor = function (agency) {
   const a = (agency || '').trim();

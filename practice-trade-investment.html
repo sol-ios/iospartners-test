@@ -3,6 +3,18 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="IOS Partners">
+<meta property="og:title" content="IOS Partners">
+<meta property="og:description" content="Economic growth &amp; sustainable development worldwide. Over 400 assignments in 130+ countries.">
+<meta property="og:image" content="https://sol-ios.github.io/iospartners-test/assets/og-image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://sol-ios.github.io/iospartners-test/assets/og-image.jpg">
+<link rel="icon" type="image/png" sizes="32x32" href="./assets/favicon-32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="./assets/favicon-192.png">
+<link rel="apple-touch-icon" href="./assets/apple-touch-icon.png">
 <script src="./support.js"></script>
 <script src="./i18n.js"></script>
 </head>
@@ -520,6 +532,19 @@ class Component extends DCLogic {
   });
   shiftCardPrev = () => this.shiftCard(-1);
   shiftCardNext = () => this.shiftCard(1);
+  okImage = (url) => {
+    if (!url) return false;
+    const cache = (window.__iosImgProbe = window.__iosImgProbe || {});
+    if (cache[url] === undefined) {
+      cache[url] = null;
+      const i = new Image();
+      const done = (w) => { cache[url] = w; this.forceUpdate(); };
+      i.onload = () => done(i.naturalWidth);
+      i.onerror = () => done(0);
+      i.src = url;
+    }
+    return cache[url] >= 800;
+  };
   allocateImages = (list) => {
     const direct = (p) => this.KEYWORD_IMG.filter(([re]) => re.test(p.title || '')).map(([, x]) => x).filter((x) => x !== this.SECTOR_IMG);
     const kin = (imgs) => imgs.flatMap((x) => this.RELATED[x] || []).filter((x, i, a) => a.indexOf(x) === i);
@@ -767,7 +792,7 @@ class Component extends DCLogic {
       modalCurrentProject: cur ? (() => {
         const sc = this.statusColors(cur.status);
         const mk = (this.state.selectedCountry + '-' + (cur.title || '')).replace(/[^a-zA-Z0-9]+/g, '-').slice(0, 48);
-        return { ...cur, agency: this.realAgency(cur.agency) || '', description: cur.description || this.describe(cur), imgSrc: cur.image || this.imgFor(cur, idx), imgId: 'modal-' + mk, statusBg: sc.bg, statusFg: sc.fg, statusBd: sc.bd };
+        return { ...cur, agency: this.realAgency(cur.agency) || '', description: cur.description || this.describe(cur), imgSrc: this.okImage(cur.image) ? cur.image : this.imgFor(cur, idx), imgId: 'modal-' + mk, statusBg: sc.bg, statusFg: sc.fg, statusBd: sc.bd };
       })() : null
     };
   }

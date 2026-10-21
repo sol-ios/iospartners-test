@@ -3,6 +3,18 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="IOS Partners">
+<meta property="og:title" content="IOS Partners">
+<meta property="og:description" content="Economic growth &amp; sustainable development worldwide. Over 400 assignments in 130+ countries.">
+<meta property="og:image" content="https://sol-ios.github.io/iospartners-test/assets/og-image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://sol-ios.github.io/iospartners-test/assets/og-image.jpg">
+<link rel="icon" type="image/png" sizes="32x32" href="./assets/favicon-32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="./assets/favicon-192.png">
+<link rel="apple-touch-icon" href="./assets/apple-touch-icon.png">
 <script src="./support.js"></script>
 <script src="./i18n.js"></script>
 </head>
@@ -243,6 +255,19 @@ class Component extends DCLogic {
   ];
 
   get countryCoords() { return window.__IOS_COUNTRY_COORDS__ || {}; }
+  okImage = (url) => {
+    if (!url) return false;
+    const cache = (window.__iosImgProbe = window.__iosImgProbe || {});
+    if (cache[url] === undefined) {
+      cache[url] = null;
+      const i = new Image();
+      const done = (w) => { cache[url] = w; this.forceUpdate(); };
+      i.onload = () => done(i.naturalWidth);
+      i.onerror = () => done(0);
+      i.src = url;
+    }
+    return cache[url] >= 800;
+  };
   get projectData() { return window.__IOS_PROJECT_DATA__ || {}; }
 
   setMapRef = (el) => {
@@ -443,7 +468,7 @@ class Component extends DCLogic {
         if (!list.length) return null;
         const p = list[this.state.modalProjectIdx % list.length];
         const sc = this.statusColors(p.status);
-        const imgSrc = p.image || this.PA_IMAGES[p.area] || Object.values(this.PA_IMAGES)[0];
+        const imgSrc = (this.okImage(p.image) ? p.image : null) || this.PA_IMAGES[p.area] || Object.values(this.PA_IMAGES)[0];
         return { ...p, statusBg: sc.bg, statusFg: sc.fg, statusBd: sc.bd, imgId: (this.state.selectedCountry + '-' + p.title).slice(0, 60), imgSrc };
       })(),
       modalCounterText: (() => {

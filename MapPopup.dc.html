@@ -159,8 +159,23 @@ class Component extends DCLogic {
     return kind + ' in ' + this.state.country + (agency ? ' for ' + agency : '') + ', covering ' + t.charAt(0).toLowerCase() + t.slice(1) + '.';
   };
 
+  probeImage = (url) => {
+    const cache = (window.__iosImgProbe = window.__iosImgProbe || {});
+    if (cache[url] !== undefined) return cache[url];
+    cache[url] = null;
+    const i = new Image();
+    const done = (w) => { cache[url] = w; this.forceUpdate(); };
+    i.onload = () => done(i.naturalWidth);
+    i.onerror = () => done(0);
+    i.src = url;
+    return null;
+  };
+
   imageFor = (p, idx) => {
-    if (p.image) return p.image;
+    if (p.image) {
+      const w = this.probeImage(p.image);
+      if (w >= 800) return p.image;
+    }
     const a = this.areasOf(p)[0];
     if (this.SECTOR_IMAGES[a]) return this.SECTOR_IMAGES[a];
     const pool = Object.values(this.SECTOR_IMAGES);
