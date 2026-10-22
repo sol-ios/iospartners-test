@@ -25,8 +25,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
   <script src="./image-slot.js"></script>
   <script src="./cursor-fx.js"></script>
-  <script src="./practice-areas-data.js?v=2"></script>
-  <script>Object.values(window.PRACTICE_AREAS||{}).forEach(function(a){if(a.file&&/\.dc\.html|%20/.test(a.file)){a.file='./practice-'+decodeURIComponent(a.file).replace(/^\.\/Practice Area - /,'').replace(/\.dc\.html$/,'').toLowerCase().replace(/&/g,'and').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')+'.html';}});</script>
+  <script src="./practice-areas-data.js"></script>
   <script src="./globe.js"></script>
   <script src="./project-data.js"></script>
   <script src="./sheet-loader.js"></script>
@@ -38,6 +37,10 @@
     @keyframes fadeInUp { from { opacity:0; transform:translateY(22px); } to { opacity:1; transform:translateY(0); } }
     @keyframes floatSlow { 0%,100% { transform:translateY(0); } 50% { transform:translateY(-10px); } }
     @keyframes sweepBar { 0% { left:-40%; } 100% { left:100%; } }
+    .pa-row image-slot { pointer-events:none; }
+    .pa-row, .pa-row * { -webkit-tap-highlight-color:transparent; }
+    @media (hover:none) { .pa-row, .pa-row * { transition:none !important; animation:none !important; } .pa-row * { pointer-events:none !important; } .pa-row:hover, .pa-row:active { flex:none !important; height:64px !important; } .pa-row:hover .pa-row-info { opacity:0 !important; display:none !important; } .pa-row:hover .pa-row-arrow { background:rgba(255,255,255,0.16) !important; } }
+    @media (max-width:700px) { [data-work-map] { aspect-ratio:1/0.95 !important; } [data-map-bar] { display:grid !important; grid-template-columns:1fr auto !important; align-items:center !important; gap:12px 10px !important; } [data-map-bar] > div:first-child { display:contents !important; } [data-map-bar] > div:first-child > div:first-child { grid-column:1; grid-row:1; min-width:0; } [data-map-stats] { grid-column:2; grid-row:1; gap:8px !important; flex-wrap:nowrap !important; justify-content:flex-end !important; } [data-map-stats] > div:nth-child(2) { display:none !important; } [data-map-stats] span:first-child { font-size:15px !important; } [data-map-stats] span:last-child { font-size:10.5px !important; } [data-map-bar-search] { grid-column:1 / -1; grid-row:2; min-width:0 !important; width:100% !important; } [data-map-bar] input { font-size:13px !important; } }
     .pa-row:hover { flex:4.2 1 0 !important; }
     .pa-row-info { opacity:0; transform:translateY(8px); transition:opacity 0.3s ease 0.15s, transform 0.4s ease 0.15s; pointer-events:none; }
     .pa-row:hover .pa-row-info { opacity:1; transform:none; }
@@ -47,7 +50,7 @@
       .pa-card .pa-card-name { font-size:13px !important; }
       .pa-card > div:last-child { padding:12px !important; }
     }
-    @media (max-width:900px) { .pa-rows { grid-template-columns:1fr !important; } .pa-row-col { height:auto !important; } .pa-row { flex:none !important; height:49px !important; transition:height 0.4s ease !important; } .pa-row:hover { height:210px !important; } }
+    @media (max-width:900px) { .pa-rows { display:grid !important; grid-template-columns:repeat(2,minmax(0,1fr)) !important; grid-auto-rows:64px !important; gap:10px !important; } .pa-rows::-webkit-scrollbar { display:none; } .pa-row-col { display:contents !important; } .pa-row { height:64px !important; scroll-snap-align:start; } .pa-row:hover { height:64px !important; } .pa-row span { font-size:12.5px !important; line-height:1.2 !important; } .pa-row > div:nth-child(2) { padding:0 10px !important; gap:8px !important; } .pa-row-arrow { display:none !important; } .pa-row-col { height:auto !important; } .pa-row { flex:none !important; height:64px !important; transition:none !important; } .pa-row:hover { flex:none !important; height:64px !important; } .pa-row:hover .pa-row-info { opacity:0 !important; display:none !important; } .pa-row:hover .pa-row-arrow { background:rgba(255,255,255,0.16) !important; } .pa-row, .pa-row * { -webkit-user-select:none; user-select:none; -webkit-touch-callout:none; } .pa-row-col { gap:10px !important; } }
     #clients-track::-webkit-scrollbar { display:none; }
     #clients-track img { -webkit-user-drag:none; pointer-events:auto; }
     #clients-track { cursor:grab; }
@@ -74,7 +77,7 @@
       [data-forms-grid] { grid-template-columns:1fr !important; max-width:none !important; }
       [data-2col-input] { grid-template-columns:1fr !important; }
       [data-footer-grid] { grid-template-columns:1fr !important; gap:32px !important; }
-      [data-filters-grid] { flex-wrap:nowrap !important; overflow-x:auto; scrollbar-width:none; margin:0 -28px; padding:0 28px 6px !important; }
+      [data-filters-grid] { display:flex !important; flex-wrap:nowrap !important; gap:8px !important; overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none; margin:0 !important; padding:2px 24px 8px 0 !important; justify-items:start; align-items:center; scroll-snap-type:x proximity; user-select:none; -webkit-user-select:none; -webkit-mask-image:linear-gradient(90deg,#000 88%,transparent); mask-image:linear-gradient(90deg,#000 88%,transparent); } [data-filters-grid]::-webkit-scrollbar { display:none; } [data-filters-grid] button { scroll-snap-align:start; flex:0 0 auto; }
     }
     .nav-link { position:relative; }
     .nav-link::after { content:''; position:absolute; left:0; right:0; bottom:-7px; height:2px; background:#82C44D; transform:scaleX(0); transform-origin:left center; transition:transform 0.32s cubic-bezier(0.22,1,0.36,1); }
@@ -192,7 +195,7 @@
     <div data-hero-grid style="position:relative;z-index:2;max-width:1280px;margin:0 auto;min-height:640px;display:grid;grid-template-columns:1fr 1fr;gap:32px;align-items:center;padding:64px 24px">
       <div style="text-align:left">
         <h1 data-hero-title style="font-family:Montserrat;font-weight:600;font-size:41px;line-height:1.14;letter-spacing:-0.02em;margin:0 0 20px;color:white;animation:fadeInUp 0.8s ease both;text-shadow:0 2px 20px rgba(0,0,0,0.35)">Economic growth & sustainable development worldwide</h1>
-        <p data-hero-sub style="font-size:17px;color:rgba(255,255,255,0.8);margin:0 0 32px;max-width:480px;animation:fadeInUp 0.8s ease both;animation-delay:0.12s;text-shadow:0 1px 12px rgba(0,0,0,0.3)">Over 25 years of experience in international economic development in over 130 countries.</p>
+        <p data-hero-sub style="font-size:17px;color:rgba(255,255,255,0.8);margin:0 0 32px;max-width:480px;animation:fadeInUp 0.8s ease both;animation-delay:0.12s;text-shadow:0 1px 12px rgba(0,0,0,0.3)">Over 25 years of experience in international economic development in over 130 countries</p>
         <div style="display:flex;gap:14px;animation:fadeInUp 0.8s ease both;animation-delay:0.24s">
           <a href="#our-work" style="background:#82C44D;color:#ffffff;font-weight:600;font-size:15px;padding:14px 24px;border-radius:10px;transition:transform 0.2s ease,box-shadow 0.2s ease" style-hover="background:#6fa93e;transform:translateY(-2px);box-shadow:0 10px 24px rgba(130,196,77,0.35)">Explore our projects →</a>
         </div>
@@ -335,7 +338,7 @@
     <div style="position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,0.05) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.05) 1px,transparent 1px);background-size:56px 56px;mask-image:linear-gradient(180deg,transparent,black 30%,black 70%,transparent)"></div>
     <div style="position:relative;max-width:780px;margin:0 auto;{{ missionStyle }}">
       <div style="display:inline-block;background:rgba(130,196,77,0.14);border:1px solid rgba(130,196,77,0.35);color:#9fd97a;font-weight:600;font-size:13px;letter-spacing:0.18em;text-transform:uppercase;font-family:'JetBrains Mono',monospace;padding:7px 16px;border-radius:99px;margin-bottom:20px">{{ txtOurMission }}</div>
-      <p style="font-family:Montserrat;font-weight:600;font-size:26px;margin:0 auto;color:white">Eradicating poverty, developing strong communities and transforming lives through inclusive economic empowerment and good governance.</p>
+      <p style="font-family:Montserrat;font-weight:600;font-size:26px;margin:0 auto;color:white">Eradicating poverty, developing strong communities and transforming lives through inclusive economic empowerment and good governance</p>
     </div>
   </section>
 
@@ -367,13 +370,13 @@
 
       <div style="position:relative;margin-top:28px;border-radius:22px;overflow:hidden;background:radial-gradient(ellipse 90% 70% at 50% 62%,oklch(0.24 0.065 264) 0%,oklch(0.15 0.045 264) 72%);box-shadow:0 24px 60px rgba(10,20,40,0.22);border:1px solid oklch(0.3 0.06 264)">
         <div style="position:relative;z-index:2;padding:22px 28px 18px;border-bottom:1px solid rgba(255,255,255,0.08)">
-          <div style="display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;margin-bottom:16px">
+          <div data-map-bar style="display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;margin-bottom:16px">
             <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;flex:1;min-width:0">
             <div style="display:flex;align-items:center;gap:10px">
               <span style="width:8px;height:8px;border-radius:50%;background:#82C44D;box-shadow:0 0 0 4px rgba(130,196,77,0.18)"></span>
               <span style="font-family:'JetBrains Mono',monospace;font-size:11.5px;letter-spacing:0.16em;text-transform:uppercase;color:#9fd97a;white-space:nowrap">Filter by sector</span>
             </div>
-            <div style="position:relative;flex:1;min-width:220px">
+            <div data-map-bar-search style="position:relative;flex:1;min-width:220px">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="2" stroke-linecap="round" style="position:absolute;left:14px;top:50%;transform:translateY(-50%);pointer-events:none"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
               <input data-dark-search type="text" placeholder="Search country, client or sector…" value="{{ mapSearchQuery }}" onChange="{{ setMapSearchQuery }}" onFocus="{{ showMapSuggestions }}" onBlur="{{ hideMapSuggestions }}" onKeyDown="{{ mapSearchKeyDown }}" style="width:100%;box-sizing:border-box;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.18);border-radius:99px;padding:9px 16px 9px 38px;font-family:Montserrat;font-size:13px;color:white;outline:none" style-focus="border-color:#82C44D;background:rgba(255,255,255,0.12)"/>
               <sc-if value="{{ mapSuggestions }}">
@@ -388,7 +391,7 @@
               </sc-if>
             </div>
             </div>
-            <div style="display:flex;align-items:baseline;gap:18px;font-family:Montserrat;color:white">
+            <div data-map-stats style="display:flex;align-items:baseline;gap:18px;font-family:Montserrat;color:white">
               <div style="display:flex;align-items:baseline;gap:6px"><span style="font-size:22px;font-weight:600">{{ filterCountryCount }}</span><span style="font-size:12px;color:rgba(255,255,255,0.6)">countries</span></div>
               <div style="width:1px;height:18px;background:rgba(255,255,255,0.18)"></div>
               <div style="display:flex;align-items:baseline;gap:6px"><span style="font-size:22px;font-weight:600">{{ filterProjectCount }}</span><span style="font-size:12px;color:rgba(255,255,255,0.6)">projects</span></div>
@@ -402,7 +405,7 @@
             </sc-for>
           </div>
         </div>
-        <div style="position:relative;width:100%;aspect-ratio:16/7.2;margin-top:12px">
+        <div data-work-map style="position:relative;width:100%;aspect-ratio:16/7.2;margin-top:12px">
           <canvas ref="{{ setMapRef }}" style="width:100%;height:100%;display:block"></canvas>
         </div>
         <div style="display:flex;justify-content:center;padding:6px 28px 18px;border-top:1px solid rgba(255,255,255,0.08);margin-top:12px">
@@ -452,7 +455,7 @@
               <img loading="lazy" decoding="async" src="./assets/client-ecowas.webp" alt="ECOWAS" style="height:56px;width:56px;max-width:none;object-fit:contain;display:block;filter:grayscale(1);opacity:0.62;transition:filter .3s ease,opacity .3s ease" style-hover="filter:none;opacity:1"/>
             </div>
             <div style="flex-shrink:0;width:185px;height:88px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
-              <img loading="lazy" decoding="async" src="./assets/client-ifc.png" alt="IFC" style="height:60px;width:133px;max-width:none;object-fit:contain;display:block;filter:grayscale(1);opacity:0.62;transition:filter .3s ease,opacity .3s ease" style-hover="filter:none;opacity:1"/>
+              <img loading="lazy" decoding="async" src="./assets/client-ifc.webp" alt="IFC" style="height:60px;width:133px;max-width:none;object-fit:contain;display:block;filter:grayscale(1);opacity:0.62;transition:filter .3s ease,opacity .3s ease" style-hover="filter:none;opacity:1"/>
             </div>
             <div style="flex-shrink:0;width:156px;height:88px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
               <img loading="lazy" decoding="async" src="./assets/client-worldbank.webp" alt="The World Bank" style="height:53px;width:104px;max-width:none;object-fit:contain;display:block;filter:grayscale(1);opacity:0.62;transition:filter .3s ease,opacity .3s ease" style-hover="filter:none;opacity:1"/>
@@ -467,10 +470,10 @@
               <img loading="lazy" decoding="async" src="./assets/client-icao.jpeg" alt="ICAO" style="height:54px;width:65px;max-width:none;object-fit:contain;display:block;filter:grayscale(1);opacity:0.62;transition:filter .3s ease,opacity .3s ease" style-hover="filter:none;opacity:1"/>
             </div>
             <div style="flex-shrink:0;width:183px;height:88px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
-              <img loading="lazy" decoding="async" src="./assets/client-idb.png" alt="Inter-American Development Bank" style="height:59px;width:131px;max-width:none;object-fit:contain;display:block;filter:grayscale(1);opacity:0.62;transition:filter .3s ease,opacity .3s ease" style-hover="filter:none;opacity:1"/>
+              <img loading="lazy" decoding="async" src="./assets/client-idb.webp" alt="Inter-American Development Bank" style="height:59px;width:131px;max-width:none;object-fit:contain;display:block;filter:grayscale(1);opacity:0.62;transition:filter .3s ease,opacity .3s ease" style-hover="filter:none;opacity:1"/>
             </div>
             <div style="flex-shrink:0;width:129px;height:88px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
-              <img loading="lazy" decoding="async" src="./assets/client-ifad.png" alt="IFAD" style="height:58px;width:77px;max-width:none;object-fit:contain;display:block;filter:grayscale(1);opacity:0.62;transition:filter .3s ease,opacity .3s ease" style-hover="filter:none;opacity:1"/>
+              <img loading="lazy" decoding="async" src="./assets/client-ifad.webp" alt="IFAD" style="height:58px;width:77px;max-width:none;object-fit:contain;display:block;filter:grayscale(1);opacity:0.62;transition:filter .3s ease,opacity .3s ease" style-hover="filter:none;opacity:1"/>
             </div>
             <div style="flex-shrink:0;width:190px;height:88px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
               <img loading="lazy" decoding="async" src="./assets/client-louisberger.png" alt="Louis Berger" style="height:44px;width:138px;max-width:none;object-fit:contain;display:block;filter:grayscale(1);opacity:0.62;transition:filter .3s ease,opacity .3s ease" style-hover="filter:none;opacity:1"/>
@@ -488,7 +491,7 @@
               <img loading="lazy" decoding="async" src="./assets/client-sadc.png" alt="SADC" style="height:62px;width:57px;max-width:none;object-fit:contain;display:block;filter:grayscale(1);opacity:0.62;transition:filter .3s ease,opacity .3s ease" style-hover="filter:none;opacity:1"/>
             </div>
             <div style="flex-shrink:0;width:132px;height:88px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
-              <img loading="lazy" decoding="async" src="./assets/client-tmea.png" alt="TradeMark Africa" style="height:68px;width:80px;max-width:none;object-fit:contain;display:block;filter:grayscale(1);opacity:0.62;transition:filter .3s ease,opacity .3s ease" style-hover="filter:none;opacity:1"/>
+              <img loading="lazy" decoding="async" src="./assets/client-tmea.webp" alt="TradeMark Africa" style="height:68px;width:80px;max-width:none;object-fit:contain;display:block;filter:grayscale(1);opacity:0.62;transition:filter .3s ease,opacity .3s ease" style-hover="filter:none;opacity:1"/>
             </div>
             <div style="flex-shrink:0;width:160px;height:88px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
               <img loading="lazy" decoding="async" src="./assets/client-usaid.webp" alt="USAID" style="height:86px;width:166px;max-width:none;object-fit:contain;display:block;filter:grayscale(1);opacity:0.62;transition:filter .3s ease,opacity .3s ease" style-hover="filter:none;opacity:1"/>
@@ -527,7 +530,7 @@
               <img loading="lazy" decoding="async" src="./assets/client-ecowas.webp" alt="ECOWAS" style="height:56px;width:56px;max-width:none;object-fit:contain;display:block;filter:grayscale(1);opacity:0.62;transition:filter .3s ease,opacity .3s ease" style-hover="filter:none;opacity:1"/>
             </div>
             <div style="flex-shrink:0;width:185px;height:88px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
-              <img loading="lazy" decoding="async" src="./assets/client-ifc.png" alt="IFC" style="height:60px;width:133px;max-width:none;object-fit:contain;display:block;filter:grayscale(1);opacity:0.62;transition:filter .3s ease,opacity .3s ease" style-hover="filter:none;opacity:1"/>
+              <img loading="lazy" decoding="async" src="./assets/client-ifc.webp" alt="IFC" style="height:60px;width:133px;max-width:none;object-fit:contain;display:block;filter:grayscale(1);opacity:0.62;transition:filter .3s ease,opacity .3s ease" style-hover="filter:none;opacity:1"/>
             </div>
             <div style="flex-shrink:0;width:156px;height:88px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
               <img loading="lazy" decoding="async" src="./assets/client-worldbank.webp" alt="The World Bank" style="height:53px;width:104px;max-width:none;object-fit:contain;display:block;filter:grayscale(1);opacity:0.62;transition:filter .3s ease,opacity .3s ease" style-hover="filter:none;opacity:1"/>
@@ -542,10 +545,10 @@
               <img loading="lazy" decoding="async" src="./assets/client-icao.jpeg" alt="ICAO" style="height:54px;width:65px;max-width:none;object-fit:contain;display:block;filter:grayscale(1);opacity:0.62;transition:filter .3s ease,opacity .3s ease" style-hover="filter:none;opacity:1"/>
             </div>
             <div style="flex-shrink:0;width:183px;height:88px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
-              <img loading="lazy" decoding="async" src="./assets/client-idb.png" alt="Inter-American Development Bank" style="height:59px;width:131px;max-width:none;object-fit:contain;display:block;filter:grayscale(1);opacity:0.62;transition:filter .3s ease,opacity .3s ease" style-hover="filter:none;opacity:1"/>
+              <img loading="lazy" decoding="async" src="./assets/client-idb.webp" alt="Inter-American Development Bank" style="height:59px;width:131px;max-width:none;object-fit:contain;display:block;filter:grayscale(1);opacity:0.62;transition:filter .3s ease,opacity .3s ease" style-hover="filter:none;opacity:1"/>
             </div>
             <div style="flex-shrink:0;width:129px;height:88px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
-              <img loading="lazy" decoding="async" src="./assets/client-ifad.png" alt="IFAD" style="height:58px;width:77px;max-width:none;object-fit:contain;display:block;filter:grayscale(1);opacity:0.62;transition:filter .3s ease,opacity .3s ease" style-hover="filter:none;opacity:1"/>
+              <img loading="lazy" decoding="async" src="./assets/client-ifad.webp" alt="IFAD" style="height:58px;width:77px;max-width:none;object-fit:contain;display:block;filter:grayscale(1);opacity:0.62;transition:filter .3s ease,opacity .3s ease" style-hover="filter:none;opacity:1"/>
             </div>
             <div style="flex-shrink:0;width:190px;height:88px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
               <img loading="lazy" decoding="async" src="./assets/client-louisberger.png" alt="Louis Berger" style="height:44px;width:138px;max-width:none;object-fit:contain;display:block;filter:grayscale(1);opacity:0.62;transition:filter .3s ease,opacity .3s ease" style-hover="filter:none;opacity:1"/>
@@ -563,7 +566,7 @@
               <img loading="lazy" decoding="async" src="./assets/client-sadc.png" alt="SADC" style="height:62px;width:57px;max-width:none;object-fit:contain;display:block;filter:grayscale(1);opacity:0.62;transition:filter .3s ease,opacity .3s ease" style-hover="filter:none;opacity:1"/>
             </div>
             <div style="flex-shrink:0;width:132px;height:88px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
-              <img loading="lazy" decoding="async" src="./assets/client-tmea.png" alt="TradeMark Africa" style="height:68px;width:80px;max-width:none;object-fit:contain;display:block;filter:grayscale(1);opacity:0.62;transition:filter .3s ease,opacity .3s ease" style-hover="filter:none;opacity:1"/>
+              <img loading="lazy" decoding="async" src="./assets/client-tmea.webp" alt="TradeMark Africa" style="height:68px;width:80px;max-width:none;object-fit:contain;display:block;filter:grayscale(1);opacity:0.62;transition:filter .3s ease,opacity .3s ease" style-hover="filter:none;opacity:1"/>
             </div>
             <div style="flex-shrink:0;width:160px;height:88px;display:flex;align-items:center;justify-content:center;box-sizing:border-box">
               <img loading="lazy" decoding="async" src="./assets/client-usaid.webp" alt="USAID" style="height:86px;width:166px;max-width:none;object-fit:contain;display:block;filter:grayscale(1);opacity:0.62;transition:filter .3s ease,opacity .3s ease" style-hover="filter:none;opacity:1"/>
@@ -1345,7 +1348,7 @@ class Component extends DCLogic {
     v.popupData = this.projectData;
     v.selectedCountryFlagUrl = window.iosFlagUrl ? window.iosFlagUrl(this.state.selectedCountry) : null;
     const p = v.modalCurrentProject;
-    if (p) { const logo = window.iosLogoFor ? window.iosLogoFor(p.agency) : null; v.modalCurrentProject = { ...p, logoSrc: logo, agencyTextOnly: !!p.agency && !logo }; }
+    if (p) { const logo = window.iosLogoFor ? window.iosLogoFor(p.agency, p.country || this.state.selectedCountry) : null; v.modalCurrentProject = { ...p, logoSrc: logo, agencyTextOnly: !!p.agency && !logo }; }
     return v;
   }
   _rvBase() {

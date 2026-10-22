@@ -681,7 +681,7 @@ function initOfficesMap(canvas,offices,scale){
   scale=scale||1;
   var ctx=canvas.getContext('2d');
   var DPR=Math.min(window.devicePixelRatio||1,2);
-  var W,H,hoverOff=-1,offPts=[];
+  var W,H,hoverOff=-1,offPts=[],placeCache=null;
   // custom per-office label offsets [dx,dy] to fan out clustered regions (Europe); default [16,-12]
   var LBL_OFF={
     'Brussels, Belgium':[-64,-4],
@@ -749,38 +749,78 @@ function initOfficesMap(canvas,offices,scale){
         ctx.moveTo(hqPt.x,hqPt.y); ctx.quadraticCurveTo(mx3,my3,op.x,op.y); ctx.stroke();
       }
     }
+    var kk=Math.min(1,Math.max(0.42,W/720)), sc=scale*kk;
+    var pkey=W+','+H+','+sc;
+    if(!placeCache||placeCache.key!==pkey){
+      var P=[],R=[],rects=[],pl=[];
+      for(var q=0;q<offices.length;q++){ P.push(px(offices[q].lng,offices[q].lat)); }
+      var dotR=(function(){return 11*sc;})();
+      var hits=function(x,y,w,h){
+        if(x<2||x+w>W-2||y<2||y+h>H-2) return true;
+        for(var j=0;j<P.length;j++){
+          var rr=(offices[j].hq?15:10)*sc;
+          var cx2=Math.max(x,Math.min(P[j].x,x+w)), cy2=Math.max(y,Math.min(P[j].y,y+h));
+          var ddx=P[j].x-cx2, ddy=P[j].y-cy2;
+          if(ddx*ddx+ddy*ddy<rr*rr) return true;
+        }
+        for(var k=0;k<rects.length;k++){ var r2=rects[k]; if(x<r2.x+r2.w+4&&x+w+4>r2.x&&y<r2.y+r2.h+3&&y+h+3>r2.y) return true; }
+        return false;
+      };
+      var order=offices.map(function(_,i){return i;}).sort(function(i,j){return (offices[j].hq?1:0)-(offices[i].hq?1:0);});
+      for(var oi=0;oi<order.length;oi++){
+        var i2=order[oi], of2=offices[i2], hq2=!!of2.hq;
+        var fs2=(hq2?13.5:10.5)*sc;
+        ctx.font=(hq2?'700':'600')+' '+fs2+'px Montserrat,sans-serif';
+        var lb2=(of2.city||of2.name.split(',')[0]);
+        var w2=ctx.measureText(lb2).width+(hq2?fs2+5:0), h2=fs2+2;
+        var best=null;
+        var radii=[13,20,30,42,56,72];
+        for(var ri=0;ri<radii.length&&!best;ri++){
+          var rd=radii[ri]*kk+(hq2?6:0);
+          var cands=[[rd,fs2*0.35],[rd*0.6,-rd*0.8],[rd*0.6,rd*0.8+fs2],[-(w2+rd),fs2*0.35],[-(w2+rd*0.6),-rd*0.8],[-(w2+rd*0.6),rd*0.8+fs2],[-w2/2,-rd-4],[-w2/2,rd+fs2]];
+          for(var ci=0;ci<cands.length;ci++){
+            var cx3=P[i2].x+cands[ci][0], cy3=P[i2].y+cands[ci][1];
+            if(!hits(cx3,cy3-fs2,w2,h2)){ best={dx:cands[ci][0],dy:cands[ci][1],x:cx3,y:cy3}; break; }
+          }
+        }
+        if(!best){ var lo0=LBL_OFF[of2.name]||[10,-9]; best={dx:lo0[0]*kk,dy:lo0[1]*kk,x:P[i2].x+lo0[0]*kk,y:P[i2].y+lo0[1]*kk}; }
+        rects.push({x:best.x,y:best.y-fs2,w:w2,h:h2});
+        pl[i2]=[best.dx,best.dy];
+      }
+      placeCache={key:pkey,off:pl};
+    }
     offPts=[];
     for(var o=0;o<offices.length;o++){
       var off=offices[o], pt=px(off.lng,off.lat);
       var pulse=0.5+0.5*Math.sin(t*1.3+o*0.6);
       var isH=(o===hoverOff), isHQ=off.hq;
       var lo=LBL_OFF[off.name]||[10,-9];
-      var ax=pt.x+lo[0], ay=pt.y+lo[1];
+      var po=placeCache.off[o]||[lo[0]*kk,lo[1]*kk]; var ax=pt.x+po[0], ay=pt.y+po[1];
       offPts.push({x:pt.x,y:pt.y,idx:o});
       // glow ring on dot
-      ctx.beginPath(); ctx.strokeStyle='rgba(130,196,77,'+(isHQ?0.7:0.35)+')'; ctx.lineWidth=(isHQ?1.6:0.9)*scale;
-      ctx.arc(pt.x,pt.y,((isHQ?11:5)+4*pulse)*scale,0,Math.PI*2); ctx.stroke();
+      ctx.beginPath(); ctx.strokeStyle='rgba(130,196,77,'+(isHQ?0.7:0.35)+')'; ctx.lineWidth=(isHQ?1.6:0.9)*sc;
+      ctx.arc(pt.x,pt.y,((isHQ?11:5)+4*pulse)*sc,0,Math.PI*2); ctx.stroke();
       if(isHQ){
-        ctx.beginPath(); ctx.fillStyle=GREEN; ctx.shadowColor=GREEN; ctx.shadowBlur=20*scale; ctx.arc(pt.x,pt.y,7*scale,0,Math.PI*2); ctx.fill(); ctx.shadowBlur=0;
+        ctx.beginPath(); ctx.fillStyle=GREEN; ctx.shadowColor=GREEN; ctx.shadowBlur=20*sc; ctx.arc(pt.x,pt.y,7*sc,0,Math.PI*2); ctx.fill(); ctx.shadowBlur=0;
       } else {
         // white halo for contrast against the blue background
         ctx.beginPath(); ctx.fillStyle='rgba(255,255,255,0.9)';
-        ctx.arc(pt.x,pt.y,3.6*scale,0,Math.PI*2); ctx.fill();
+        ctx.arc(pt.x,pt.y,3.6*sc,0,Math.PI*2); ctx.fill();
         // core dot
         ctx.beginPath(); ctx.fillStyle=GREEN;
-        ctx.shadowColor=GREEN; ctx.shadowBlur=(isH?11:6)*scale;
-        ctx.arc(pt.x,pt.y,2.8*scale,0,Math.PI*2); ctx.fill(); ctx.shadowBlur=0;
+        ctx.shadowColor=GREEN; ctx.shadowBlur=(isH?11:6)*sc;
+        ctx.arc(pt.x,pt.y,2.8*sc,0,Math.PI*2); ctx.fill(); ctx.shadowBlur=0;
       }
       // leader line: dot → anchor
       ctx.beginPath();
       ctx.strokeStyle=isHQ?GREENLINE:'rgba(255,255,255,'+(isH?0.5:0.35)+')';
-      ctx.lineWidth=(isHQ?0.9:0.6)*scale;
+      ctx.lineWidth=(isHQ?0.9:0.6)*sc;
       ctx.setLineDash(isHQ?[]:[2,3]);
       ctx.moveTo(pt.x,pt.y); ctx.lineTo(ax,ay); ctx.stroke();
       ctx.setLineDash([]);
       // label at anchor — plain white text, no background box
       var lbl=(off.city||off.name.split(',')[0]);
-      var fs=(isHQ?13.5:(isH?13:10.5))*scale;
+      var fs=(isHQ?13.5:(isH?13:10.5))*sc;
       ctx.font=(isHQ||isH?'700':'600')+' '+fs+'px Montserrat,sans-serif';
       var iconW=isHQ?fs+5:0;
       var tw=ctx.measureText(lbl).width+iconW;

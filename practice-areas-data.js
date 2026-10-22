@@ -53,6 +53,7 @@ window.getPracticeAreaProjects = function (slug) {
 };
 
 window.IOS_AGENCY_LOGOS = [
+  [/ositran.*world bank/i, './assets/client-ositran-worldbank.webp'],
     [/asian development bank|\bADB\b/i, './assets/client-adb.webp'],
     [/AECOM/i, './assets/client-aecom.webp'],
     [/african development bank|AfDB/i, './assets/client-afdb.webp'],
@@ -63,29 +64,68 @@ window.IOS_AGENCY_LOGOS = [
     [/deloitte/i, './assets/client-deloitte.webp'],
     [/european bank|EBRD/i, './assets/client-ebrd.webp'],
     [/ECOWAS/i, './assets/client-ecowas.webp'],
-    [/USTDA|trade and development agency/i, './assets/client-ustda.webp'],
+    [/USTDA|trade (and|&|&amp;) development agency/i, './assets/client-ustda.webp'],
     [/world bank|\bIDA\b|\bIBRD\b|\bWB\b/i, './assets/client-worldbank.webp'],
     [/millennium challenge|\bMCC\b/i, './assets/client-mcc.webp'],
     [/USAID|agency for international development/i, './assets/client-usaid.webp'],
-    [/international finance corp|\bIFC\b/i, './assets/client-ifc.png'],
-    [/inter-american development bank|\bIDB\b|\bIADB\b/i, './assets/client-idb.png'],
-    [/international fund for agricultural development|\bIFAD\b/i, './assets/client-ifad.png'],
-    [/dept\.? of state|department of state/i, './assets/client-dos.png'],
-    [/garnier\s*&?\s*garnier/i, './assets/client-garnier.png'],
-    [/\bONDA\b|office national des a[eé]roports/i, './assets/client-onda.png'],
-    [/air\s*mada(gascar)?/i, './assets/client-airmada.png'],
-    [/national bank of ethiopia|\bNBE\b/i, './assets/client-nbe.png'],
-    [/\bTMEA\b|trademark africa/i, './assets/client-tmea.png'],
-    [/outreach aid to the america|\bOAA\b/i, './assets/client-oaa.png'],
-    [/state of california/i, './assets/client-ca-gov.jpeg'],
-    [/lesotho national development|\bLNDC\b/i, './assets/client-lndc.png'],
-    [/central bank of the bahamas|\bCBOB\b/i, './assets/client-cbob.png']
+    [/international finance corp|\bIFC\b/i, './assets/client-ifc.webp'],
+    [/inter-american development bank|\bIDB\b|\bIADB\b/i, './assets/client-idb.webp'],
+    [/international fund for agricultural development|\bIFAD\b/i, './assets/client-ifad.webp'],
+    [/dept\.? of state|department of state/i, './assets/client-dos.webp'],
+    [/garnier\s*&?\s*garnier/i, './assets/client-garnier.webp'],
+    [/\bONDA\b|office national des a[eé]roports/i, './assets/client-onda.webp'],
+    [/air\s*mada(gascar)?/i, './assets/client-airmada.webp'],
+    [/national bank of ethiopia|\bNBE\b/i, './assets/client-nbe.webp'],
+    [/\bTMEA\b|trademark africa/i, './assets/client-tmea.webp'],
+    [/outreach aid to the america|\bOAA\b/i, './assets/client-oaa.webp'],
+    [/state of california/i, './assets/client-ca-gov.webp'],
+    [/lesotho national development|\bLNDC\b/i, './assets/client-lndc.webp'],
+    [/central bank of\s+the\s+bahamas|\bCBOB\b/i, './assets/client-cbob.webp'],
+    [/central bank of montenegro|centralna banka|\bCBCG\b/i, './assets/client-cbcg.webp'],
+  [/\bFISE\b|fondo de inversi[oó]n social/i, './assets/client-fise.webp'],
+  [/\bICT\b|instituto costarricense de turismo/i, './assets/client-ict.webp'],
+  [/brunei|autoriti monetari/i, './assets/client-brunei.webp'],
+  [/\bFAAN\b|federal airports authority/i, './assets/client-faan.webp'],
+  [/\bTRB\b|reynold brothers/i, './assets/client-trb.webp'],
+  [/E&Y|ernst|\bEY\b/i, './assets/client-ey.webp'],
+  [/JAMPRO/i, './assets/client-jampro.webp'],
+  [/government of jamaica/i, './assets/client-jamaica-gov.webp'],
+  [/vinci/i, './assets/client-vinci.webp'],
+  [/\bARME\b/i, './assets/client-arme.webp'],
+  [/\bICAO\b|international civil aviation/i, './assets/client-icao.webp'],
+  [/moldova/i, './assets/client-moldova.webp'],
+  [/seychelles/i, './assets/client-seychelles.webp'],
+  [/kiribati|fisheries (and|&) marine resources development/i, './assets/client-kiribati.webp'],
+  [/tunisi|hydraulic resources|maritime fisheries/i, './assets/client-tunisia.webp'],
+  [/pemco/i, './assets/client-pemco.webp'],
+  [/\bUTHO\b/i, './assets/client-utho.webp'],
+  [/\bAPIX\b/i, './assets/client-apix.webp'],
+  [/infraco/i, './assets/client-infraco.webp'],
+  [/el salvador|ministerio de turismo/i, './assets/client-elsalvador.webp'],
+  [/labou?r (and|&|&amp;) social affairs/i, './assets/client-montenegro-labor.webp'],
+  [/social security system|\bSSS\b/i, './assets/client-sss.webp'],
+  [/insurance state supervision/i, './assets/client-georgia-insurance.webp'],
+  [/equality of opportunity|labou?r, family/i, './assets/client-romania.webp'],
+  [/ukraine social investment|\bUSIF\b/i, './assets/client-usif.webp'],
+  [/abu dh?abi|abu dabi/i, './assets/client-adpf.webp'],
+  [/industry,? trade (and|&|&amp;) tourism/i, './assets/client-malawi-ministry.webp'],
+  [/lagos/i, './assets/client-lagos.webp'],
+  [/qatar tourism/i, './assets/client-qatar-tourism.webp'],
+  [/\bACRP\b|airport cooperative research/i, './assets/client-acrp.webp'],
+  [/OSITRAN|organismo supervisor/i, './assets/client-ositran.webp'],
+  [/al-?muhaidib/i, './assets/client-muhaidib.webp'],
+  [/kingdom of saudi arabia|\bKSA\b/i, './assets/client-ksa.webp'],
+  [/roads authority/i, './assets/client-roads-authority.webp'],
+  [/government of mozambique/i, './assets/client-mozambique.webp'],
+  [/development,? industry (and|&|&amp;) commerce/i, './assets/client-nicaragua-ministry.webp'],
+  [/halcrow/i, './assets/client-halcrow.webp'],
   ];
-window.iosLogoFor = function (agency) {
+window.iosLogoFor = function (agency, country) {
   const a = (agency || '').trim();
   if (!a || /^(n\/a|\?|-|none)$/i.test(a)) return null;
   const hit = window.IOS_AGENCY_LOGOS.find(function (x) { return x[0].test(a); });
-  return hit ? hit[1] : null;
+  if (hit) return hit[1];
+  return null;
 };
 
 window.IOS_COUNTRY_CODES = {"Burkina Faso":"BF","Morocco":"MA","Lesotho":"LS","Madagascar":"MG","Sierra Leone":"SL","Seychelles":"SC","Haiti":"HT","Benin":"BJ","Georgia":"GE","Hungary":"HU","Mali":"ML","Nigeria":"NG","Nicaragua":"NI","Senegal":"SN","Iraq":"IQ","Samoa":"WS","Philippines":"PH","Tuvalu":"TV","Cambodia":"KH","Fiji":"FJ","Solomon Islands":"SB","Ethiopia":"ET","Saint Vincent and The Grenadines":"VC","Jamaica":"JM","Djibouti":"DJ","Canada":"CA","Costa Rica":"CR","United Arab Emirates":"AE","Bangladesh":"BD","Bosnia and Herzegovina":"BA","Brazil":"BR","Chile":"CL","Cameroon":"CM","Cape Verde":"CV","Ecuador":"EC","Egypt":"EG","Greece":"GR","Hong Kong":"HK","India":"IN","Kenya":"KE","Laos":"LA","Myanmar":"MM","Mongolia":"MN","Mozambique":"MZ","Malawi":"MW","Peru":"PE","Palau":"PW","Puerto Rico":"PR","Qatar":"QA","Indonesia":"ID","Rwanda":"RW","Saudi Arabia":"SA","El Salvador":"SV","Somalia":"SO","Suriname":"SR","Togo":"TG","Trinidad and Tobago":"TT","Tanzania":"TZ","United States":"US","Vanuatu":"VU","Barbados":"BB","China":"CN","Gambia":"GM","Moldova":"MD","Macedonia":"MK","Montenegro":"ME","Nepal":"NP","Russia":"RU","Zambia":"ZM","Guyana":"GY","Saint Lucia":"LC","Palestine":"PS","Bahamas":"BS","Tunisia":"TN","Sint Maarten":"SX","Angola":"AO","Republic of Guinea":"GN","Maldives":"MV","Albania":"AL","Comoros Islands":"KM","Pakistan":"PK","Kiribati":"KI","Belize":"BZ","Brunei Darussalam":"BN","Antigua & Barbuda":"AG","Afghanistan":"AF","Cote d'Ivoire":"CI","Congo, Democratic Republic":"CD","Colombia":"CO","Jordan":"JO","Kyrgyzstan":"KG","Lebanon":"LB","Azerbaijan":"AZ","Bolivia":"BO","Serbia":"RS","South Africa":"ZA","Zimbabwe":"ZW","Kingdom of Bahrain":"BH","Dominican Republic":"DO","Honduras":"HN","Kuwait":"KW","Sri Lanka":"LK","Sudan":"SD","Yemen":"YE","Vietnam":"VN","Bulgaria":"BG","Cook Islands":"CK","Kazakhstan":"KZ","Kosovo":"XK","Romania":"RO","Slovakia":"SK","Ukraine":"UA"};
@@ -96,3 +136,10 @@ window.iosFlagUrl = function (country) {
 
 window.IOS_COUNTRY_CODES_EXTRA = { 'Republic of Georgia': 'GE', 'Saint Vincent and the Grenadines': 'VC', 'Central African Republic': 'CF', 'Micronesia': 'FM', 'Malaysia': 'MY', 'Marshall Islands': 'MH', 'Papua New Guinea': 'PG', 'Thailand': 'TH', 'Timor-Leste': 'TL', 'Tonga': 'TO', 'Bosnia & Herzegovina': 'BA', 'Cuba': 'CU', 'Ivory Coast': 'CI', 'Côte d’Ivoire': 'CI', "Côte d'Ivoire": 'CI', 'Democratic Republic of Congo': 'CD', 'Ghana': 'GH', 'British Virgin Islands': 'VG', 'Burundi': 'BI', 'Saint Maarten': 'SX' };
 Object.assign(window.IOS_COUNTRY_CODES, window.IOS_COUNTRY_CODES_EXTRA);
+
+// warm the browser cache with every client logo once the page is idle, so popups/cards show them instantly
+window.__iosLogoPrefetch = function () {
+  var seen = {};
+  (window.IOS_AGENCY_LOGOS || []).forEach(function (r) { var u = r[1]; if (u && !seen[u]) { seen[u] = 1; var i = new Image(); i.decoding = 'async'; i.src = u; } });
+};
+(window.requestIdleCallback || function (f) { setTimeout(f, 1500); })(function () { window.__iosLogoPrefetch(); }, { timeout: 4000 });

@@ -82,7 +82,7 @@
   </div>
 </sc-if>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props="{&quot;country&quot;: {&quot;editor&quot;: &quot;text&quot;, &quot;default&quot;: &quot;&quot;, &quot;tsType&quot;: &quot;string&quot;}, &quot;data&quot;: {&quot;editor&quot;: null, &quot;tsType&quot;: &quot;Record&lt;string, any[]&gt;&quot;}, &quot;onClose&quot;: {&quot;editor&quot;: null, &quot;tsType&quot;: &quot;() =&gt; void&quot;}}">
+<script type="text/x-dc" data-dc-script data-props="{&quot;country&quot;: {&quot;editor&quot;: &quot;text&quot;, &quot;default&quot;: &quot;&quot;, &quot;tsType&quot;: &quot;string&quot;}, &quot;data&quot;: {&quot;editor&quot;: null, &quot;tsType&quot;: &quot;Record&lt;string, any[]&gt;&quot;}, &quot;focusTitle&quot;: {&quot;editor&quot;: &quot;text&quot;, &quot;default&quot;: &quot;&quot;, &quot;tsType&quot;: &quot;string&quot;}, &quot;onClose&quot;: {&quot;editor&quot;: null, &quot;tsType&quot;: &quot;() =&gt; void&quot;}}">
 class Component extends DCLogic {
   state = { country: null, area: 'All', idx: 0, query: '', focused: false, copied: false };
 
@@ -113,8 +113,12 @@ class Component extends DCLogic {
     if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(url).then(done, () => window.prompt('Copy this link:', url));
     else window.prompt('Copy this link:', url);
   };
-  componentDidUpdate(prev) { if (prev.country !== this.props.country) this.syncCountry(); }
-  syncCountry() { this.setState({ country: this.props.country || null, area: 'All', idx: 0, query: '' }); }
+  componentDidUpdate(prev) { if (prev.country !== this.props.country || prev.focusTitle !== this.props.focusTitle) this.syncCountry(); }
+  syncCountry() {
+    const c = this.props.country || null, ft = this.props.focusTitle;
+    const at = c && ft ? Math.max(0, (this.data[c] || []).findIndex((p) => p.title === ft)) : 0;
+    this.setState({ country: c, area: 'All', idx: at, query: '' });
+  }
 
   SECTOR_IMAGES = {
     'Agriculture': './assets/pa-agriculture.webp', 'Aviation': './assets/pa-aviation.webp', 'Tourism': './assets/pa-tourism.webp',
@@ -243,7 +247,7 @@ class Component extends DCLogic {
     if (p) {
       const agency = this.realAgency(p.agency);
       project = { ...p, agency, area: this.areasOf(p).join(' · '), description: p.description || this.describe(p),
-        logoSrc: window.iosLogoFor ? window.iosLogoFor(agency) : null,
+        logoSrc: window.iosLogoFor ? window.iosLogoFor(agency, country) : null,
         imgSrc: this.imageFor(p, idx), imgId: ('popup-' + country + '-' + p.title).replace(/[^a-zA-Z0-9]+/g, '-').slice(0, 70) };
     }
     return {

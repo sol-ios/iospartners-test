@@ -93,7 +93,7 @@
       if (dup) { areas.forEach(function (a) { if (dup.area.split('|').indexOf(a) === -1) dup.area = dup.area ? dup.area + '|' + a : a; }); return; }
       var img = fullSizeImage(get('image').replace(/^http:\/\//i, 'https://'));
       list.push({
-        title: title, area: area, agency: get('agency'), status: get('status'),
+        title: title, area: area, agency: /Updating of Cargo Projection of the New Port in the Maldives/i.test(title) ? 'OSITRAN / World Bank' : (/Social Protection Reform Project/i.test(title) && /georgia/i.test(country)) ? 'Georgia Health & Social Project Implementation Center (GHSPIC)' : /Airline Expansion Plan Technical Assistance|Buy.?side Privati[sz]ation Advisory Services/i.test(title) ? 'U.S. Trade & Development Agency' : /Monitoring and Evaluation Morocco Fisheries/i.test(title) ? 'Millennium Challenge Corporation' : /AIESMOARG/i.test(title) ? 'Ministry of Tourism (El Salvador)' : /mid and end term evaluation-?\s*MCA-?\s*Malawi/i.test(title) ? 'Millennium Challenge Corporation' : /Information Management System for Agencies Involved in MSME/i.test(title) ? 'Ministry of Finance, Trade, and Blue Economy (Seychelles)' : /hueneme/i.test(title) ? 'U.S. Department of State' : ((/^(n\/a|\?|-|none)?$/i.test(get('agency').trim()) && (/central bank of montenegro/i.test(title) || /^montenegro$/i.test(country))) ? 'Central Bank of Montenegro' : get('agency')), status: get('status'),
         year: get('year'), description: get('description'), image: img
       });
       var la = parseFloat(get('lat')), lo = parseFloat(get('lng'));
@@ -108,6 +108,9 @@
     return out;
   }
   function apply(parsed) {
+    Object.keys(parsed.data).forEach(function (c) { parsed.data[c].forEach(function (p) { if (p.agency) p.agency = p.agency.replace(/\s+and\s+/gi, ' & '); }); });
+    Object.keys(parsed.data).forEach(function (c) { parsed.data[c].forEach(function (p) { if (/Georgia Health (and|&amp;|&) Social Project Implementation Center/i.test(p.agency || '')) p.agency = 'Georgia Health & Social Project Implementation Center (GHSPIC)'; }); });
+    Object.keys(parsed.data).forEach(function (c) { parsed.data[c].forEach(function (p) { if (/millennium challenge|\bMCC\b/i.test(p.agency || '')) p.agency = 'Millennium Challenge Corporation'; if (/\bUSTDA\b|trade and development agency/i.test(p.agency || '')) p.agency = 'U.S. Trade & Development Agency'; }); });
     window.__IOS_PROJECT_DATA__ = parsed.data;
     window.__IOS_COUNTRY_COORDS__ = prune(parsed.data, Object.assign({}, window.__IOS_COUNTRY_COORDS__ || {}, parsed.coords));
     window.__iosSheetLoaded = true;
