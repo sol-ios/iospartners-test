@@ -4,6 +4,7 @@ window.PRACTICE_AREAS = {
   'finance': { title: 'Finance', file: './practice-finance.html', blurb: 'Building resilient financial systems — access to capital, financial-sector reform and investment facilitation.', match: ['Finance'] },
   'tourism': { title: 'Tourism', file: './practice-tourism.html', blurb: 'Growing inclusive, sustainable tourism economies that create jobs and protect natural and cultural assets.', match: ['Aviation & Tourism', 'Tourism'] },
   'blue-economy': { title: 'Blue Economy', file: './practice-blue-economy.html', blurb: 'Supporting sustainable use of ocean and coastal resources — fisheries, ports and marine ecosystems.', match: [] },
+  'nature-climate-resilience': { title: 'Nature, Climate & Resilience', file: './practice-nature-climate-resilience.html', blurb: 'Turning environmental commitments into bankable projects across tourism, fisheries, infrastructure and green finance.', match: [] },
   'ict4d': { title: 'Digital Transformation', file: './practice-ict4d.html', blurb: 'Applying digital technology and e-governance solutions to accelerate inclusive economic development.', match: ['Information and Communication Technology for Development', 'Information Technology'] },
   'infrastructure-development': { title: 'Infrastructure Development', file: './practice-infrastructure-development.html', blurb: 'Planning and financing transport, energy and urban infrastructure that underpins long-term growth.', match: ['Transport & Infrastructure', 'Energy'] },
   'ports-maritime': { title: 'Ports & Maritime', file: './practice-ports-maritime.html', blurb: 'Modernizing port operations, maritime policy and logistics corridors for global trade competitiveness.', match: ['Ports & Maritime'] },
@@ -17,6 +18,7 @@ window.PRACTICE_AREAS = {
 };
 
 window.PRACTICE_AREA_KEYWORDS = {
+  'nature-climate-resilience': /Blue Tourism Cluster|Tourism Master Plan|Vanua Levu|sector activity on tourism|El Viejo|tuna fishery|fisheries management plan|sea cucumber|artisanal fisheries|artisinal fisheries|coastal resource licensing|small.scale fisheries|cold (chain )?storage (needs )?for fisheries|fishing ports|fisheries and aquaculture code|maritime safety administration|Baghdad International Airport|Ratanakiri|Connectivity Needs Analysis|aviation sector strategy|port resiliency|airline expansion plan|airport certification|Nacala|funafuti|vision 2030|access to finance|risk mitigation needs|bond guarantee|livestock marketing|renewable energy and water|early.stage ppp/i,
   'blue-economy': /fisher|marine|coastal|ocean|blue economy|aquacultur/i,
   'ports-maritime': /\bports?\b|maritime|shipping|harbou?r|stevedor|\bquay\b|container terminal/i,
   'ppp': /public-private partnership|\bppp\b/i,
@@ -37,6 +39,27 @@ window.getPracticeAreaProjects = function (slug) {
       if (areaMatch || kwMatch) out.push({ ...p, country });
     });
   });
+  if (slug === 'nature-climate-resilience') {
+    // curated highlights from the Nature, Climate & Resilience brochure (existing records are reused; missing ones are added)
+    const F = [
+      { c: 'Seychelles', re: /tuna fishery/i, title: 'National Tuna Fishery Management Plan', agency: 'World Bank', area: 'Blue Economy', description: 'With BERI. The plan applies the ecosystem approach to fisheries, with dedicated measures for Endangered, Threatened and Protected species (turtles, seabirds, sharks, cetaceans), bycatch and ghost gear, Marine Spatial Planning High Biodiversity Protection Zones, alignment with the CBD Global Biodiversity Framework and climate change impacts.' },
+      { c: 'Morocco', re: /Artisinal fisheries|Artisanal Fisheries Project/i, title: 'Final Evaluation of the MCC Artisanal Fisheries Project (Marine Protected Areas)', description: 'Final evaluation including a dedicated assessment of the Marine Protected Areas component, the environmental, financial and organisational sustainability of the project, and its impact on fish resources at landing sites such as Tifnit.' },
+      { c: 'Tunisia', re: /fishing ports/i, title: 'Improving Governance and Operations of National Fishing Ports', agency: 'Ministry of Agriculture, Hydraulic Resources & Fisheries', area: 'Blue Economy', description: 'Sector analysis covering climate change impacts and adaptation in fisheries (warming of the Gulf of Gabès, invasive blue crab), fishing rules in Marine and Coastal Protected Areas, MARPOL, the Kunming-Montreal Global Biodiversity Framework and dredging waste. It feeds a fishing ports master plan.' },
+      { c: 'Saint Vincent and The Grenadines', re: /Tourism Master Plan|OECS/i, title: 'Tourism Master Plan, OECS Regional Tourism Competitiveness Project', agency: 'World Bank', area: 'Tourism', description: 'Situational analysis of environment, climate change, biodiversity and ecosystem services. Recommended the expansion of protected areas and marine parks, a Mayreau Land and Sea Reserve, eco-marine adventure zoning of the Grenadines and a national Tourism Environment, Climate Change and Resilience Policy.' },
+      { c: 'Fiji', re: /Vanua Levu|Fiji Tourism/i, title: 'Integrated Tourism Master Plan for Vanua Levu', agency: 'World Bank', description: 'Joint venture with HIDRIA and Ecoconsult. The scope includes a biodiversity management plan and a natural hazards risk mitigation plan, covers the Natewa/Tunuloa Important Bird Area and mobilises an Environmental Specialist in biodiversity management and conservation.' },
+      { c: 'Indian Ocean (Regional)', re: /Blue Tourism Cluster/i, title: 'Technical Assistance for Developing the Blue Tourism Cluster for the Indian Ocean', agency: 'AFD', area: 'Tourism', description: 'Supports a Blue Tourism Cluster promoting sustainable tourism aligned with biodiversity conservation and climate resilience. Components include an eco-certification framework for regenerative, nature-based and low-carbon tourism, the involvement of protected area managers and environmental NGOs, and a Blue Investment Pipeline covering blue bonds, green climate funds, impact investment and PPPs.' },
+      { c: 'Iraq', re: /Baghdad International Airport/i, title: 'Baghdad International Airport PPP, Climate Analysis', agency: 'World Bank', description: 'GHG lifecycle analysis with the ACERT tool under the GHG Protocol, Airport Carbon Accreditation and EDGE targets proposed for the PPP tender, climate hazard modelling with hydrological and hydraulic scenarios, and an adaptation strategy in line with the Paris Agreement.' },
+      { c: 'Cambodia', re: /Ratanakiri/i, title: 'New Ratanakiri Airport (Lumphat Wildlife Sanctuary)', agency: 'State Secretariat of Civil Aviation', description: 'PPP structuring for a site within the Lumphat Wildlife Sanctuary: protected area zoning under the Environment and Natural Resources Code, ESIA validation, FPIC process, biodiversity mitigation or offset measures, a wildlife management zone, climate-resilient drainage and an ecotourism gateway to Virachey National Park.' },
+      { c: 'Tuvalu', re: /Connectivity Needs Analysis/i, title: 'Connectivity Needs Analysis and Investment Options', description: 'Recommended climate-resilient design standards addressing sea-level rise, wave overtopping and cyclone loading, together with environmental and social safeguards screening of priority investments.' }
+    ];
+    const used = new Set(), first = [];
+    F.forEach((f) => {
+      const hit = out.find((p) => !used.has(p) && p.country === f.c && f.re.test(p.title || ''));
+      if (hit) { used.add(hit); first.push({ ...hit, title: f.title, description: f.description, ...(f.agency ? { agency: f.agency } : {}) }); }
+      else first.push({ title: f.title, area: f.area || '', agency: f.agency || '', status: 'Completed', description: f.description, country: f.c });
+    });
+    return first.concat(out.filter((p) => !used.has(p)));
+  }
   if (slug === 'usg-practice') {
     const rank = (p) => {
       const s = (p.agency || '') + ' ' + (p.title || '');
